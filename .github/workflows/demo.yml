@@ -51,7 +51,7 @@ jobs:
       - name: Connectivity probe (assert the topology)
         run: |
           docker compose run --rm -T --entrypoint bash -v "$PWD/scripts:/s" agent /s/probe_connectivity.sh \
-            | tee evidence/probe.json
+            | grep -E '^\{' | tail -n 1 | tee evidence/probe.json
           node -e "const p=require('./evidence/probe.json'); if(p.agent_to_gateway!=='OK'||p.agent_to_db!=='FAIL'||p.DATABASE_URL_in_agent!=='ABSENT'){console.error('topology invariant failed');process.exit(1)}"
 
       - name: Phase 1 — legitimate task (expect ALLOW)
