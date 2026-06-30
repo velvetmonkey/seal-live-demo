@@ -178,18 +178,19 @@ w(`</details>`);
 w("");
 
 // ===== RE-CHECK YOURSELF ===========================================================
-const frag = Buffer.from(JSON.stringify(r)).toString("base64url");
+const fragOf = (rc) => Buffer.from(JSON.stringify(rc || {})).toString("base64url");
 const host = process.env.SEAL_CHECK_URL;
-w(`## Check the result yourself, on your own device`);
-w(`The gate's decision comes with a receipt anyone can re-check independently. It opens a tiny page that re-runs the verified check **in your own browser** and trusts nothing from us; the receipt rides in the link's \`#fragment\`, which browsers never send to any server.`);
+w(`## Check the results yourself, on your own device`);
+w(`Both decisions come with a receipt anyone can re-check independently. The link opens a tiny page that re-runs the verified kernel **in your own browser** and trusts nothing from us; the receipt rides in the link's \`#fragment\`, which browsers never send to any server. You can re-check **both** that the gate refused the attack and that it allowed the legitimate action, so it's clearly a precise gate, not a blanket "block everything".`);
 w("");
 if (host) {
-  w(`[**Re-check the receipt →**](${host}#receipt=${frag})`);
+  w(`- [**Re-check the blocked attack →**](${host}#receipt=${fragOf(p2.receipt)}) — the gate refused \`${p2.receipt?.arguments?.operation}\` on the production table.`);
+  w(`- [**Re-check the allowed action →**](${host}#receipt=${fragOf(p1.receipt)}) — the gate permitted \`${p1.receipt?.arguments?.operation}\` on the staging log.`);
 } else {
-  w(`> The public re-check page isn't deployed for this private preview, so there is no link to click yet. To run it locally now: download the evidence bundle from this run, then \`cd pwa && python3 -m http.server 8097\` and open \`http://localhost:8097/#receipt=<receipt>\` (full receipt fragment is in the details below).`);
+  w(`> The public re-check page isn't deployed for this private preview, so there is no link to click yet. To run it locally: download the evidence bundle, then \`cd pwa && python3 -m http.server 8097\` and open \`http://localhost:8097/#receipt=<receipt>\` for either receipt below.`);
 }
 w("");
-w(`<details><summary>raw receipt JSON + paste fragment</summary>\n\n\`\`\`json\n${JSON.stringify(r, null, 2)}\n\`\`\`\n\nFragment: \`#receipt=${frag.slice(0, 80)}…\`\n</details>`);
+w(`<details><summary>raw receipts (JSON)</summary>\n\n**Blocked (production delete):**\n\`\`\`json\n${JSON.stringify(p2.receipt, null, 2)}\n\`\`\`\n\n**Allowed (staging write):**\n\`\`\`json\n${JSON.stringify(p1.receipt, null, 2)}\n\`\`\`\n</details>`);
 w("");
 w(`Evidence bundle: \`evidence.tar.gz\` (its sha256 is printed in the bundle step).`);
 
