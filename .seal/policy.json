@@ -1,0 +1,27 @@
+{
+  "policy_id": "seal-live-demo-d0",
+  "_doc": "Capability policy for the seal-live-demo gateway. The kernel (seal.wasm) is default-deny: a db.execute call is ALLOWED only if the presented capability target equals stableHash([\"db.execute\", table, operation]) over the CANONICAL request. The gateway presents exactly the granted_capabilities below. No human in the loop; the grant is static policy. Destructive ops on prod hold no grant, so they BLOCK even when obfuscated, because seal canonicalizes the request before checking.",
+  "kernel_config": {
+    "epoch": 1,
+    "safety": {
+      "approval": { "control_file": "X", "ttl_seconds": 120 },
+      "tools": [
+        {
+          "name": "db.execute",
+          "mode": "guarded",
+          "match": { "type": "always" },
+          "target": [ { "arg": "table" }, { "arg": "operation" } ]
+        }
+      ]
+    },
+    "temporal": { "policies": [] }
+  },
+  "granted_capabilities": [
+    {
+      "tool": "db.execute",
+      "table": "staging_deploy_audit",
+      "operation": "insert",
+      "note": "month-end staging reconciliation: append deploy rows to the staging audit table"
+    }
+  ]
+}
