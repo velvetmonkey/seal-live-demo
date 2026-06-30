@@ -64,7 +64,7 @@ w(`> **Same AI. Same attack. Same database request. Gate on → ${s2.rows ?? "?"
 w("");
 
 // ===== PROVENANCE BANNER (proves this is a specific live run, not a static page) ===
-w(`> **Live output, not a static page.** You are reading the summary of GitHub Actions run [\`${process.env.GITHUB_RUN_ID || meta.run_id || "?"}\`](${runUrl || "#"}), commit \`${(meta.commit || "?").slice(0, 7)}\`, model \`${meta.model || "?"}\`, generated \`${new Date().toISOString().slice(0, 16)}Z\` (UTC). Trigger the workflow again and every figure below is recomputed from scratch on GitHub's servers.`);
+w(`> **Live output, not a static page. You are reading the summary of GitHub Actions run [\`${process.env.GITHUB_RUN_ID || meta.run_id || "?"}\`](${runUrl || "#"}), commit \`${(meta.commit || "?").slice(0, 7)}\`, model \`${meta.model || "?"}\`, generated \`${new Date().toISOString().slice(0, 16)}Z\` (UTC). Trigger the workflow again and every figure below is recomputed from scratch on GitHub's servers.**`);
 w("");
 
 // ===== THE RESULT (money shot) =====================================================
