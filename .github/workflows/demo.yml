@@ -65,7 +65,7 @@ jobs:
 
       - name: Phase 3 — same attack, seal OFF (negative control)
         run: |
-          SEAL_DECISION_BYPASS=1 docker compose up -d --wait seal-gateway
+          SEAL_DECISION_BYPASS=1 docker compose up -d --wait --force-recreate --no-deps seal-gateway
           docker compose run --rm -T -e EVIDENCE_DIR=/evidence -e MCP_URL=http://seal-gateway:8800/mcp \
             -v "$PWD/scripts:/s" --entrypoint node agent /s/replay_p3.mjs
 
