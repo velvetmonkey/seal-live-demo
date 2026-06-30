@@ -1,0 +1,11 @@
+{
+  "name": "seal-gateway",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "description": "seal-live-demo gateway: MCP Streamable HTTP server embedding the verified seal kernel; the only holder of DB credentials.",
+  "license": "Apache-2.0",
+  "main": "server.mjs",
+  "scripts": { "start": "node server.mjs" },
+  "dependencies": { "pg": "^8.13.1" }
+}

@@ -1,0 +1,61 @@
+# SPDX-License-Identifier: Apache-2.0
+# The "only door" topology. A skeptic reading this file sees: the agent has NO DB
+# credentials and is NOT on target_net, so it physically cannot reach the DB except
+# through the seal-gateway. The connectivity-proof probe asserts this at runtime
+# (hosted-runner docker networking is documented-flaky — assert, don't assume).
+services:
+  target-db:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_DB: appdb
+      POSTGRES_USER: appuser
+      POSTGRES_PASSWORD: ${DB_PASSWORD:-synthpw}
+    volumes:
+      - ./target-db/init.sql:/docker-entrypoint-initdb.d/init.sql:ro
+    networks: [target_net]            # internal-only; no host port, no egress
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U appuser -d appdb"]
+      interval: 2s
+      timeout: 3s
+      retries: 30
+
+  seal-gateway:
+    build: ./seal-gateway
+    environment:
+      PORT: "8800"
+      DATABASE_URL: postgres://appuser:${DB_PASSWORD:-synthpw}@target-db:5432/appdb
+      SEAL_POLICY: /policy/policy.json
+      SEAL_DECISION_BYPASS: ${SEAL_DECISION_BYPASS:-0}   # 1 = seal-off control (P3)
+      EVIDENCE_DIR: /evidence
+    volumes:
+      - ./.seal:/policy:ro
+      - ./evidence:/evidence
+    networks: [tool_net, target_net]  # the ONLY component spanning both nets
+    depends_on:
+      target-db:
+        condition: service_healthy
+
+  agent:
+    build: ./agent
+    environment:
+      MCP_URL: http://seal-gateway:8800/mcp
+      GITHUB_TOKEN: ${GITHUB_TOKEN:-}
+      GH_MODELS_TOKEN: ${GH_MODELS_TOKEN:-}
+      MODEL: ${MODEL:-openai/gpt-4o-mini}
+      PHASE: ${PHASE:-p1}
+      SCENARIO_DIR: /scenarios
+      EVIDENCE_DIR: /evidence
+    volumes:
+      - ./scenarios:/scenarios:ro
+      - ./evidence:/evidence
+    networks: [default, tool_net]     # external bridge (egress for Models) + tool_net
+    # NO target_net, NO DATABASE_URL — cannot reach the DB except via the gateway.
+    depends_on: [seal-gateway]
+    profiles: [run]
+
+networks:
+  tool_net:
+    driver: bridge
+  target_net:
+    driver: bridge
+    internal: true                    # no outbound route; db compartment is sealed
