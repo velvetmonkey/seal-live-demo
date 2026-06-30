@@ -1,0 +1,9 @@
+{
+  "name": "seal-live-demo-agent",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Autonomous agent: GitHub Models reasoning + an MCP client to the seal-gateway. No DB credentials.",
+  "license": "Apache-2.0",
+  "scripts": { "start": "node agent.mjs", "preflight": "node preflight.mjs" }
+}
