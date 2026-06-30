@@ -20,6 +20,9 @@ button { background:#1b1e27; color:var(--ink); border:1px solid var(--line); bor
 button:hover { border-color:var(--accent); }
 button.primary { background:#14304f; border-color:#2b6cb0; color:#dcebff; }
 .boot-error { background:#210f0f; color:var(--red); border-bottom:1px solid #5a2020; padding:10px 20px; font-family:var(--mono); font-size:13px; }
+.deeplink { margin:16px 0; padding:12px 14px; border-radius:10px; border:1px solid var(--line); background:var(--panel); font-size:14px; }
+.deeplink.ok { border-color:#1f5a45; } .deeplink.bad { border-color:#5a2020; color:var(--red); }
+.sw-cache { color:var(--muted); }
 
 /* money shot */
 .stage { display:grid; grid-template-columns:1fr 1fr; gap:18px; }

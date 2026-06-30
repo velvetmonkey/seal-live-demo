@@ -89,7 +89,19 @@ w("");
 w(`<details><summary>raw P2 agent trace + wire bytes + receipt</summary>\n\n\`\`\`json\n${JSON.stringify(p2, null, 2)}\n\`\`\`\n</details>`);
 w(`<details><summary>P3 control receipt</summary>\n\n\`\`\`json\n${JSON.stringify(p3, null, 2)}\n\`\`\`\n</details>`);
 w("");
-w(`> Verify the Block receipt yourself in seal-check (re-derives in your browser, trusts nothing of ours). Evidence bundle: \`evidence.tar.gz\` (sha256 printed in the bundle step).`);
+
+// Verify-this-receipt-yourself: base64url the Block receipt into a deep-link whose
+// payload lives in the URL FRAGMENT (#) — never sent to any server. The PWA decodes
+// it, self-verifies its own wasm sha256, and re-derives the verdict on-device.
+const frag = Buffer.from(JSON.stringify(r)).toString("base64url");
+const base = process.env.SEAL_CHECK_URL || "https://<your-pages-host>/pwa/";
+w(`## 👉 Verify this Block receipt yourself`);
+w(`Opens a zero-install page that re-derives the verdict **on your device** — it trusts nothing of ours. The receipt rides in the URL \`#fragment\`, which browsers never send to a server.`);
+w(`[**Verify the receipt →**](${base}#receipt=${frag})`);
+w("");
+w(`<details><summary>paste fallback (if the link host isn't set) + raw receipt JSON</summary>\n\nServe the bundled \`pwa/\` (\`cd pwa && python3 -m http.server 8090\`) and open:\n\n\`#receipt=${frag.slice(0, 64)}…\`\n\n\`\`\`json\n${JSON.stringify(r, null, 2)}\n\`\`\`\n</details>`);
+w("");
+w(`Evidence bundle: \`evidence.tar.gz\` (sha256 printed in the bundle step).`);
 
 fs.writeFileSync(OUT, m.join("\n") + "\n");
 console.log(`summary written -> ${OUT} (${m.length} lines)`);

@@ -4,10 +4,53 @@
 // Drama rule: if it wasn't emitted by the run, it doesn't appear here.
 import { decideConfig, ready } from "./seal-wasm.js";
 import { stableHash } from "./seal-config.js";
+import { sha256Hex } from "./sha256.js";
 
 const $ = (id) => document.getElementById(id);
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
+const KERNEL_SHA = "1cc765c7de2cead88eda2e8e5f5af5a5e070f35a767916e754b873733562c70a";
 let BUNDLE = null, GRANTS = [];
+
+// Self-verify the kernel binary we actually loaded (hash it, compare to the pin).
+async function verifyWasm() {
+  try {
+    const buf = new Uint8Array(await (await fetch("wasm/seal.wasm")).arrayBuffer());
+    const got = await sha256Hex(buf);
+    return { got, match: got === KERNEL_SHA };
+  } catch (e) { return { got: null, match: false, err: e.message }; }
+}
+
+function b64urlDecode(s) {
+  s = s.replace(/-/g, "+").replace(/_/g, "/"); while (s.length % 4) s += "=";
+  const bin = atob(s); const bytes = Uint8Array.from(bin, (c) => c.charCodeAt(0));
+  return new TextDecoder().decode(bytes);
+}
+
+// A deep-linked receipt (#receipt=<base64url>) — re-derive it on-device, fragment
+// never leaves the browser.
+async function handleDeepLink() {
+  const params = new URLSearchParams(location.hash.slice(1));
+  const enc = params.get("receipt");
+  if (!enc) return false;
+  const banner = $("deeplink-banner");
+  banner.classList.remove("hidden");
+  let receipt;
+  try { receipt = JSON.parse(b64urlDecode(enc)); } catch (e) { banner.innerHTML = `<b>Deep-linked receipt:</b> could not decode (${e.message}).`; return true; }
+  $("tamper-input").value = JSON.stringify(receipt, null, 2);
+  $("receipt-view").classList.remove("hidden");
+  $("rv-json").textContent = JSON.stringify(receipt, null, 2);
+  try {
+    const live = await reDerive(receipt.arguments);
+    const got = live.verdict === "DENY" ? "BLOCK" : live.verdict;
+    const claimed = receipt.verdict;
+    const okMatch = !claimed || claimed === got;
+    banner.innerHTML = `<b>Deep-linked Block receipt</b> — re-derived on your device: kernel says <b>${got}</b>${claimed ? ` (receipt claims ${claimed})` : ""}. ${okMatch ? "✓ matches" : "⚠ MISMATCH — receipt rejected"}. Nothing was sent to a server.`;
+    banner.className = "deeplink " + (okMatch ? "ok" : "bad");
+    $("rv-rederive").textContent = okMatch ? `✓ re-derived: kernel says ${got}` : `⚠ re-derived ${got} ≠ receipt ${claimed}`;
+    $("rv-rederive").className = "rederive " + (okMatch ? "ok" : "bad");
+  } catch (e) { banner.textContent = "re-derive error: " + e.message; banner.className = "deeplink bad"; }
+  return true;
+}
 
 if (location.protocol === "file:") { $("boot-error").hidden = false; }
 
@@ -129,7 +172,8 @@ async function init() {
   GRANTS = grantsFrom(BUNDLE.policy);
   await ready();
   const m = BUNDLE.meta || {};
-  $("meta").textContent = `commit ${(m.commit || "?").slice(0, 12)} · model ${m.model || "?"} · kernel ${(m.kernel_sha256 || "").slice(0, 12)}… · policy ${m.policy || "?"}`;
+  const v = await verifyWasm();
+  $("meta").textContent = `commit ${(m.commit || "?").slice(0, 12)} · model ${m.model || "?"} · policy ${m.policy || "?"} · kernel ${(v.got || "").slice(0, 12)}… ${v.match ? "self-verified ✓" : "⚠ SHA MISMATCH"}`;
   buildGrid($("grid-off")); buildGrid($("grid-on"));
   const before = BUNDLE.snapshots.before.rows;
   setGrid($("grid-off"), before, before); setGrid($("grid-on"), before, before);
@@ -138,5 +182,6 @@ async function init() {
   $("tamper-input").value = JSON.stringify(BUNDLE.phases.p2.receipt, null, 2);
   $("play").addEventListener("click", play);
   $("tamper-run").addEventListener("click", tamper);
+  await handleDeepLink();
 }
 init();
