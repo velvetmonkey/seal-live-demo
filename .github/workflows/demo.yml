@@ -11,6 +11,7 @@ on:
 permissions:
   contents: read
   models: read
+  actions: read   # read this run's job/step map so the report can deep-link into the live log
 
 jobs:
   demo:
@@ -73,6 +74,13 @@ jobs:
 
       - name: Snapshot prod AFTER P3 (expect destroyed)
         run: bash scripts/snapshot_host.sh > evidence/snap-after-p3.json && cat evidence/snap-after-p3.json
+
+      - name: Capture live-log anchors for the report
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh api "repos/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID/jobs" > evidence/jobs.json \
+            || echo '{}' > evidence/jobs.json
 
       - name: Render report to job summary
         run: node scripts/render_summary.mjs
