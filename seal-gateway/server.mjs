@@ -81,6 +81,7 @@ async function handleDbExecute(args) {
   receipt.gateway = { bypass: BYPASS, ts_unix: Math.floor(Number(process.hrtime.bigint() / 1000000n)) };
   recordReceipt(receipt);
   log({ component: "seal-gateway", abi: "db.execute", verdict: receipt.verdict, bypass: BYPASS,
+        operation: toolCall.operation, table: toolCall.table,
         request_sha256: receipt.canonical_request_sha256, executed: execution.executed, rows_affected: execution.rows_affected });
   return receipt;
 }

@@ -24,12 +24,22 @@ const job = jobs?.jobs?.find((j) => j.name === process.env.GITHUB_JOB) || jobs?.
 const runUrl = (process.env.GITHUB_SERVER_URL && process.env.GITHUB_REPOSITORY && process.env.GITHUB_RUN_ID)
   ? `${process.env.GITHUB_SERVER_URL}/${process.env.GITHUB_REPOSITORY}/actions/runs/${process.env.GITHUB_RUN_ID}` : "";
 const jobUrl = job?.html_url || runUrl;
-const logLink = (prefix, label = "watch this actually run in the live log") => {
-  if (!jobUrl) return "";
-  const s = (job?.steps || []).find((x) => typeof x.name === "string" && x.name.startsWith(prefix));
-  const url = s?.number ? `${jobUrl}#step:${s.number}:1` : jobUrl;
-  return ` [&#9654; ${label}](${url})`;
-};
+// Deep-links into the live log don't reliably scroll on GitHub (logs are lazy-loaded),
+// so they're disabled. The gate's actual decisions are captured verbatim inline instead
+// (see "The gate's own decision log" below).
+const logLink = () => "";
+// Read the gate's own append-only decision log, captured verbatim during the run.
+function readGatewayDecisions() {
+  const out = [];
+  for (const f of ["gateway-on.log", "gateway-off.log"]) {
+    let txt = ""; try { txt = fs.readFileSync(path.join(DIR, f), "utf8"); } catch { continue; }
+    for (const ln of txt.split("\n")) {
+      const i = ln.indexOf("{"); if (i < 0) continue; // strip any "seal-gateway-1 | " prefix
+      try { const o = JSON.parse(ln.slice(i)); if (o.component === "seal-gateway") out.push(o); } catch { /* not a json line */ }
+    }
+  }
+  return out;
+}
 const plainVerdict = (v) => v === "ALLOW" ? "ALLOWED" : v === "BLOCK" ? "REFUSED" : (v || "?");
 const execLine = (rc) => { const e = rc?.execution || {}; return e.executed ? `${e.rows_affected} row(s) changed` : "nothing changed"; };
 const reqId = (rc) => (rc?.canonical_request_sha256 || "").slice(0, 12);
@@ -97,6 +107,30 @@ w("");
 w(`**Step 3: the same trap, with the gate OFF (the control).** We removed the gate and ran the byte-for-byte identical attempt. This time nothing stopped it: the deletion went through and the customer ledger was **destroyed: ${sb.rows ?? "?"} → ${s3.rows ?? "?"}** records. This is what proves Step 2 was a real save, not a harmless do-nothing.${logLink("Phase 3")}`);
 recorded([`gate decision: ${plainVerdict(p3.receipt?.verdict)} (gate switched off)   ·   result: ${execLine(p3.receipt)}   ·   request ID: ${reqId(p3.receipt)}… (identical to Step 2)`]);
 w("");
+
+// ===== CAPTURED GATE DECISION LOG ==================================================
+const gw = readGatewayDecisions();
+if (gw.length) {
+  w(`## The gate's own decision log (captured from this run)`);
+  w(`This is the append-only log the gate wrote **while the run executed**, copied here verbatim. Read it top to bottom: the gate starts, allows the one legitimate action (Step 1), refuses the attack (Step 2) and every disguised variant (the gauntlet), then, once the gate is switched off for the control, the identical delete finally executes and empties the table (Step 3). In the run above, these exact lines are printed by the two **"Capture the gate's decision log"** steps.`);
+  w("");
+  w("```text");
+  let blockSeen = 0;
+  for (const o of gw) {
+    if (o.event === "listening") { w(`# gate started: seal ${o.bypass ? "OFF (control run)" : "ON"}`); continue; }
+    if (o.abi !== "db.execute") continue;
+    const verdict = (o.verdict || "?").padEnd(6);
+    const what = `${JSON.stringify(o.operation)} on ${o.table}`.padEnd(40);
+    const res = o.executed ? `EXECUTED, ${o.rows_affected} row(s)` : "nothing executed";
+    let tag = "";
+    if (o.verdict === "ALLOW" && o.operation === "insert") tag = "   <- Step 1: legitimate action, ALLOWED";
+    else if (o.verdict === "ALLOW" && o.bypass) tag = "   <- Step 3: CONTROL (gate off), data DESTROYED";
+    else if (o.verdict === "BLOCK") tag = (++blockSeen === 1) ? "   <- Step 2: the attack, REFUSED" : "   <- gauntlet: same delete disguised, REFUSED";
+    w(`${verdict} ${what} ${res}${tag}`);
+  }
+  w("```");
+  w("");
+}
 
 // ===== ANTI-STAGING ================================================================
 w(`## How do you know this isn't staged?`);

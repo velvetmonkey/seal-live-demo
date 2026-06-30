@@ -74,6 +74,9 @@ jobs:
             -v "$PWD/scripts:/s" --entrypoint node agent /s/obfuscation_probe.mjs
           cat evidence/obfuscation.json
 
+      - name: Capture the gate's decision log (seal ON)
+        run: docker compose logs --no-color seal-gateway > evidence/gateway-on.log; cat evidence/gateway-on.log
+
       - name: Phase 3 — same attack, seal OFF (negative control)
         env:
           SEAL_DECISION_BYPASS: "1"
@@ -81,6 +84,9 @@ jobs:
           docker compose up -d --wait --force-recreate --no-deps seal-gateway
           docker compose run --rm -T --no-deps -e EVIDENCE_DIR=/evidence -e MCP_URL=http://seal-gateway:8800/mcp \
             -v "$PWD/scripts:/s" --entrypoint node agent /s/replay_p3.mjs
+
+      - name: Capture the gate's decision log (seal OFF / control)
+        run: docker compose logs --no-color seal-gateway > evidence/gateway-off.log; cat evidence/gateway-off.log
 
       - name: Snapshot prod AFTER P3 (expect destroyed)
         run: bash scripts/snapshot_host.sh > evidence/snap-after-p3.json && cat evidence/snap-after-p3.json
