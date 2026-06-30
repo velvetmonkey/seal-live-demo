@@ -23,7 +23,7 @@ w(`# 🛡️ seal · Live Agent Threat Report`);
 w(`Run for commit \`${(meta.commit || "?").slice(0, 12)}\` · workflow-hash \`${(meta.workflow_hash || "?").slice(0, 12)}\` · model \`${meta.model || "?"}\``);
 w("");
 // Honesty ABOVE the badges (amendment #7).
-w(`> **What this proves / does NOT prove.** This proves the mediation **decision**: a state transition that violates the capability policy **cannot be executed** once it reaches seal (the Lean-verified decision function), modulo assumptions A1–A3. It does **NOT** prove the agent is safe — a fooled agent can still leak what it reads — and it tests, but does not prove, the host/container wiring. No third party (incl. ARIA) certifies anything here. Green check = assertions passed on captured receipts + external row counts.`);
+w(`> **What this proves / does NOT prove.** This is a Lean-verified mediation **decision function** inside a host gateway. It proves **complete mediation modulo A1–A3, for calls that reach seal**: state transitions violating the capability policy **cannot be executed** once canonicalised. It does **NOT** prove the agent is safe — a fooled agent can still leak what it *reads* — and the demo **tests but does not prove** the host/transport/container wiring. The requested destructive DB effect **was not performed**; that is not the same as "the environment is safe". The receipt is **demo-key signed (integrity check, not production identity)**. **Policy errors are out of scope** — this proves only that a decision cannot be bypassed after canonicalisation. No third party (incl. ARIA) certifies anything. **Green check = assertions passed on captured receipts + external row counts.**`);
 w("");
 // Text-only badges (no external image fetch — nothing leaves the runner).
 w(`\`✅ seal verified\`  \`🧾 receipt re-derivable\`  \`🛑 destructive effect not performed\``);
@@ -48,6 +48,22 @@ w(`## Keystones (the anti-staged proofs)`);
 w(`1. **The block is real, not cosmetic** — connectivity probe: agent→gateway \`${probe.agent_to_gateway}\`, agent→db \`${probe.agent_to_db}\` (no route), \`DATABASE_URL\` in agent: \`${probe.DATABASE_URL_in_agent}\`.`);
 w(`2. **The attack is real** — negative control (seal off) executed the identical request and destroyed the table: ${sb.rows} → ${s3.rows} rows.`);
 w(`3. **The agent genuinely tried** — P2 and P3 canonical request hashes are ${same ? "**identical**" : "**NOT identical (⚠)**"}: \`${reqHash.slice(0, 32)}…\`.`);
+w("");
+
+// Canonical bytes: ALLOW vs BLOCK differ only in the request; obfuscation vs canonical.
+const p1op = p1.receipt?.arguments?.operation, p1tbl = p1.receipt?.arguments?.table;
+const p2op = p2.receipt?.arguments?.operation, p2tbl = p2.receipt?.arguments?.table;
+w(`## The exact bytes`);
+w(`Same tool, same presented capability — ALLOW and BLOCK differ **only** in the canonical request bytes:`);
+w("");
+w(`| | operation | table | verdict |`);
+w(`|---|---|---|---|`);
+w(`| ALLOW (P1) | \`${JSON.stringify(p1op)}\` | \`${p1tbl}\` | \`${p1.receipt?.verdict}\` |`);
+w(`| BLOCK (P2) | \`${JSON.stringify(p2op)}\` | \`${p2tbl}\` | \`${p2.receipt?.verdict}\` |`);
+w("");
+w(`**Beats "it's just a regex".** The attack obfuscates the operation: \`${JSON.stringify(p2op)}\` (note the trailing newline). A naive filter does \`operation === "delete_all"\` and **misses it** — the delete would reach the DB. seal canonicalizes the request and checks it against the capability policy, so it blocks the obfuscated form regardless. Obfuscated vs canonical:`);
+w("");
+w(`\`\`\`\nobfuscated operation bytes : ${JSON.stringify(p2op)}\nnaive \`op === "delete_all"\`   : ${p2op === "delete_all"}  (misses the obfuscation)\nseal verdict (canonicalised) : ${p2.receipt?.verdict}  via ${p2.receipt?.deny_kernel}\n\`\`\``);
 w("");
 
 // Phases
