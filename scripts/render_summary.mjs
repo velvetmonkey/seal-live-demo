@@ -110,20 +110,29 @@ w(`5. **It ran on someone else's computer.** This executed on GitHub's own serve
 w(`6. **Nothing here was typed by hand.** Every count and verdict was written by the steps during this run, and an automated check then re-read the receipts and the external database counts. The green check means all of those checks held.${logLink("Assert invariants", "see the pass/fail checklist in the live log")}`);
 w("");
 
-// ===== KEYWORD FILTER (tightened / conditional) ------------------------------------
-const p2op = p2.receipt?.arguments?.operation || "";
-const obfuscated = /delete/i.test(p2op) && p2op !== "delete_all";
+// ===== OBFUSCATION GAUNTLET (amendment #6, deterministic) --------------------------
+const obf = read("obfuscation.json");
 w(`## Why this is more than a keyword blocklist`);
-if (obfuscated) {
-  w(`The attack disguised the delete command with extra bytes (\`${JSON.stringify(p2op)}\`). A naive filter checking \`operation == "delete_all"\` sees a non-match (\`${p2op === "delete_all"}\`) and lets it straight through. The gate does not keyword-match: it boils the request down to one standard, fully-decoded form and checks **that** against the permission rules, so the disguise makes no difference. That is the whole reason for a formally-verified gate instead of a five-line script.`);
+if (obf?.rows?.length) {
+  const missed = obf.rows.filter((r) => !r.naive_exact_match).length;
+  const blocked = obf.rows.filter((r) => r.gate_verdict === "BLOCK").length;
+  w(`A one-line filter that checks \`operation == "delete_all"\` is trivial to dodge: tweak the spelling and the dangerous command sails through. During this run we sent the gate the **same** "delete all customers" command in ${obf.rows.length} disguises. A naive filter missed **${missed} of ${obf.rows.length}**. The gate refused **all ${blocked}**.`);
+  w("");
+  w(`| the same delete, disguised | exact bytes | one-line keyword filter | the gate |`);
+  w(`|---|---|---|---|`);
+  for (const r of obf.rows) {
+    w(`| ${r.name} | \`${JSON.stringify(r.operation)}\` | ${r.naive_exact_match ? "caught" : "**missed** ✗"} | ${plainVerdict(r.gate_verdict)} ✓ |`);
+  }
+  w("");
+  w(`Every disguise above was sent to the live gate during this run; each was refused and none touched the database. That is why a formally-verified gate beats a hand-written filter: it decides on the request's standard, fully-decoded form, so spelling tricks are not the security boundary.${logLink("Obfuscation gauntlet", "see the gauntlet run in the live log")}`);
 } else {
-  w(`A keyword blocklist might catch this exact spelling. The gate's point is different: it decides on the request's standard, fully-decoded form against the agent's permission rules, so spelling tricks (extra spaces, odd casing, encodings) are not the security boundary. The on-device re-check page includes a tamper test that demonstrates this.`);
+  w(`A keyword blocklist can be dodged by changing the spelling. The gate decides on the request's standard, fully-decoded form against the agent's permission rules, so spelling tricks (extra spaces, odd casing, encodings) are not the security boundary.`);
 }
 w("");
 
 // ===== FOR ENGINEERS (folded) ======================================================
 const p1op = p1.receipt?.arguments?.operation, p1tbl = p1.receipt?.arguments?.table;
-const p2tbl = p2.receipt?.arguments?.table;
+const p2op = p2.receipt?.arguments?.operation || "", p2tbl = p2.receipt?.arguments?.table;
 const r = p2.receipt || {};
 w(`## For engineers`);
 w("");

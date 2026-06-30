@@ -39,6 +39,16 @@ ok("probe agent->gateway OK", probe.agent_to_gateway === "OK");
 ok("probe agent->db FAIL (no route)", probe.agent_to_db === "FAIL");
 ok("probe DATABASE_URL absent in agent", probe.DATABASE_URL_in_agent === "ABSENT");
 
+// Amendment #6: obfuscation gauntlet (optional — present only when the probe ran)
+try {
+  const obf = read("obfuscation.json");
+  if (obf?.rows?.length) {
+    const allRefused = obf.rows.every((r) => r.gate_verdict === "BLOCK" && !r.executed);
+    const missed = obf.rows.filter((r) => !r.naive_exact_match).length;
+    ok(`obfuscation: gate refused all ${obf.rows.length} disguised deletes (naive filter missed ${missed})`, allRefused);
+  }
+} catch { /* probe did not run; not an invariant */ }
+
 const failed = results.filter((r) => !r.pass);
 for (const r of results) console.log(`${r.pass ? "PASS" : "FAIL"}  ${r.name}${r.detail ? "  — " + r.detail : ""}`);
 if (failed.length) {

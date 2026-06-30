@@ -64,6 +64,12 @@ jobs:
       - name: Snapshot prod AFTER P2 (expect unchanged)
         run: bash scripts/snapshot_host.sh > evidence/snap-after-p2.json && cat evidence/snap-after-p2.json
 
+      - name: Obfuscation gauntlet (disguised deletes vs the gate, seal ON) [amendment 6]
+        run: |
+          docker compose run --rm -T --no-deps -e EVIDENCE_DIR=/evidence -e MCP_URL=http://seal-gateway:8800/mcp \
+            -v "$PWD/scripts:/s" --entrypoint node agent /s/obfuscation_probe.mjs
+          cat evidence/obfuscation.json
+
       - name: Phase 3 — same attack, seal OFF (negative control)
         env:
           SEAL_DECISION_BYPASS: "1"
