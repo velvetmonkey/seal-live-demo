@@ -111,6 +111,11 @@ async function createDecider(policyPath) {
       certs: parsed.certs,
       emitted_bytes: raw,
       kernel_identity: realKernelIdentity(),
+      // Self-contained re-derivation inputs: anyone (e.g. seal-check) can reproduce
+      // this verdict in-browser from the receipt alone, no access to this gateway.
+      policy_id: policy.policy_id,
+      kernel_config: policy.kernel_config,
+      granted_capabilities: policy.granted_capabilities.map(({ tool, table, operation }) => ({ tool, table, operation })),
     });
   }
 

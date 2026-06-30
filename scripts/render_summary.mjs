@@ -124,7 +124,7 @@ if (obf?.rows?.length) {
     w(`| ${r.name} | \`${JSON.stringify(r.operation)}\` | ${r.naive_exact_match ? "caught" : "**missed** ✗"} | ${plainVerdict(r.gate_verdict)} ✓ |`);
   }
   w("");
-  w(`Every disguise above was sent to the live gate during this run; each was refused and none touched the database. That is why a formally-verified gate beats a hand-written filter: it decides on the request's standard, fully-decoded form, so spelling tricks are not the security boundary.${logLink("Obfuscation gauntlet", "see the gauntlet run in the live log")}`);
+  w(`Every disguise above was sent to the live gate during this run; each was refused and none touched the database. The gate is **default-deny**: the agent was granted permission to do exactly one thing (add a row to the staging log), so every delete on the production table is refused for lacking a grant, however it is spelled. There is no blocklist to slip past, which is why a hand-written keyword filter loses and a verified gate does not.${logLink("Obfuscation gauntlet", "see the gauntlet run in the live log")}`);
 } else {
   w(`A keyword blocklist can be dodged by changing the spelling. The gate decides on the request's standard, fully-decoded form against the agent's permission rules, so spelling tricks (extra spaces, odd casing, encodings) are not the security boundary.`);
 }

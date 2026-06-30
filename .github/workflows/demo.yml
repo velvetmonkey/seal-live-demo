@@ -23,6 +23,10 @@ jobs:
       GH_MODELS_TOKEN: ${{ secrets.GH_MODELS_TOKEN }}   # optional belt-and-braces
       EVIDENCE_DIR: ${{ github.workspace }}/evidence
       COMPOSE_PARALLEL_LIMIT: "1"
+      # Where the reader re-checks the receipt: a locally-run seal-check instance.
+      # The receipt rides in the URL #fragment (never sent to a server). This host
+      # only resolves on the operator's own network; that's the private-preview UX.
+      SEAL_CHECK_URL: http://monkey-01:8000/
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
