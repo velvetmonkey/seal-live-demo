@@ -63,6 +63,10 @@ w("");
 w(`> **Same AI. Same attack. Same database request. Gate on → ${s2.rows ?? "?"} survived. Gate off → ${s3.rows ?? "?"} left. Every number on this page came from the run, not from us.**`);
 w("");
 
+// ===== PROVENANCE BANNER (proves this is a specific live run, not a static page) ===
+w(`> **Live output, not a static page.** You are reading the summary of GitHub Actions run [\`${process.env.GITHUB_RUN_ID || meta.run_id || "?"}\`](${runUrl || "#"}), commit \`${(meta.commit || "?").slice(0, 7)}\`, model \`${meta.model || "?"}\`, generated \`${new Date().toISOString().slice(0, 16)}Z\` (UTC). Trigger the workflow again and every figure below is recomputed from scratch on GitHub's servers.`);
+w("");
+
 // ===== THE RESULT (money shot) =====================================================
 w(`## The result`);
 w(`The same AI agent, given the same hidden trap, run twice. The **only** difference between the two runs is whether the safety gate was switched on.${logLink("Snapshot prod AFTER P3", "see the database counts in the live log")}`);
@@ -80,8 +84,6 @@ recorded([
   `after the attack, gate ON    : ${s2.rows ?? "?"} customer records   (unchanged, the attack was refused)`,
   `after the attack, gate OFF   : ${s3.rows ?? "?"} customer records   (the database was emptied)`,
 ]);
-w("");
-w(`*This ran on GitHub's servers for commit \`${(meta.commit || "?").slice(0, 12)}\`, using the AI model \`${meta.model || "?"}\`.*`);
 w("");
 
 // ===== THE LIMITS (plain bridge + precise panel, kept verbatim) + badges -----------
