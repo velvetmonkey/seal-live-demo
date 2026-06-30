@@ -128,3 +128,5 @@ kernel is the same audited artifact as [seal-check]; its source proofs live in t
 
 ## License
 Apache-2.0. See [LICENSE](LICENSE) and [NOTICE](NOTICE). Synthetic data only.
+
+<!-- registered with GitHub Actions 2026-06-30T19:31Z -->
