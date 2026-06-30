@@ -1,0 +1,57 @@
+/* SPDX-License-Identifier: Apache-2.0 */
+:root {
+  --bg:#0e0f13; --panel:#16181f; --line:#2a2e3a; --ink:#e6e8ee; --muted:#9aa0ad;
+  --accent:#5aa9ff; --green:#36d399; --red:#f87272; --warn:#e8b54a;
+  --mono:ui-monospace,"SF Mono",Menlo,Consolas,monospace;
+}
+* { box-sizing:border-box; }
+body { margin:0; background:var(--bg); color:var(--ink); font:15px/1.55 system-ui,-apple-system,Segoe UI,Roboto,sans-serif; }
+.wrap { max-width:980px; margin:0 auto; padding:0 20px; }
+header { padding:34px 20px 16px; border-bottom:1px solid var(--line); }
+h1 { margin:0 0 6px; font-size:28px; letter-spacing:-.5px; }
+.tag { color:var(--ink); max-width:74ch; margin:0 0 10px; }
+.meta { color:var(--muted); font-size:12px; }
+.mono { font-family:var(--mono); } .muted { color:var(--muted); }
+code { background:#00000040; padding:1px 5px; border-radius:4px; font-family:var(--mono); font-size:.92em; }
+section { padding:24px 0; border-bottom:1px solid var(--line); }
+h2 { font-size:19px; margin:0 0 10px; } h3 { font-size:15px; margin:0 0 6px; }
+.row { display:flex; gap:12px; align-items:center; flex-wrap:wrap; margin-top:10px; }
+button { background:#1b1e27; color:var(--ink); border:1px solid var(--line); border-radius:8px; padding:9px 14px; font-size:13px; cursor:pointer; }
+button:hover { border-color:var(--accent); }
+button.primary { background:#14304f; border-color:#2b6cb0; color:#dcebff; }
+.boot-error { background:#210f0f; color:var(--red); border-bottom:1px solid #5a2020; padding:10px 20px; font-family:var(--mono); font-size:13px; }
+
+/* money shot */
+.stage { display:grid; grid-template-columns:1fr 1fr; gap:18px; }
+.side { border:1px solid var(--line); border-radius:12px; padding:16px; background:var(--panel); }
+.side h2 { font-size:15px; letter-spacing:1px; } .side .sub { color:var(--muted); font-weight:400; font-size:12px; }
+.grid { display:grid; grid-template-columns:repeat(20,1fr); gap:3px; margin:12px 0; }
+.cell { aspect-ratio:1; border-radius:2px; background:var(--green); transition:background .25s, opacity .25s, transform .25s; }
+.side.off .cell { background:var(--accent); }
+.cell.gone { background:#23262f; opacity:.35; transform:scale(.7); }
+.count { font-family:var(--mono); font-size:34px; font-weight:700; letter-spacing:1px; }
+.count.crater { color:var(--red); } .count.held { color:var(--green); }
+.caption { color:var(--muted); font-size:12px; margin-top:2px; min-height:1.2em; }
+.narration { font-size:17px; min-height:1.5em; margin-top:14px; color:#d6dae3; }
+
+/* phase cards */
+.cards { display:grid; grid-template-columns:repeat(3,1fr); gap:12px; }
+.card { text-align:left; padding:14px; border-radius:10px; background:var(--panel); }
+.card-title { font-weight:600; font-size:13.5px; } .card-sub { font-size:11px; color:var(--muted); margin:4px 0 8px; }
+.card-verdict { font-family:var(--mono); font-weight:700; }
+.card.ok .card-verdict { color:var(--green); } .card.block .card-verdict { color:var(--red); } .card.crater .card-verdict { color:var(--warn); }
+.receipt-view { margin-top:16px; }
+.rederive { font-family:var(--mono); font-size:12px; margin-left:6px; }
+.rederive.ok { color:var(--green); } .rederive.bad { color:var(--red); }
+.receipt, textarea { width:100%; background:#0b0c10; border:1px solid var(--line); border-radius:8px; padding:12px; font-family:var(--mono); font-size:12px; color:var(--ink); }
+.receipt { overflow:auto; max-height:340px; white-space:pre; } textarea { resize:vertical; }
+.hidden { display:none; }
+#tamper-result.ok { color:var(--green); } #tamper-result.bad { color:var(--red); }
+
+.claim-grid { display:grid; grid-template-columns:1fr 1fr; gap:16px; }
+.claim { border:1px solid var(--line); border-radius:10px; padding:14px; background:var(--panel); }
+.claim.proves { border-color:#1f5a45; } .claim.notproves { border-color:#5a3a20; }
+.claim.proves h3 { color:var(--green); } .claim.notproves h3 { color:var(--warn); }
+.claim p { font-size:13px; margin:0; }
+footer { padding:22px 20px 60px; font-size:12px; }
+@media (max-width:720px){ .stage,.cards,.claim-grid{ grid-template-columns:1fr; } }

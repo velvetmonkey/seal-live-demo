@@ -60,4 +60,5 @@ echo "== teardown =="
 
 echo "== ASSERT =="; EVIDENCE_DIR=$EV node scripts/assert.mjs
 echo "== RENDER =="; EVIDENCE_DIR=$EV node scripts/render_summary.mjs
+echo "== BUNDLE-JSON (PWA) =="; EVIDENCE_DIR=$EV node scripts/assemble_bundle_json.mjs; cp "$EV/bundle.json" pwa/bundle.json
 echo "== BUNDLE =="; EVIDENCE_DIR=$EV bash scripts/make_bundle.sh evidence.tar.gz

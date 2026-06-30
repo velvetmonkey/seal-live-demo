@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<!-- SPDX-License-Identifier: Apache-2.0 -->
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>seal · live agent threat — evidence replay</title>
+  <meta name="description" content="Replays the real evidence bundle from a seal-live-demo run: same AI agent, same attack, one verified gate. Re-derivable in your browser." />
+  <link rel="manifest" href="manifest.json" />
+  <link rel="stylesheet" href="style.css" />
+  <script src="wasm/seal.js"></script>
+</head>
+<body>
+  <div id="boot-error" class="boot-error" hidden>
+    Serve over http(s) (not file://). Run: <code>cd pwa &amp;&amp; python3 -m http.server 8090</code>
+  </div>
+
+  <header class="wrap">
+    <h1>🛡️ seal · live agent threat</h1>
+    <p class="tag">Same AI agent. Same attack. The only difference is one verified gate. This page
+      <strong>replays the real run's evidence bundle</strong> — every number is a captured value; click any
+      frame to re-derive its receipt in your browser.</p>
+    <div id="meta" class="meta mono"></div>
+  </header>
+
+  <main class="wrap">
+    <!-- MONEY SHOT -->
+    <section id="moneyshot">
+      <div class="stage">
+        <div class="side off">
+          <h2>SEAL OFF <span class="sub">(control)</span></h2>
+          <div class="grid" id="grid-off"></div>
+          <div class="count" id="count-off">—</div>
+          <div class="caption" id="cap-off">customer records</div>
+        </div>
+        <div class="side on">
+          <h2>SEAL ON <span class="sub">(verified gate)</span></h2>
+          <div class="grid" id="grid-on"></div>
+          <div class="count" id="count-on">—</div>
+          <div class="caption" id="cap-on">customer records</div>
+        </div>
+      </div>
+      <div class="row">
+        <button id="play" class="primary">▶ Replay the run</button>
+        <span id="hash-line" class="mono muted"></span>
+      </div>
+      <p id="narration" class="narration"></p>
+    </section>
+
+    <!-- PHASES (click to inspect) -->
+    <section id="phases">
+      <h2>The three phases — click a card to re-derive its receipt</h2>
+      <div id="phase-cards" class="cards"></div>
+      <div id="receipt-view" class="receipt-view hidden">
+        <h3>Receipt <span id="rv-rederive" class="rederive"></span></h3>
+        <pre id="rv-json" class="receipt"></pre>
+      </div>
+    </section>
+
+    <!-- TAMPER TEST (centerpiece) -->
+    <section id="tamper">
+      <h2>Tamper test — the receipt is not "just JSON"</h2>
+      <p class="muted">Edit the Block receipt below — flip <code>verdict</code> to <code>ALLOW</code>, or change the
+        request. Then re-derive against the verified kernel in your browser. The kernel, not the JSON, decides.</p>
+      <textarea id="tamper-input" spellcheck="false" rows="12"></textarea>
+      <div class="row">
+        <button id="tamper-run" class="primary">Re-derive against kernel</button>
+        <span id="tamper-result" class="mono"></span>
+      </div>
+    </section>
+
+    <!-- HONESTY -->
+    <section id="honesty">
+      <h2>What this proves — and what it does not</h2>
+      <div class="claim-grid">
+        <div class="claim proves">
+          <h3>✓ Proves</h3>
+          <p>The mediation <strong>decision</strong>: a state transition that violates the capability policy
+            <strong>cannot be executed</strong> once it reaches seal (the Lean-4-verified decision function),
+            modulo assumptions A1–A3. Same input → byte-identical verdict; re-derivable here, in your browser.</p>
+        </div>
+        <div class="claim notproves">
+          <h3>✗ Does NOT prove</h3>
+          <p>It does <strong>not</strong> prove the agent is safe — a fooled agent can still leak what it reads.
+            It tests, but does not prove, the host/container wiring. The receipt is <em>demo-key signed</em>
+            (integrity check, not production identity). No third party (incl. ARIA) certifies anything here.</p>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="wrap muted">
+    seal-live-demo evidence replay · the kernel runs as a compiled black-box (sha256 pinned); its source proofs
+    are public but are not re-checked in the browser. Apache-2.0. Synthetic data only.
+  </footer>
+
+  <script type="module" src="replay.js"></script>
+</body>
+</html>
