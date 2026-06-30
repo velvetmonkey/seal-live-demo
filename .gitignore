@@ -2,3 +2,4 @@
 *.log
 node_modules/
 evidence/
+evidence.tar.gz

@@ -2,8 +2,8 @@
   "kind": "seal-live-demo-evidence",
   "version": "v0",
   "meta": {
-    "commit": "672677a5e1a3b998f6d024928843decca0c0eaef",
-    "workflow_hash": "461e5805400e7790d0d39fde849d21880858f356c5e9cf80bd2a36491d7a555b",
+    "commit": "0703ee1c2a74f52f3b035f57dfcbc685dc1d291d",
+    "workflow_hash": "fd4ee93cdf65f810c0553b611c17719b07557553755c85e5c1ac6d90293bc59d",
     "model": "local-synthetic (no GitHub Models)",
     "policy": "seal-live-demo-d0",
     "kernel_sha256": "1cc765c7de2cead88eda2e8e5f5af5a5e070f35a767916e754b873733562c70a",
@@ -135,7 +135,7 @@
         },
         "gateway": {
           "bypass": false,
-          "ts_unix": 1460630220
+          "ts_unix": 1460875983
         }
       }
     },
@@ -195,7 +195,7 @@
         },
         "gateway": {
           "bypass": false,
-          "ts_unix": 1460630374
+          "ts_unix": 1460876130
         }
       }
     },
@@ -234,7 +234,7 @@
         },
         "gateway": {
           "bypass": true,
-          "ts_unix": 1460645389
+          "ts_unix": 1460891111
         }
       }
     }

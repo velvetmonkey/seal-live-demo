@@ -75,6 +75,9 @@ jobs:
       - name: Render report to job summary
         run: node scripts/render_summary.mjs
 
+      - name: Assemble bundle.json (for the seal-check / replay PWA)
+        run: node scripts/assemble_bundle_json.mjs
+
       - name: Package evidence bundle
         run: bash scripts/make_bundle.sh evidence.tar.gz
 
