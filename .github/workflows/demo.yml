@@ -23,10 +23,10 @@ jobs:
       GH_MODELS_TOKEN: ${{ secrets.GH_MODELS_TOKEN }}   # optional belt-and-braces
       EVIDENCE_DIR: ${{ github.workspace }}/evidence
       COMPOSE_PARALLEL_LIMIT: "1"
-      # Where the reader re-checks the receipt: a locally-run seal-check instance.
-      # The receipt rides in the URL #fragment (never sent to a server). This host
-      # only resolves on the operator's own network; that's the private-preview UX.
-      SEAL_CHECK_URL: http://monkey-01:8000/
+      # SEAL_CHECK_URL is intentionally UNSET for public/preview runs. When unset the
+      # summary renders local re-check instructions instead of a clickable link, so no
+      # private host is ever baked into the workflow. Set it in a private env only if
+      # you want emitted links to resolve on your own network.
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -41,7 +41,7 @@ jobs:
           cat evidence/run-meta.json
 
       # Fail LOUD if Models is unavailable, BEFORE Docker. Never canned fallback.
-      - name: Preflight GitHub Models (real schema)
+      - name: Preflight GitHub Models (tool-calling smoke test)
         run: node agent/preflight.mjs
 
       - name: Build images

@@ -103,8 +103,9 @@ yourself in the replay PWA's **tamper test**.
 **On GitHub Actions** (the real run, with the live model): the repo owner runs the
 `seal · live agent threat demo` workflow via `workflow_dispatch`. `permissions:
 { contents: read, models: read }` + the built-in `GITHUB_TOKEN` is sufficient (no PAT;
-optional `GH_MODELS_TOKEN` secret as a fallback). A preflight fails loud if Models is
-unavailable — it never falls back to canned output.
+optional `GH_MODELS_TOKEN` secret as a fallback). A preflight (a tool-calling
+availability smoke test) fails loud if Models is unavailable; it never falls back to
+canned output.
 
 **Locally** (everything except the live model — Docker 24+, Node 22):
 ```sh

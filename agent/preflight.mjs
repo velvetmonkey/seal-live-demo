@@ -1,7 +1,10 @@
 // SPDX-License-Identifier: Apache-2.0
-// Preflight: call the EXACT model with the EXACT tools schema and tool_choice, and
-// fail LOUD on quota / permission / no-tool-call BEFORE Docker starts. Never silently
-// fall back to canned output — a green run must mean the live model really ran.
+// Preflight: tool-calling availability smoke test. Calls the model with a
+// representative tool schema + tool_choice and fails LOUD on quota / permission /
+// no-tool-call BEFORE Docker starts. This is NOT byte-identical to the agent's full
+// tool schema; it only proves the model+tier can emit a tool-call and that quota is
+// live. Never silently fall back to canned output: a green run must mean the live
+// model really ran.
 const MODEL = process.env.MODEL || "openai/gpt-4o-mini";
 const TOKEN = process.env.GH_MODELS_TOKEN || process.env.GITHUB_TOKEN;
 const MODELS_URL = "https://models.github.ai/inference/chat/completions";

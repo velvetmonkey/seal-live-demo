@@ -7,7 +7,8 @@
     "model": "local-synthetic (no GitHub Models)",
     "policy": "seal-live-demo-d0",
     "kernel_sha256": "1cc765c7de2cead88eda2e8e5f5af5a5e070f35a767916e754b873733562c70a",
-    "generated_by": "run_local.sh"
+    "generated_by": "run_local.sh",
+    "provenance": "SAMPLE / LOCAL EVIDENCE. Synthetic run, NOT a live GitHub Models Actions run. Do not publish as the live demo bundle; regenerate from a real workflow run for external sharing."
   },
   "probe": {
     "agent_to_gateway": "OK",
@@ -135,7 +136,7 @@
         },
         "gateway": {
           "bypass": false,
-          "ts_unix": 1460875983
+          "ts_mono_ms": 1460875983
         }
       }
     },
@@ -195,7 +196,7 @@
         },
         "gateway": {
           "bypass": false,
-          "ts_unix": 1460876130
+          "ts_mono_ms": 1460876130
         }
       }
     },
@@ -234,7 +235,7 @@
         },
         "gateway": {
           "bypass": true,
-          "ts_unix": 1460891111
+          "ts_mono_ms": 1460891111
         }
       }
     }
