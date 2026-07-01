@@ -3,7 +3,7 @@
 // subset) exposing ONE tool, db.execute. It is the sole holder of DB credentials and
 // the sole route to the DB. Every call is mediated by the verified seal kernel
 // (decide.cjs → seal.wasm): on ALLOW it performs the DB op; on BLOCK nothing happens.
-// SEAL_DECISION_BYPASS=1 removes seal from the path (the seal-off control) — SAME
+// SEAL_DECISION_BYPASS=1 removes seal from the path (the seal-off control), SAME
 // image, SAME executor, only this flag differs.
 //
 // Honesty: this tests, but does NOT prove, the host/transport/container wiring. seal
@@ -26,7 +26,7 @@ const DATABASE_URL = process.env.DATABASE_URL || null;
 const EVIDENCE_DIR = process.env.EVIDENCE_DIR || "/evidence";
 const PROTOCOL_VERSION = "2025-03-26";
 
-// Tables this gateway is willing to address (identifier allowlist — never interpolate
+// Tables this gateway is willing to address (identifier allowlist, never interpolate
 // arbitrary names into SQL). The capability policy is what gates ALLOW/BLOCK; this is
 // just defense-in-depth on identifier safety.
 const TABLES = new Set(["prod_customer_ledger", "staging_deploy_audit"]);

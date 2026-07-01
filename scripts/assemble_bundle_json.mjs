@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: Apache-2.0
 // Assemble the captured evidence files into one bundle.json that the PWA replays, and
 // copy the policy so the PWA can RE-DERIVE verdicts in-browser (real-only replay +
-// tamper test). Fabricates nothing — it only collates files the run already emitted.
+// tamper test). Fabricates nothing, it only collates files the run already emitted.
 import fs from "node:fs";
 import path from "node:path";
 

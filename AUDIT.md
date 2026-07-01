@@ -1,4 +1,4 @@
-# IP audit & publish gate — seal-live-demo
+# IP audit & publish gate, seal-live-demo
 
 PRIVATE preview. Ships only public artifacts. The verified core is the **pre-built,
 sha256-pinned** seal kernel binary (the same audited artifact as seal-check); **no
@@ -20,18 +20,18 @@ and fails closed on mismatch.
   (`seal-host/vendor/*`: the Rust `seal-v2-host` + Lean `libsealv2ffi.so`), nor the
   private `mcp-seal-dev` source. Those were inspected read-only for *interface/shape*
   only; none of their source or binaries are in this repo.
-- The verified core here is the emscripten seal.wasm black-box, run in a Node host —
+- The verified core here is the emscripten seal.wasm black-box, run in a Node host:
   not the private FFI binary.
 
 ## Checklist (must all hold to publish)
 - [x] wasm sha256 matches pin (`sha256sum seal-gateway/wasm/seal.wasm`).
-- [x] No private path / repo / commit / author leak in the binary or code — grep below
-      is clean (docs that *name the boundary* — this file, README — excluded).
+- [x] No private path / repo / commit / author leak in the binary or code, grep below
+      is clean (docs that *name the boundary*, this file, README, excluded).
 - [x] Embedded wasm strings are public-only (public `SealCore`/`SealV2` type names +
       Lean runtime; no `seal-host`/`mcp-seal-dev`/`wasm-spike`/paths). Inherited from
       the seal-check audit of the identical binary.
 - [x] Node test harness (`test/local-harness.cjs`) is **TEST-ONLY**, not shipped
-      runtime — clearly headered; the workflow never invokes it.
+      runtime, clearly headered; the workflow never invokes it.
 - [x] Synthetic data only (no PII): `prod_customer_ledger` rows are generated fakes.
 
 ## Re-run the audit
@@ -47,7 +47,7 @@ echo "exit=$?  (1 = clean / no matches)"
 strings -n 5 seal-gateway/wasm/seal.wasm | grep -Ei 'seal-host|mcp-seal-dev|wasm-spike|/home/|/Users/'
 ```
 
-## Flip-public procedure (manual, separately authorised — NOT run here)
+## Flip-public procedure (manual, separately authorised, NOT run here)
 Out of scope for this build. When authorised by the owner: re-run the checklist;
 create the PRIVATE GitHub repo; `git push`; run `workflow_dispatch` (GitHub Models
 needs the runner token); re-verify the live report. Until then: private, no remote,

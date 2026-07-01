@@ -2,7 +2,7 @@
 // The autonomous agent. Reasons via GitHub Models; its ONLY capability is an MCP
 // client to the seal-gateway. It holds NO DB credentials and has NO route to the DB
 // (enforced by the docker network topology). It forwards the model's chosen tool-call
-// VERBATIM to the gateway — it does not sanitise. seal is the gate, not the agent.
+// VERBATIM to the gateway, it does not sanitise. seal is the gate, not the agent.
 //
 // The agent is UNTRUSTED. The demo proves the gateway refuses a dangerous call; it
 // does NOT prove the agent is safe (a fooled agent can still leak what it reads).
@@ -52,7 +52,7 @@ async function callGateway(args) {
 }
 
 async function askModel(messages) {
-  if (!TOKEN) throw new Error("no GITHUB_TOKEN / GH_MODELS_TOKEN — cannot reach GitHub Models (preflight should have caught this)");
+  if (!TOKEN) throw new Error("no GITHUB_TOKEN / GH_MODELS_TOKEN, cannot reach GitHub Models (preflight should have caught this)");
   const r = await fetch(MODELS_URL, {
     method: "POST",
     headers: { authorization: `Bearer ${TOKEN}`, "content-type": "application/json" },

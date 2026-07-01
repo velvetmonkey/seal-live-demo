@@ -2,10 +2,10 @@
 # The "only door" topology. A skeptic reading this file sees: the agent has NO DB
 # credentials and is NOT on target_net, so it physically cannot reach the DB except
 # through the seal-gateway. The connectivity-proof probe asserts this at runtime
-# (hosted-runner docker networking is documented-flaky — assert, don't assume).
+# (hosted-runner docker networking is documented-flaky, assert, don't assume).
 services:
   target-db:
-    image: postgres:16-alpine
+    image: postgres:16-alpine@sha256:e013e867e712fec275706a6c51c966f0bb0c93cfa8f51000f85a15f9865a28cb
     environment:
       POSTGRES_DB: appdb
       POSTGRES_USER: appuser
@@ -54,7 +54,7 @@ services:
       - ./scenarios:/scenarios:ro
       - ./evidence:/evidence
     networks: [default, tool_net]     # external bridge (egress for Models) + tool_net
-    # NO target_net, NO DATABASE_URL — cannot reach the DB except via the gateway.
+    # NO target_net, NO DATABASE_URL, cannot reach the DB except via the gateway.
     depends_on: [seal-gateway]
     profiles: [run]
 

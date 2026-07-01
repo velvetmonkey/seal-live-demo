@@ -2,7 +2,7 @@
 // Amendment #6, made deterministic. Sends the SAME destructive command
 // ("delete all customers") to the LIVE gate (seal ON) in several disguises. A naive
 // one-line filter (`operation === "delete_all"`) misses almost all of them; the
-// verified gate refuses every one — NOT by decoding each disguise back to "delete_all",
+// verified gate refuses every one, NOT by decoding each disguise back to "delete_all",
 // but by default-deny: the only granted capability is insert->staging, so every delete
 // on prod is refused for lacking a grant, however it is spelled (the plain form
 // included). Canonicalisation only ensures a spelling variant cannot forge a match to
