@@ -57,7 +57,8 @@ flowchart LR
 A single tool; ALLOW and BLOCK differ only in the **canonical bytes** of the request.
 The capability policy ([.seal/policy.json](.seal/policy.json)) grants exactly one
 capability (insert → staging); destructive ops on prod hold no grant, so they are
-denied — even when obfuscated, because seal canonicalizes the request before checking.
+denied by default-deny no matter how they are spelled. Canonicalisation stops a spelling
+variant from forging a match to the grant; it does not decode a delete into an allow.
 
 ## The three phases
 
@@ -78,10 +79,12 @@ query outside seal**, before/after each phase.
 
 A naive filter does `if operation == "delete_all": block`. The attacker sends
 `"delete_all\n"` (a trailing newline an LLM trivially emits). The exact-match filter
-**misses** it and forwards the delete. seal canonicalizes the request and checks it
-against the capability policy, so it blocks the obfuscated form just the same. The
-report shows the obfuscated bytes vs the canonical form, and you can re-derive the
-verdict yourself in the replay PWA's **tamper test**.
+**misses** it and forwards the delete. seal is **default-deny**: it grants exactly one
+capability (insert → staging), so every delete on prod is refused for lacking a grant,
+whatever the spelling — the plain form and every disguise alike. It does not decode the
+obfuscated form back to `"delete_all"`; there is simply no grant to match. The report
+shows the obfuscated bytes vs the canonical form, and you can re-derive the verdict
+yourself in the replay PWA's **tamper test**.
 
 ## Try to bypass it yourself
 

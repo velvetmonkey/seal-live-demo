@@ -1,6 +1,6 @@
 {
   "policy_id": "seal-live-demo-d0",
-  "_doc": "Capability policy for the seal-live-demo gateway. The kernel (seal.wasm) is default-deny: a db.execute call is ALLOWED only if the presented capability target equals stableHash([\"db.execute\", table, operation]) over the CANONICAL request. The gateway presents exactly the granted_capabilities below. No human in the loop; the grant is static policy. Destructive ops on prod hold no grant, so they BLOCK even when obfuscated, because seal canonicalizes the request before checking.",
+  "_doc": "Capability policy for the seal-live-demo gateway. The kernel (seal.wasm) is default-deny: a db.execute call is ALLOWED only if the presented capability target equals stableHash([\"db.execute\", table, operation]) over the CANONICAL request. The gateway presents exactly the granted_capabilities below. No human in the loop; the grant is static policy. Destructive ops on prod hold no grant, so they BLOCK by default-deny no matter how the operation is spelled. Canonicalisation ensures a spelling variant cannot forge a match to a granted target; it does not decode a disguised delete into an allow.",
   "kernel_config": {
     "epoch": 1,
     "safety": {
