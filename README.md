@@ -121,15 +121,19 @@ The local orchestrator substitutes a scripted tool-call for the model (clearly m
 
 | Zone | What | Trusted? |
 |---|---|---|
-| Verified core | `seal.wasm` decision function (Lean 4, axioms {propext, Classical.choice, Quot.sound}) | proven (modulo A1-A3) |
+| Verified core | `seal.wasm` decision function (Lean 4, axioms {propext, Classical.choice, Quot.sound}) | trusted compile + differential evidence (not a proof) |
 | Trusted glue | the Node host, MCP transport, canonical parser seam, pg executor | trusted, not proven |
 | Untrusted | the agent + the model + all retrieved data | not trusted, mediated |
 
 Assumptions A1-A3 (host delivers the call unmodified to seal; the executor acts only on
-ALLOW; the policy is the intended one) are stated, not hidden. Policy errors are out of
+ALLOW; the policy is the intended one) are stated, not hidden. (These A1-A3 are
+demo-local assumptions, NOT the canonical mcp-seal A1-A6 series — the numbering is
+unrelated.) Policy errors are out of
 scope, this proves a decision cannot be bypassed after canonicalisation. The verified
 kernel is the same audited artifact as [seal-check]; its source proofs live in the
-(private, pre-award) seal repos and are not vendored here.
+(private, pre-award) seal repos and are not vendored here. The deployed seal host
+mediates under the `compatible` profile, not strict canonical-l0 (see seal-host
+CLAIMS.md); the canonical AST is audit input to the kernels, not the mediation gate.
 
 ## License
 Apache-2.0. See [LICENSE](LICENSE) and [NOTICE](NOTICE). Synthetic data only.
