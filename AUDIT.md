@@ -9,8 +9,8 @@ the checklist must pass before any public flip, which is a separate authorised s
 
 ## Pinned kernel binary
 ```
-sha256(seal-gateway/wasm/seal.wasm) = 1cc765c7de2cead88eda2e8e5f5af5a5e070f35a767916e754b873733562c70a
-size = 3,462,118 bytes   (identical copy under pwa/wasm/seal.wasm)
+sha256(seal-gateway/wasm/seal.wasm) = ebd17c14668176612c49f6e2940b23df82a2c1a7cdef6759f0d6276ae997e9d0
+size = 3,562,510 bytes   (identical copy under pwa/wasm/seal.wasm)
 ```
 The gateway recomputes and verifies this on startup (`decide.cjs` → `verifyKernelSha`)
 and fails closed on mismatch.

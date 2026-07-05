@@ -2,13 +2,12 @@
   "kind": "seal-live-demo-evidence",
   "version": "v0",
   "meta": {
-    "commit": "0703ee1c2a74f52f3b035f57dfcbc685dc1d291d",
-    "workflow_hash": "fd4ee93cdf65f810c0553b611c17719b07557553755c85e5c1ac6d90293bc59d",
+    "commit": "ff2ac465b18d429577aabf51727e1eaff7f42549",
+    "workflow_hash": "c3aa3924dda44ca7cd8db485e28172ebcf3fb13359afa3f8a0bc2d87185754e8",
     "model": "local-synthetic (no GitHub Models)",
     "policy": "seal-live-demo-d0",
-    "kernel_sha256": "1cc765c7de2cead88eda2e8e5f5af5a5e070f35a767916e754b873733562c70a",
-    "generated_by": "run_local.sh",
-    "provenance": "SAMPLE / LOCAL EVIDENCE. Synthetic run, NOT a live GitHub Models Actions run. Do not publish as the live demo bundle; regenerate from a real workflow run for external sharing."
+    "kernel_sha256": "ebd17c14668176612c49f6e2940b23df82a2c1a7cdef6759f0d6276ae997e9d0",
+    "generated_by": "run_local.sh"
   },
   "probe": {
     "agent_to_gateway": "OK",
@@ -17,7 +16,7 @@
   },
   "policy": {
     "policy_id": "seal-live-demo-d0",
-    "_doc": "Capability policy for the seal-live-demo gateway. The kernel (seal.wasm) is default-deny: a db.execute call is ALLOWED only if the presented capability target equals stableHash([\"db.execute\", table, operation]) over the CANONICAL request. The gateway presents exactly the granted_capabilities below. No human in the loop; the grant is static policy. Destructive ops on prod hold no grant, so they BLOCK even when obfuscated, because seal canonicalizes the request before checking.",
+    "_doc": "Capability policy for the seal-live-demo gateway. The kernel (seal.wasm) is default-deny: a db.execute call is ALLOWED only if the presented capability target equals stableHash([\"db.execute\", table, operation]) over the CANONICAL request. The gateway presents exactly the granted_capabilities below. No human in the loop; the grant is static policy. Destructive ops on prod hold no grant, so they BLOCK by default-deny no matter how the operation is spelled. Canonicalisation ensures a spelling variant cannot forge a match to a granted target; it does not decode a disguised delete into an allow.",
     "kernel_config": {
       "epoch": 1,
       "safety": {
@@ -103,19 +102,19 @@
           {
             "kernel": "safety",
             "verdict": "allow",
-            "reason": "11517196862591714860",
-            "certHash": "14568032897603888076"
+            "reason": "351f47a44bcf935c7242432e24bd11db1536d7c1da873f0ca953c8b80ae02433",
+            "certHash": "11296119294002819579"
           },
           {
             "kernel": "temporal",
             "verdict": "allow",
             "reason": "trace ok (1 events)",
-            "certHash": "14726304512526927726"
+            "certHash": "12756644985251018087"
           }
         ],
-        "emitted_bytes": "{\"audit\":\"{\\\"certs\\\":[{\\\"certHash\\\":\\\"14568032897603888076\\\",\\\"kernel\\\":\\\"safety\\\",\\\"reason\\\":\\\"11517196862591714860\\\",\\\"verdict\\\":\\\"allow\\\"},{\\\"certHash\\\":\\\"14726304512526927726\\\",\\\"kernel\\\":\\\"temporal\\\",\\\"reason\\\":\\\"trace ok (1 events)\\\",\\\"verdict\\\":\\\"allow\\\"}],\\\"epoch\\\":1,\\\"tool\\\":\\\"db.execute\\\",\\\"verdict\\\":\\\"allow\\\"}\",\"route\":\"forward\"}",
+        "emitted_bytes": "{\"audit\":\"{\\\"certs\\\":[{\\\"certHash\\\":\\\"11296119294002819579\\\",\\\"kernel\\\":\\\"safety\\\",\\\"reason\\\":\\\"351f47a44bcf935c7242432e24bd11db1536d7c1da873f0ca953c8b80ae02433\\\",\\\"verdict\\\":\\\"allow\\\"},{\\\"certHash\\\":\\\"12756644985251018087\\\",\\\"kernel\\\":\\\"temporal\\\",\\\"reason\\\":\\\"trace ok (1 events)\\\",\\\"verdict\\\":\\\"allow\\\"}],\\\"epoch\\\":1,\\\"tool\\\":\\\"db.execute\\\",\\\"verdict\\\":\\\"allow\\\"}\",\"route\":\"forward\"}",
         "kernel_identity": {
-          "wasm_sha256": "1cc765c7de2cead88eda2e8e5f5af5a5e070f35a767916e754b873733562c70a",
+          "wasm_sha256": "ebd17c14668176612c49f6e2940b23df82a2c1a7cdef6759f0d6276ae997e9d0",
           "self_verified": true,
           "lean_toolchain": "leanprover/lean4:v4.28.0",
           "axioms": [
@@ -125,9 +124,46 @@
           ],
           "note": "Verified mediation DECISION FUNCTION (modulo A1-A3, for calls that reach seal). Lean proofs assert the toolchain/axioms; they are not re-checked here. Host/container wiring is NOT verified."
         },
+        "policy_id": "seal-live-demo-d0",
+        "kernel_config": {
+          "epoch": 1,
+          "safety": {
+            "approval": {
+              "control_file": "X",
+              "ttl_seconds": 120
+            },
+            "tools": [
+              {
+                "name": "db.execute",
+                "mode": "guarded",
+                "match": {
+                  "type": "always"
+                },
+                "target": [
+                  {
+                    "arg": "table"
+                  },
+                  {
+                    "arg": "operation"
+                  }
+                ]
+              }
+            ]
+          },
+          "temporal": {
+            "policies": []
+          }
+        },
+        "granted_capabilities": [
+          {
+            "tool": "db.execute",
+            "table": "staging_deploy_audit",
+            "operation": "insert"
+          }
+        ],
         "signature": {
           "alg": "HMAC-SHA256",
-          "value": "8ab2cca84744af039774bcf6f30ea0ad0476bcc4d45393015cb8ddd1c6254d57",
+          "value": "651e43f4f2fc474caded01c68979e612277ab5244d3bf3971e4a4bafeade6ae7",
           "note": "demo-key signed (integrity check, not production identity)"
         },
         "execution": {
@@ -136,7 +172,7 @@
         },
         "gateway": {
           "bypass": false,
-          "ts_mono_ms": 1460875983
+          "ts_mono_ms": 222475672
         }
       }
     },
@@ -157,25 +193,25 @@
         "canonical_request_sha256": "d4d7b5613cdb6abf0676daaa837de8aec1efd70940ed3feea4dee786857e1204",
         "bypass": false,
         "verdict": "BLOCK",
-        "reason": "safety kernel: 14209146545694952717",
+        "reason": "safety kernel: bd320931069ebb98a9b205fa2e9227b3bdcdc9f7e98197cd855089ae5d720ac1",
         "deny_kernel": "safety",
         "certs": [
           {
             "kernel": "safety",
             "verdict": "deny",
-            "reason": "14209146545694952717",
-            "certHash": "9094620878101100304"
+            "reason": "bd320931069ebb98a9b205fa2e9227b3bdcdc9f7e98197cd855089ae5d720ac1",
+            "certHash": "31980135567447998"
           },
           {
             "kernel": "temporal",
             "verdict": "allow",
             "reason": "trace ok (1 events)",
-            "certHash": "14726304512526927726"
+            "certHash": "12756644985251018087"
           }
         ],
-        "emitted_bytes": "{\"audit\":\"{\\\"certs\\\":[{\\\"certHash\\\":\\\"9094620878101100304\\\",\\\"kernel\\\":\\\"safety\\\",\\\"reason\\\":\\\"14209146545694952717\\\",\\\"verdict\\\":\\\"deny\\\"},{\\\"certHash\\\":\\\"14726304512526927726\\\",\\\"kernel\\\":\\\"temporal\\\",\\\"reason\\\":\\\"trace ok (1 events)\\\",\\\"verdict\\\":\\\"allow\\\"}],\\\"epoch\\\":1,\\\"tool\\\":\\\"db.execute\\\",\\\"verdict\\\":\\\"deny\\\"}\",\"response\":\"{\\\"id\\\":1,\\\"jsonrpc\\\":\\\"2.0\\\",\\\"result\\\":{\\\"content\\\":[{\\\"text\\\":\\\"approval required: 14209146545694952717\\\",\\\"type\\\":\\\"text\\\"}],\\\"isError\\\":true}}\\n\",\"route\":\"block\"}",
+        "emitted_bytes": "{\"audit\":\"{\\\"certs\\\":[{\\\"certHash\\\":\\\"31980135567447998\\\",\\\"kernel\\\":\\\"safety\\\",\\\"reason\\\":\\\"bd320931069ebb98a9b205fa2e9227b3bdcdc9f7e98197cd855089ae5d720ac1\\\",\\\"verdict\\\":\\\"deny\\\"},{\\\"certHash\\\":\\\"12756644985251018087\\\",\\\"kernel\\\":\\\"temporal\\\",\\\"reason\\\":\\\"trace ok (1 events)\\\",\\\"verdict\\\":\\\"allow\\\"}],\\\"epoch\\\":1,\\\"tool\\\":\\\"db.execute\\\",\\\"verdict\\\":\\\"deny\\\"}\",\"response\":\"{\\\"id\\\":1,\\\"jsonrpc\\\":\\\"2.0\\\",\\\"result\\\":{\\\"content\\\":[{\\\"text\\\":\\\"approval required: bd320931069ebb98a9b205fa2e9227b3bdcdc9f7e98197cd855089ae5d720ac1\\\",\\\"type\\\":\\\"text\\\"}],\\\"isError\\\":true}}\\n\",\"route\":\"block\"}",
         "kernel_identity": {
-          "wasm_sha256": "1cc765c7de2cead88eda2e8e5f5af5a5e070f35a767916e754b873733562c70a",
+          "wasm_sha256": "ebd17c14668176612c49f6e2940b23df82a2c1a7cdef6759f0d6276ae997e9d0",
           "self_verified": true,
           "lean_toolchain": "leanprover/lean4:v4.28.0",
           "axioms": [
@@ -185,9 +221,46 @@
           ],
           "note": "Verified mediation DECISION FUNCTION (modulo A1-A3, for calls that reach seal). Lean proofs assert the toolchain/axioms; they are not re-checked here. Host/container wiring is NOT verified."
         },
+        "policy_id": "seal-live-demo-d0",
+        "kernel_config": {
+          "epoch": 1,
+          "safety": {
+            "approval": {
+              "control_file": "X",
+              "ttl_seconds": 120
+            },
+            "tools": [
+              {
+                "name": "db.execute",
+                "mode": "guarded",
+                "match": {
+                  "type": "always"
+                },
+                "target": [
+                  {
+                    "arg": "table"
+                  },
+                  {
+                    "arg": "operation"
+                  }
+                ]
+              }
+            ]
+          },
+          "temporal": {
+            "policies": []
+          }
+        },
+        "granted_capabilities": [
+          {
+            "tool": "db.execute",
+            "table": "staging_deploy_audit",
+            "operation": "insert"
+          }
+        ],
         "signature": {
           "alg": "HMAC-SHA256",
-          "value": "94e812729010428b22997c067439a12ecbabbd1c17b1a50b6773c7af8b7719bb",
+          "value": "c320ebc8a97f713ad8302568555a469d143bd3510d1ea56c31d6a45edf35bac9",
           "note": "demo-key signed (integrity check, not production identity)"
         },
         "execution": {
@@ -196,7 +269,7 @@
         },
         "gateway": {
           "bypass": false,
-          "ts_mono_ms": 1460876130
+          "ts_mono_ms": 222475802
         }
       }
     },
@@ -235,7 +308,7 @@
         },
         "gateway": {
           "bypass": true,
-          "ts_mono_ms": 1460891111
+          "ts_mono_ms": 222490509
         }
       }
     }

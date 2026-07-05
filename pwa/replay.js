@@ -8,7 +8,7 @@ import { sha256Hex } from "./sha256.js";
 
 const $ = (id) => document.getElementById(id);
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
-const KERNEL_SHA = "1cc765c7de2cead88eda2e8e5f5af5a5e070f35a767916e754b873733562c70a";
+const KERNEL_SHA = "ebd17c14668176612c49f6e2940b23df82a2c1a7cdef6759f0d6276ae997e9d0";
 let BUNDLE = null, GRANTS = [];
 
 // Self-verify the kernel binary we actually loaded (hash it, compare to the pin).
