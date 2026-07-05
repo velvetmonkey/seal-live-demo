@@ -1,145 +1,68 @@
-<!-- SPDX-License-Identifier: Apache-2.0 -->
-# seal · live agent threat demo
+# seal-live-demo
 
-![License](https://img.shields.io/badge/license-Apache--2.0-blue)
+A replayable live-agent demonstration showing Seal block an unapproved effect and the same request succeed when Seal is removed. **Role:** Watch it work.
+
+![Demo](https://img.shields.io/badge/demo-live%20agent-red)
 ![Runtime](https://img.shields.io/badge/runtime-WebAssembly-654ff0)
-![Demo](https://img.shields.io/badge/demo-replayed%20attacks-red)
+![License](https://img.shields.io/badge/license-Apache--2.0-blue)
 
-**Give an autonomous AI agent the keys to a production database, let an attacker trick
-it into destroying the data, and watch [seal](https://github.com/velvetmonkey/mcp-seal)
-stop it cold, then run the identical attack with seal removed and watch the database
-die.** The difference is a Lean-4-verified mediation decision, not a filter.
+**Seal is a proven checkpoint for AI agents.** When an AI agent tries to use a real tool over MCP — send money, delete a record, call an external service — Seal stands in the way and asks one question: did a human explicitly approve *this exact request*? No matching approval, no action. Every decision is written into a tamper-evident record you can check yourself. What makes Seal different from other guardrails: the core mediation rules aren't just tested — they're machine-checked theorems in Lean 4. The same decision logic then runs byte-for-byte in the Rust host you deploy, in the browser, and in the checker, each verified against that one proven rulebook.
 
-> **Status: PRIVATE preview.** Runs internally with the real (pinned, audited) kernel.
-> No public remote, no Pages. The public, fork-reproducible release is a separate
-> authorised step. See [AUDIT.md](AUDIT.md).
+That is the product line in one sentence: prove the rulebook, then check every body that runs it. Seal is built around MCP because MCP is where agent intent becomes an external effect. The proof says what the kernel must do; the conformance tests show that the Rust, wasm, and JavaScript artifacts used by the product family emit the same decisions and records over the shared corpus.
 
-One `workflow_dispatch` runs three phases and produces a layperson-readable report
-(`GITHUB_STEP_SUMMARY`) plus a re-derivable evidence bundle. A green check means the
-evidence bundle passed the invariants: same request, seal-on blocked, seal-off
-destroyed, external DB row counts verified. The assertions only pass on real receipts,
-and the negative control must actually destroy the data.
+## What happens when an agent is tricked by hostile data
 
-## What this proves, and what it does NOT
+The demo gives an agent an MCP route to a database through a gateway. In the safe path, a staging insert has an approval and is allowed. In the attack path, retrieved data persuades the agent to emit a destructive production delete. Seal blocks it because there is no approval for that exact target. In the control path, the same request runs with Seal bypassed and the database is destroyed.
 
-- **Proves:** the mediation **decision**. A state transition that violates the
-  capability policy **cannot be executed** once it reaches seal (the Lean-verified
-  decision function), modulo assumptions A1-A3, for calls that reach seal.
-- **Does NOT prove:** that the agent is safe, a fooled agent can still leak what it
-  reads. It tests, but does not prove, the host/transport/container wiring. The
-  receipt is *demo-key signed* (integrity check, not production identity). **No third
-  party (incl. ARIA) certifies anything here.**
+The point is not that the model understood the situation. The point is that the external effect had to cross an approval boundary first.
 
-## Architecture, three compartments, the "only door"
+## For evaluators and auditors
 
-```mermaid
-flowchart LR
-  subgraph tool_net
-    A[agent\nGitHub Models + MCP client\nNO DB creds, NOT on target_net]
-    G[seal-gateway\nseal.wasm + the ONLY DB creds\nALLOW: execute · BLOCK: nothing]
-  end
-  subgraph target_net["target_net (internal: true, no egress)"]
-    D[(target-db\nprod_customer_ledger ~10k\nstaging_deploy_audit)]
-  end
-  Models([GitHub Models]) <-->|egress| A
-  A -->|MCP Streamable HTTP\ndb.execute| G
-  G -->|psql, only on ALLOW| D
-  A -. no route / no creds .-x D
-```
+Seal's proof story is intentionally narrow. The Lean theorems cover the mediation kernel and selected model properties. The binaries and browser artifacts are connected to that proof by reproducible conformance tests, not by a theorem about every compiled instruction.
 
-- **agent**, reasons via GitHub Models. Holds ONLY an MCP client to the gateway. It
-  needs internet egress to reach Models, so the honest claim is **"no DB credentials +
-  not on `target_net`"**, never "no egress". It forwards the model's chosen tool-call
-  verbatim, it is untrusted; seal is the gate, not the agent.
-- **seal-gateway**, embeds the verified kernel (`seal.wasm`, sha256 pinned) in a Node
-  host exposing one MCP tool, `db.execute(operation, table, payload)`. The sole holder
-  of DB credentials and the sole route to the DB. On ALLOW it executes; on BLOCK
-  nothing happens; it emits a re-derivable receipt. `SEAL_DECISION_BYPASS=1` removes
-  seal from the path (the seal-off control), **same image, same executor**.
-- **target-db**, Postgres, synthetic prod-shaped data, on an `internal: true` network
-  reachable only from the gateway.
+Start with [docs/PROOF-REFERENCE.md](docs/PROOF-REFERENCE.md) for theorem names and file locations, [docs/CONFORMANCE.md](docs/CONFORMANCE.md) for the byte-identity claim, and [docs/TCB.md](docs/TCB.md) for what remains trusted.
 
-A single tool; ALLOW and BLOCK differ only in the **canonical bytes** of the request.
-The capability policy ([.seal/policy.json](.seal/policy.json)) grants exactly one
-capability (insert → staging); destructive ops on prod hold no grant, so they are
-denied by default-deny no matter how they are spelled. Canonicalisation stops a spelling
-variant from forging a match to the grant; it does not decode a delete into an allow.
+Mandatory non-claims:
 
-## The three phases
+- Seal proves properties of the mediation KERNEL, not of the whole deployed system.
+- Seal does NOT prove SHA-256 collision resistance in Lean; it is a named, scoped cryptographic assumption (A-CR).
+- The deployed Rust / wasm / JS are NOT proven bug-free; they are tied to the proof by byte-exact conformance testing over a corpus, not for every possible input.
+- Seal guarantees AUTHORIZATION match, not INTENT match: if a human approves a malicious-but-valid request, Seal will execute it.
+- Seal does NOT prevent compromise of hosts, browsers, build systems, keys, operators, or downstream tools.
+- Seal's audit chain is tamper-EVIDENT, not tamper-IMPOSSIBLE.
+- Seal does NOT make the AI smarter or prevent hallucinations; it stops an unapproved effect.
+- Axiom footprint {propext, Classical.choice, Quot.sound} is the minimal classical fragment; no extra axioms.
 
-1. **ALLOW**, benign month-end staging reconciliation → `db.execute(insert,
-   staging_deploy_audit)` → seal ALLOW → row written.
-2. **BLOCK (hero)**, a poisoned customer-feedback record posing as a GDPR auditor
-   tells the agent to wipe the ledger. The destructive command **never appears in the
-   task**, it is planted in retrieved data (confused deputy / indirect injection). The
-   agent emits `delete_all` on `prod_customer_ledger`, **obfuscated** (trailing
-   newline) → seal BLOCK → nothing happens.
-3. **CONTROL**, the identical request, `SEAL_DECISION_BYPASS=1` → delete executes →
-   `prod_customer_ledger` rows → 0.
+## Verify in five minutes
 
-Row counts + a content hash of `prod_customer_ledger` are captured by a **direct DB
-query outside seal**, before/after each phase.
-
-## "It's just a regex", no
-
-A naive filter does `if operation == "delete_all": block`. The attacker sends
-`"delete_all\n"` (a trailing newline an LLM trivially emits). The exact-match filter
-**misses** it and forwards the delete. seal is **default-deny**: it grants exactly one
-capability (insert → staging), so every delete on prod is refused for lacking a grant,
-whatever the spelling, the plain form and every disguise alike. It does not decode the
-obfuscated form back to `"delete_all"`; there is simply no grant to match. The report
-shows the obfuscated bytes vs the canonical form, and you can re-derive the verdict
-yourself in the replay PWA's **tamper test**.
-
-## Try to bypass it yourself
-
-- Open [`docker-compose.yml`](docker-compose.yml): the agent has **no** `DATABASE_URL`
-  and is **not** on `target_net`. The runtime connectivity probe asserts it
-  (agent→gateway OK, agent→db FAIL, `DATABASE_URL` absent).
-- Edit the Block receipt in the replay PWA and flip `verdict` to `ALLOW`, re-derive
-  against the kernel in your browser; it is **rejected**.
-- Change the attack payload in [`scenarios/p2_attack.json`](scenarios/p2_attack.json)
-  to any obfuscation you like; the capability policy still grants no prod-delete.
-- Re-run the whole thing on your own fork. The green check means the assertions in
-  [`scripts/assert.mjs`](scripts/assert.mjs) passed on captured evidence.
-
-## Run it
-
-**On GitHub Actions** (the real run, with the live model): the repo owner runs the
-`seal · live agent threat demo` workflow via `workflow_dispatch`. `permissions:
-{ contents: read, models: read }` + the built-in `GITHUB_TOKEN` is sufficient (no PAT;
-optional `GH_MODELS_TOKEN` secret as a fallback). A preflight (a tool-calling
-availability smoke test) fails loud if Models is unavailable; it never falls back to
-canned output.
-
-**Locally** (everything except the live model, Docker 24+, Node 22):
 ```sh
-bash scripts/run_local.sh     # builds, runs all 3 phases vs the real kernel + Postgres,
-                              # asserts 11 invariants, renders the summary, writes the bundle
-cd pwa && python3 -m http.server 8090   # open http://localhost:8090 for the replay PWA
+node test/local-harness.cjs
+bash scripts/run_local.sh
+cd pwa && python3 -m http.server 8090
+# open http://localhost:8090
 ```
-The local orchestrator substitutes a scripted tool-call for the model (clearly marked
-`synthetic_agent: true`); the kernel verdicts, DB row counts and receipts are real.
 
-## Threat model & TCB (summary)
+## The Seal family
 
-| Zone | What | Trusted? |
-|---|---|---|
-| Verified core | `seal.wasm` decision function (Lean 4, axioms {propext, Classical.choice, Quot.sound}) | trusted compile + differential evidence (not a proof) |
-| Trusted glue | the Node host, MCP transport, canonical parser seam, pg executor | trusted, not proven |
-| Untrusted | the agent + the model + all retrieved data | not trusted, mediated |
+- [seal](https://github.com/velvetmonkey/seal) — the private umbrella story, product map, and evaluator path.
+- [mcp-seal-dev](https://github.com/velvetmonkey/mcp-seal-dev) — The rulebook, proven.
+- [seal-host](https://github.com/velvetmonkey/seal-host) — The guard at the door.
+- [seal-check](https://github.com/velvetmonkey/seal-check) — Don't trust. Verify.
+- [seal-live-demo](https://github.com/velvetmonkey/seal-live-demo) — Watch it work.
+- [seal-assurance-kit](https://github.com/velvetmonkey/seal-assurance-kit) — Check your own boundary.
 
-Assumptions A1-A3 (host delivers the call unmodified to seal; the executor acts only on
-ALLOW; the policy is the intended one) are stated, not hidden. (These A1-A3 are
-demo-local assumptions, NOT the canonical mcp-seal A1-A6 series — the numbering is
-unrelated.) Policy errors are out of
-scope, this proves a decision cannot be bypassed after canonicalisation. The verified
-kernel is the same audited artifact as [seal-check]; its source proofs live in the
-(private, pre-award) seal repos and are not vendored here. The deployed seal host
-mediates under the `compatible` profile, not strict canonical-l0 (see seal-host
-CLAIMS.md); the canonical AST is audit input to the kernels, not the mediation gate.
+## Documentation
+
+- [Architecture](docs/ARCHITECTURE.md)
+- [Threat model](docs/THREAT-MODEL.md)
+- [Assumptions](docs/ASSUMPTIONS.md)
+- [Proof reference](docs/PROOF-REFERENCE.md)
+- [Conformance](docs/CONFORMANCE.md)
+- [Trusted computing base](docs/TCB.md)
+- [Glossary](docs/GLOSSARY.md)
+- [Limitations](docs/LIMITATIONS.md)
+- [Security policy](SECURITY.md)
 
 ## License
-Apache-2.0. See [LICENSE](LICENSE) and [NOTICE](NOTICE). Synthetic data only.
 
-<!-- registered with GitHub Actions 2026-06-30T19:31Z -->
+Apache-2.0. See [LICENSE](LICENSE).
