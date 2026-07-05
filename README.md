@@ -1,6 +1,10 @@
 <!-- SPDX-License-Identifier: Apache-2.0 -->
 # seal · live agent threat demo
 
+![License](https://img.shields.io/badge/license-Apache--2.0-blue)
+![Runtime](https://img.shields.io/badge/runtime-WebAssembly-654ff0)
+![Demo](https://img.shields.io/badge/demo-replayed%20attacks-red)
+
 **Give an autonomous AI agent the keys to a production database, let an attacker trick
 it into destroying the data, and watch [seal](https://github.com/velvetmonkey/mcp-seal)
 stop it cold, then run the identical attack with seal removed and watch the database
