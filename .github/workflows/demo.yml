@@ -32,6 +32,10 @@ jobs:
       - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
         with: { node-version: "22" }
 
+      - name: npm audit seal-gateway
+        run: npm audit --omit=dev --audit-level=moderate
+        working-directory: seal-gateway
+
       # Immutable "what ran": commit + workflow-file hash, before anything else.
       - name: Pre-run identity
         run: |
