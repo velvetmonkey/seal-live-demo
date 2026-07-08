@@ -2,6 +2,8 @@
 
 These limits are part of the Seal claim. They are not footnotes.
 
+<!-- Canonical copy of the non-claims block. README + docs/THREAT-MODEL.md mirror it verbatim between the same markers; edit here first. scripts/claims-drift.mjs enforces equality. -->
+<!-- claims:begin -->
 - Seal proves properties of the mediation KERNEL, not of the whole deployed system.
 - Seal does NOT prove SHA-256 collision resistance in Lean; it is a named, scoped cryptographic assumption (A-CR).
 - The deployed Rust / wasm / JS are NOT proven bug-free; they are tied to the proof by byte-exact conformance testing over a corpus, not for every possible input.
@@ -10,3 +12,4 @@ These limits are part of the Seal claim. They are not footnotes.
 - Seal's audit chain is tamper-EVIDENT, not tamper-IMPOSSIBLE.
 - Seal does NOT make the AI smarter or prevent hallucinations; it stops an unapproved effect.
 - Axiom footprint {propext, Classical.choice, Quot.sound} is the minimal classical fragment; no extra axioms.
+<!-- claims:end -->
