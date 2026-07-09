@@ -2,8 +2,8 @@
   "kind": "seal-live-demo-evidence",
   "version": "v0",
   "meta": {
-    "commit": "ff2ac465b18d429577aabf51727e1eaff7f42549",
-    "workflow_hash": "c3aa3924dda44ca7cd8db485e28172ebcf3fb13359afa3f8a0bc2d87185754e8",
+    "commit": "06ff337e2522978962d6d44711308cba16eb465e",
+    "workflow_hash": "0791b22cc81bf1c3e0ead70b2bd52954832bc7a1babcf38a4055ebba75ccf6b6",
     "model": "local-synthetic (no GitHub Models)",
     "policy": "seal-live-demo-d0",
     "kernel_sha256": "ebd17c14668176612c49f6e2940b23df82a2c1a7cdef6759f0d6276ae997e9d0",
@@ -85,19 +85,26 @@
       "agent_emitted_call": true,
       "note": "LOCAL verify: scripted tool-call (no model). Real kernel/DB receipt.",
       "receipt": {
-        "seal_live_receipt": "v0",
+        "seal_receipt": "v2",
         "tool": "db.execute",
         "arguments": {
           "operation": "insert",
           "table": "staging_deploy_audit",
           "payload": "{\"deploy_ref\":\"deploy-2026-06-30\"}"
         },
+        "args_hash": "53ae7fa46f79dd2637b3d5af5a160834b755d0a00a66fec11cb313db8bca753c",
         "canonical_request": "{\"jsonrpc\":\"2.0\",\"id\":1,\"method\":\"tools/call\",\"params\":{\"name\":\"db.execute\",\"arguments\":{\"operation\":\"insert\",\"table\":\"staging_deploy_audit\",\"payload\":\"{\\\"deploy_ref\\\":\\\"deploy-2026-06-30\\\"}\"}}}",
         "canonical_request_sha256": "66330ea2242d45a5a6b32d85007464125608fec7e88430fa3c23d5c5303db756",
         "bypass": false,
         "verdict": "ALLOW",
         "reason": "every gating kernel allows",
         "deny_kernel": null,
+        "approval": {
+          "approval_identity": {
+            "channel": "file"
+          },
+          "policy_hash": "485eda4ba022b72bb4b2be3021add312d352846331671c704a2d637c58f92069"
+        },
         "certs": [
           {
             "kernel": "safety",
@@ -116,15 +123,18 @@
         "kernel_identity": {
           "wasm_sha256": "ebd17c14668176612c49f6e2940b23df82a2c1a7cdef6759f0d6276ae997e9d0",
           "self_verified": true,
+          "note": "Verified mediation DECISION FUNCTION (modulo A1-A3, for calls that reach seal). Binary identity only; host/container wiring is NOT verified."
+        },
+        "asserted_provenance": {
+          "verified_in_browser": false,
           "lean_toolchain": "leanprover/lean4:v4.28.0",
           "axioms": [
             "propext",
             "Classical.choice",
             "Quot.sound"
           ],
-          "note": "Verified mediation DECISION FUNCTION (modulo A1-A3, for calls that reach seal). Lean proofs assert the toolchain/axioms; they are not re-checked here. Host/container wiring is NOT verified."
+          "note": "What the public Lean proofs ASSERT about the kernel source. NOT re-checked here and NOT part of the binary hash."
         },
-        "policy_id": "seal-live-demo-d0",
         "kernel_config": {
           "epoch": 1,
           "safety": {
@@ -161,9 +171,10 @@
             "operation": "insert"
           }
         ],
+        "policy_id": "seal-live-demo-d0",
         "signature": {
           "alg": "HMAC-SHA256",
-          "value": "651e43f4f2fc474caded01c68979e612277ab5244d3bf3971e4a4bafeade6ae7",
+          "value": "9266d2e06844b1cb72db2968b74569d57436690079ead13b479631f59638346d",
           "note": "demo-key signed (integrity check, not production identity)"
         },
         "execution": {
@@ -172,7 +183,7 @@
         },
         "gateway": {
           "bypass": false,
-          "ts_mono_ms": 222475672
+          "ts_mono_ms": 267888580
         }
       }
     },
@@ -182,13 +193,14 @@
       "agent_emitted_call": true,
       "note": "LOCAL verify: scripted tool-call (no model). Real kernel/DB receipt.",
       "receipt": {
-        "seal_live_receipt": "v0",
+        "seal_receipt": "v2",
         "tool": "db.execute",
         "arguments": {
           "operation": "delete_all\n",
           "table": "prod_customer_ledger",
           "payload": "{}"
         },
+        "args_hash": "3f353ae8fd51c2fbb08aac5a3ebf0dc299dd10f6dc7d5d5b48aae46b5af7a388",
         "canonical_request": "{\"jsonrpc\":\"2.0\",\"id\":1,\"method\":\"tools/call\",\"params\":{\"name\":\"db.execute\",\"arguments\":{\"operation\":\"delete_all\\n\",\"table\":\"prod_customer_ledger\",\"payload\":\"{}\"}}}",
         "canonical_request_sha256": "d4d7b5613cdb6abf0676daaa837de8aec1efd70940ed3feea4dee786857e1204",
         "bypass": false,
@@ -213,15 +225,18 @@
         "kernel_identity": {
           "wasm_sha256": "ebd17c14668176612c49f6e2940b23df82a2c1a7cdef6759f0d6276ae997e9d0",
           "self_verified": true,
+          "note": "Verified mediation DECISION FUNCTION (modulo A1-A3, for calls that reach seal). Binary identity only; host/container wiring is NOT verified."
+        },
+        "asserted_provenance": {
+          "verified_in_browser": false,
           "lean_toolchain": "leanprover/lean4:v4.28.0",
           "axioms": [
             "propext",
             "Classical.choice",
             "Quot.sound"
           ],
-          "note": "Verified mediation DECISION FUNCTION (modulo A1-A3, for calls that reach seal). Lean proofs assert the toolchain/axioms; they are not re-checked here. Host/container wiring is NOT verified."
+          "note": "What the public Lean proofs ASSERT about the kernel source. NOT re-checked here and NOT part of the binary hash."
         },
-        "policy_id": "seal-live-demo-d0",
         "kernel_config": {
           "epoch": 1,
           "safety": {
@@ -258,9 +273,10 @@
             "operation": "insert"
           }
         ],
+        "policy_id": "seal-live-demo-d0",
         "signature": {
           "alg": "HMAC-SHA256",
-          "value": "c320ebc8a97f713ad8302568555a469d143bd3510d1ea56c31d6a45edf35bac9",
+          "value": "33281e5846ad19dffca5f7a89cb66f514cffe189c2e6467ea15d65c24cc16eda",
           "note": "demo-key signed (integrity check, not production identity)"
         },
         "execution": {
@@ -269,7 +285,7 @@
         },
         "gateway": {
           "bypass": false,
-          "ts_mono_ms": 222475802
+          "ts_mono_ms": 267888723
         }
       }
     },
@@ -278,7 +294,7 @@
       "control": true,
       "note": "identical canonical request as P2 (exact bytes replayed); only SEAL_DECISION_BYPASS=1 differs",
       "receipt": {
-        "seal_live_receipt": "v0",
+        "seal_receipt": "v2",
         "tool": "db.execute",
         "arguments": {
           "operation": "delete_all\n",
@@ -299,7 +315,7 @@
         },
         "signature": {
           "alg": "HMAC-SHA256",
-          "value": "9e766c2c53a77ac4e7258cd2d57503b61a83b1493a16b4523dbbb2e5e441d0c4",
+          "value": "7c5532bd8939080582b63c50e3473e1b36b24bad4199bf35739a086415279a00",
           "note": "demo-key signed (integrity check, not production identity)"
         },
         "execution": {
@@ -308,7 +324,7 @@
         },
         "gateway": {
           "bypass": true,
-          "ts_mono_ms": 222490509
+          "ts_mono_ms": 267903021
         }
       }
     }

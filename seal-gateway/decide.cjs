@@ -53,30 +53,26 @@ async function createDecider(policyPath) {
   verifyKernelSha();
   const M = await loadModule();
   const cfg = await import(path.join(ROOT, "seal-config.js"));
+  // The SHARED receipt seam (vendored byte-identical from seal-check canonical).
+  // Emission goes through assembleReceiptV2 — one schema, no gateway fork.
+  const rf = await import(path.join(ROOT, "receipt-format.js"));
 
   // The capability targets the gateway will present (the agent's static grants).
   const granted = policy.granted_capabilities.map((g) =>
     cfg.stableHash([g.tool, g.table, g.operation])
   );
 
-  // Canonical JSON-RPC tools/call line for a db.execute(operation, table, payload).
-  // This is the byte string seal canonicalizes and the report hashes (request_sha256).
-  function canonicalRequest({ operation, table, payload }) {
-    return JSON.stringify({
-      jsonrpc: "2.0", id: 1, method: "tools/call",
-      params: { name: "db.execute", arguments: { operation, table, payload } },
-    });
-  }
-
   // Decide one tool-call. With bypass=true the seal decision is SKIPPED entirely
   // (the seal-off control) — SAME executor, only this flag differs.
   function decide(toolCall, { bypass = false } = {}) {
-    const request_line = canonicalRequest(toolCall);
+    // Normalized argument object in the pinned key order (§2: stored key order is
+    // significant; the same bytes the previous emitter produced).
+    const args = { operation: toolCall.operation, table: toolCall.table, payload: toolCall.payload };
+    const request_line = rf.canonicalRequest("db.execute", args);
     const request_sha256 = sha256Hex(request_line);
     const base = {
-      seal_live_receipt: "v0",
       tool: "db.execute",
-      arguments: toolCall,
+      arguments: args,
       canonical_request: request_line,
       canonical_request_sha256: request_sha256,
       bypass,
@@ -84,14 +80,15 @@ async function createDecider(policyPath) {
 
     if (bypass) {
       // No mediation. Record honestly that seal was removed from the path.
-      return finalizeReceipt({
+      // v2 honesty rule: no args_hash, no approval — nothing was mediated.
+      return finalizeReceipt(rf.assembleReceiptV2({
         ...base,
         verdict: "ALLOW",
         reason: "SEAL_DECISION_BYPASS=1 — seal removed from the path; no mediation performed",
         deny_kernel: null,
         certs: [],
         kernel_identity: bypassKernelIdentity(),
-      });
+      }));
     }
 
     const ir = JSON.parse(
@@ -99,33 +96,48 @@ async function createDecider(policyPath) {
     );
     if (ir.ok !== true) throw new Error("seal_init failed: " + JSON.stringify(ir));
     const step = cfg.buildStepInput({
-      tool: "db.execute", args: toolCall, approvals: granted,
+      tool: "db.execute", args, approvals: granted,
     });
     const raw = M.ccall("seal_decide", "string", ["string"], [step]);
     const parsed = cfg.parseVerdict(raw, "db.execute");
-    return finalizeReceipt({
+    const verdict = parsed.verdict === "DENY" ? "BLOCK" : parsed.verdict; // ALLOW|BLOCK|ERROR
+    return finalizeReceipt(rf.assembleReceiptV2({
       ...base,
-      verdict: parsed.verdict === "DENY" ? "BLOCK" : parsed.verdict, // ALLOW|BLOCK|ERROR
+      verdict,
+      // §11.2: the gateway's grants are static entries read from the policy FILE;
+      // that channel carries no nonce/issued_at/expiry, so none is asserted
+      // (unknown = absent, never fabricated). policy_hash and args_hash are
+      // derived inside the seam. db.execute is not payment-class: no payment fields.
+      approval: verdict === "ALLOW" ? { approval_identity: { channel: "file" } } : undefined,
       reason: parsed.reason,
       deny_kernel: parsed.deny_kernel ?? null,
       certs: parsed.certs,
       emitted_bytes: raw,
       kernel_identity: realKernelIdentity(),
+      asserted_provenance: assertedProvenance(),
       // Self-contained re-derivation inputs: anyone (e.g. seal-check) can reproduce
       // this verdict in-browser from the receipt alone, no access to this gateway.
       policy_id: policy.policy_id,
       kernel_config: policy.kernel_config,
       granted_capabilities: policy.granted_capabilities.map(({ tool, table, operation }) => ({ tool, table, operation })),
-    });
+    }));
   }
 
+  // §4 HARD SPLIT: identity = the binary fact only; toolchain/axiom provenance is
+  // ASSERTED, lives in its own block, and is never part of any verified claim.
   function realKernelIdentity() {
     return {
       wasm_sha256: KERNEL_WASM_SHA256,
       self_verified: true,
+      note: "Verified mediation DECISION FUNCTION (modulo A1-A3, for calls that reach seal). Binary identity only; host/container wiring is NOT verified.",
+    };
+  }
+  function assertedProvenance() {
+    return {
+      verified_in_browser: false,
       lean_toolchain: LEAN_TOOLCHAIN,
       axioms: KERNEL_AXIOMS,
-      note: "Verified mediation DECISION FUNCTION (modulo A1-A3, for calls that reach seal). Lean proofs assert the toolchain/axioms; they are not re-checked here. Host/container wiring is NOT verified.",
+      note: "What the public Lean proofs ASSERT about the kernel source. NOT re-checked here and NOT part of the binary hash.",
     };
   }
   function bypassKernelIdentity() {
@@ -133,12 +145,15 @@ async function createDecider(policyPath) {
   }
 
   // demo-key signature = HMAC-SHA256 over the canonical receipt core. Integrity check
-  // for the re-derivation demo, NOT a production identity signature.
+  // for the re-derivation demo, NOT a production identity signature. Keyed on the v2
+  // discriminator since the schema bump: signature bytes CHANGED vs the v0 emitter —
+  // expected and documented, not a regression (the demo key proves nothing but
+  // transport integrity either way).
   function finalizeReceipt(r) {
     const core = JSON.stringify({
-      seal_live_receipt: r.seal_live_receipt, tool: r.tool, arguments: r.arguments,
+      seal_receipt: r.seal_receipt, tool: r.tool, arguments: r.arguments,
       canonical_request_sha256: r.canonical_request_sha256, verdict: r.verdict,
-      deny_kernel: r.deny_kernel, certs: r.certs || [], bypass: r.bypass,
+      deny_kernel: r.deny_kernel ?? null, certs: r.certs || [], bypass: r.bypass,
     });
     r.signature = {
       alg: "HMAC-SHA256",
