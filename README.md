@@ -69,7 +69,8 @@ cd pwa && python3 -m http.server 8090     # open http://localhost:8090 — the b
 ```
 
 Receipts in `evidence/receipts.jsonl` also verify through `seal-assurance-kit`'s
-`node bin/seal verify` (install-to-first-PASS guide:
+`node bin/seal verify` — and in CI: `seal-verify-action` runs the same pinned verify closure
+in GitHub Actions and fails the build on an unverifiable receipt (install-to-first-PASS guide:
 [deployment guide](https://github.com/velvetmonkey/seal-assurance-kit/blob/main/docs/DEPLOYMENT.md)).
 
 ## The Seal family
@@ -82,6 +83,8 @@ _All Seal-family repositories are currently private; these links resolve only fo
 - [seal-check](https://github.com/velvetmonkey/seal-check): Don't trust. Verify.
 - [seal-live-demo](https://github.com/velvetmonkey/seal-live-demo): Watch it work.
 - [seal-assurance-kit](https://github.com/velvetmonkey/seal-assurance-kit): Check your own boundary.
+- [witness-check](https://github.com/velvetmonkey/witness-check): The sufficiency analyzer. (private/proprietary)
+- [seal-verify-action](https://github.com/velvetmonkey/seal-verify-action): Gate receipts in CI.
 
 ## Documentation
 
