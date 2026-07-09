@@ -13,7 +13,7 @@ A replayable live-agent demonstration showing Seal block an unapproved effect an
 <!-- truthbox:end -->
 > Map: [EVALUATOR-START.md](https://github.com/velvetmonkey/seal/blob/main/EVALUATOR-START.md) · profile detail: [PROFILE.md](https://github.com/velvetmonkey/seal-host/blob/main/PROFILE.md) — both in private repos; the links resolve only for authorised evaluators.
 
-**Seal is a proven checkpoint for AI agents.** When an AI agent tries to use a real tool over MCP (send money, delete a record, call an external service), Seal stands in the way and asks one question: did a human explicitly approve *this exact request*? No matching approval, no action. Every decision is written into a tamper-evident record you can check yourself. What makes Seal different from other guardrails: the core mediation rules aren't just tested, they're machine-checked theorems in Lean 4. The same decision logic then runs byte-for-byte in the Rust host you deploy, in the browser, and in the checker, each verified against that one proven rulebook.
+**Seal is the approval gateway for agentic tool use: it lets agents read and reason, but forces every protected external effect through an exact, recorded, checkable approval boundary.** When an AI agent tries to use a real tool over MCP (send money, delete a record, call an external service), Seal stands in the way and asks one question: did a human explicitly approve *this exact request*? No matching approval, no action. Every decision is written into a tamper-evident record you can check yourself. What makes Seal different from other guardrails: the core mediation rules aren't just tested, they're machine-checked theorems in Lean 4. The same decision logic then runs byte-for-byte in the Rust host you deploy, in the browser, and in the checker, each verified against that one proven rulebook.
 
 That is the product line in one sentence: prove the rulebook, then check every body that runs it. Seal is built around MCP because MCP is where agent intent becomes an external effect. The proof says what the kernel must do; the conformance tests show that the Rust, wasm, and JavaScript artifacts used by the product family emit the same decisions and records over the shared corpus.
 
@@ -27,7 +27,7 @@ The point is not that the model understood the situation. The point is that the 
 
 Seal's proof story is intentionally narrow. The Lean theorems cover the mediation kernel and selected model properties. The binaries and browser artifacts are connected to that proof by reproducible conformance tests, not by a theorem about every compiled instruction.
 
-Start with [docs/PROOF-REFERENCE.md](docs/PROOF-REFERENCE.md) for theorem names and file locations, [docs/CONFORMANCE.md](docs/CONFORMANCE.md) for the byte-identity claim, and [docs/TCB.md](docs/TCB.md) for what remains trusted.
+Start with the family [claims matrix](https://github.com/velvetmonkey/seal/blob/main/docs/CLAIMS-MATRIX.md) (one table: proven / tested / assumed / not claimed) and [What Seal is NOT](https://github.com/velvetmonkey/seal-assurance-kit/blob/main/docs/WHAT-SEAL-IS-NOT.md), then [docs/PROOF-REFERENCE.md](docs/PROOF-REFERENCE.md) for theorem names and file locations, [docs/CONFORMANCE.md](docs/CONFORMANCE.md) for the byte-identity claim, and [docs/TCB.md](docs/TCB.md) for what remains trusted.
 
 Mandatory non-claims:
 
@@ -44,12 +44,33 @@ Mandatory non-claims:
 
 ## Verify in five minutes
 
+This is the Seal family's one canonical demo: one command, real containers, deterministic
+outcome. **Prerequisites:** Docker with `docker compose`, and Node.js. No API keys — the local
+run scripts the agent's tool call (`synthetic_agent: true`); the gateway, kernel, database,
+receipts, and row counts are all real.
+
 ```sh
-node test/local-harness.cjs
-bash scripts/run_local.sh
-cd pwa && python3 -m http.server 8090
-# open http://localhost:8090
+bash scripts/run_local.sh        # builds + runs the full P1/P2/P3 sequence (a few minutes,
+                                 # mostly docker build); ends with "ASSERT OK: 15/15"
 ```
+
+What you will see, in order: **P1** an approved staging insert is ALLOWED; **P2** the agent is
+tricked into a destructive production delete and Seal BLOCKS it (row count provably unchanged);
+**P3** the *byte-identical* request replays with Seal bypassed and the 10,000-row table is
+destroyed. The P2/P3 requests carry the same `canonical_request_sha256` — the only variable is
+Seal. Every phase emits a v2 receipt; `scripts/assert.mjs` gates all 15 invariants.
+
+Then check the evidence yourself — neither checker trusts this repo:
+
+```sh
+node test/local-harness.cjs               # offline harness against the shipped wasm kernel
+cd pwa && python3 -m http.server 8090     # open http://localhost:8090 — the browser replay
+                                          # re-derives every decision from bundle.json
+```
+
+Receipts in `evidence/receipts.jsonl` also verify through `seal-assurance-kit`'s
+`node bin/seal verify` (install-to-first-PASS guide:
+[deployment guide](https://github.com/velvetmonkey/seal-assurance-kit/blob/main/docs/DEPLOYMENT.md)).
 
 ## The Seal family
 
@@ -64,6 +85,8 @@ _All Seal-family repositories are currently private; these links resolve only fo
 
 ## Documentation
 
+- [What Seal is NOT](https://github.com/velvetmonkey/seal-assurance-kit/blob/main/docs/WHAT-SEAL-IS-NOT.md) — read this first (private kit repo)
+- [Family claims matrix](https://github.com/velvetmonkey/seal/blob/main/docs/CLAIMS-MATRIX.md) · [family architecture map](https://github.com/velvetmonkey/seal/blob/main/docs/ARCHITECTURE.md) (private umbrella)
 - [Architecture](docs/ARCHITECTURE.md)
 - [Threat model](docs/THREAT-MODEL.md)
 - [Assumptions](docs/ASSUMPTIONS.md)
