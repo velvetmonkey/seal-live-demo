@@ -12,6 +12,7 @@ BRANCH_LOG="$SCRATCH/${REPO}-branch.log"
 DEMO_LOG="$SCRATCH/${REPO}-demo.log"
 
 echo "=== capture_evidence for $REPO ==="
+: > "$DEMO_LOG"  # fresh capture, no append pollution
 
 # Assert clean checkout
 if [[ -n "$(git status --porcelain)" ]]; then

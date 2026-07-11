@@ -21,7 +21,7 @@ The demo wires an agent to a DB. Attack path: hostile data makes the agent emit 
 bash scripts/showcase.sh
 ```
 
-(Delegates to run_local.sh if Docker available; else PWA + evidence print.) You will see attack **blocked** vs bypass succeed, same bytes, ASSERT style. Visible terminal outcome.
+One command spins the full live agent + gateway + kernel + DB. Watch P1 ALLOW a staging insert, P2 BLOCK the tricked destructive prod delete (rows unchanged), P3 identical bytes bypass and destroy the table. Real row counts, receipts, and "ASSERT OK: 15/15" land in your terminal. (Requires Docker + compose; otherwise see the PWA replay below.)
 
 The point: the external effect had to cross the approval boundary. The model was just the story.
 
