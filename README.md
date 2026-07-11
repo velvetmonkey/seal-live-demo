@@ -1,6 +1,8 @@
 # seal-live-demo
 
-A replayable live-agent demonstration showing Seal block an unapproved effect and the same request succeed when Seal is removed. **Role:** Watch it work.
+**Watch a live agent get tricked into a destructive prod delete — and Seal block it. Remove Seal and the identical request destroys the data. One command, real evidence, visible outcome.**
+
+The demo wires an agent to a DB. Attack path: hostile data makes the agent emit the bad call. Seal stops it (no approval for that exact target). Control path: Seal off, data gone. Every step produces real receipts you can re-verify.
 
 ![Demo](https://img.shields.io/badge/demo-live%20agent-red)
 ![Runtime](https://img.shields.io/badge/runtime-WebAssembly-654ff0)
@@ -13,20 +15,17 @@ A replayable live-agent demonstration showing Seal block an unapproved effect an
 <!-- truthbox:end -->
 > Map: [EVALUATOR-START.md](https://github.com/velvetmonkey/seal/blob/main/EVALUATOR-START.md) · profile detail: [PROFILE.md](https://github.com/velvetmonkey/seal-host/blob/main/PROFILE.md) — both in private repos; the links resolve only for authorised evaluators.
 
-**Seal is the approval gateway for agentic tool use: it lets agents read and reason, but forces every protected external effect through an exact, recorded, checkable approval boundary.** When an AI agent tries to use a real tool over MCP (send money, delete a record, call an external service), Seal stands in the way and asks one question: did a human explicitly approve *this exact request*? No matching approval, no action. Every decision is written into a tamper-evident record you can check yourself. What makes Seal different from other guardrails: the core mediation rules aren't just tested, they're machine-checked theorems in Lean 4. The same decision logic then runs in the Rust host you deploy, in the browser, and in the checker — each checked byte-for-byte against that one proven rulebook over the conformance corpus.
+**Luxury one-command showcase**
 
-That is the product line in one sentence: prove the rulebook, then check every body that runs it. Seal is built around MCP because MCP is where agent intent becomes an external effect. The proof says what the kernel must do; the conformance tests show that the Rust, wasm, and JavaScript artifacts used by the product family emit the same decisions and records over the shared corpus.
+```bash
+bash scripts/run_local.sh   # Docker + Node; ends ASSERT OK: 15/15
+```
 
-## What happens when an agent is tricked by hostile data
+You will see the attack **blocked** (prod rows unchanged) and the bypass **succeed** (rows -> 0). Same canonical bytes in both. Receipts in evidence/ are v2 and re-derivable.
 
-The demo gives an agent an MCP route to a database through a gateway. In the safe path, a staging insert has an approval and is allowed. In the attack path, retrieved data persuades the agent to emit a destructive production delete. Seal blocks it because there is no approval for that exact target. In the control path, the same request runs with Seal bypassed and the database is destroyed.
+No Docker? `cd pwa && python3 -m http.server 8090` → open the page. Same receipts, browser re-derives every decision.
 
-The point is not that the model understood the situation. The point is that the external effect had to cross an approval boundary first.
-
-**Run it now:** `bash scripts/run_local.sh` (Docker + Node; ends with `ASSERT OK: 15/15`).
-**No Docker?** Watch the replay in your browser: `cd pwa && python3 -m http.server 8090` →
-open http://localhost:8090 — it re-derives every decision from the committed evidence bundle,
-no containers needed. Details for both in [Verify in five minutes](#verify-in-five-minutes).
+The point: the external effect had to cross the approval boundary. The model was just the story.
 
 <!-- TODO(asset, shot #1, PROMO-GRADE): real terminal capture, split view — P2 BLOCK with
      "prod rows unchanged" beside P3 bypass "rows -> 0", the identical canonical_request_sha256
