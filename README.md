@@ -21,7 +21,15 @@ The demo wires an agent to a DB. Attack path: hostile data makes the agent emit 
 bash scripts/showcase.sh
 ```
 
-One command spins the full live agent + gateway + kernel + DB. Watch P1 ALLOW a staging insert, P2 BLOCK the tricked destructive prod delete (rows unchanged), P3 identical bytes bypass and destroy the table. Real row counts, receipts, and "ASSERT OK: 15/15" land in your terminal. (Requires Docker + compose; otherwise see the PWA replay below.)
+One command spins the full live agent + gateway + kernel + DB. Watch P1 ALLOW a staging insert, P2 BLOCK the tricked destructive prod delete (rows unchanged), P3 identical bytes bypass and destroy the table. Real row counts, receipts, and "ASSERT OK: 15/15" land in your terminal. (Requires Docker + compose.)
+
+**No Docker? Replay the exact evidence in your browser (30 seconds):**
+
+```bash
+cd pwa && python3 -m http.server 8090   # then open http://localhost:8090
+```
+
+Ships ready to serve — the audited `wasm/seal.js` and a real run's `bundle.json` are already in `pwa/`. The page re-derives every P1/P2/P3 decision from that bundle in your browser: SEAL ON grid full vs SEAL OFF grid empty, the identical `canonical_request_sha256` on both, receipts you can re-verify. Nothing leaves the page; no containers, no build. (Smoke-tested: index, `bundle.json`, and `wasm/seal.js` all serve 200.)
 
 The point: the external effect had to cross the approval boundary. The model was just the story.
 
