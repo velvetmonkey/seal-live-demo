@@ -8,6 +8,19 @@
 # orchestration, asserts, summary and PWA against real kernel output.
 set -euo pipefail
 cd "$(dirname "$0")/.."
+
+# Fail fast with a pointer instead of an opaque mid-build error.
+missing=""
+command -v docker >/dev/null 2>&1 || missing="docker"
+docker compose version >/dev/null 2>&1 || missing="${missing:+$missing, }docker compose"
+command -v node >/dev/null 2>&1 || missing="${missing:+$missing, }node"
+if [ -n "$missing" ]; then
+  echo "ERROR: missing prerequisite(s): $missing" >&2
+  echo "No Docker? The browser replay needs none of this:" >&2
+  echo "  cd pwa && python3 -m http.server 8090   # then open http://localhost:8090" >&2
+  exit 1
+fi
+
 export DB_PASSWORD=synthpw
 DC=(docker compose -f docker-compose.yml -f docker-compose.verify.yml)
 EV=evidence
