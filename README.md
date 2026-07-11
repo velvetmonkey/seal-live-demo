@@ -18,12 +18,10 @@ The demo wires an agent to a DB. Attack path: hostile data makes the agent emit 
 **Luxury one-command showcase**
 
 ```bash
-bash scripts/run_local.sh   # Docker + Node; ends ASSERT OK: 15/15
+bash scripts/showcase.sh
 ```
 
-You will see the attack **blocked** (prod rows unchanged) and the bypass **succeed** (rows -> 0). Same canonical bytes in both. Receipts in evidence/ are v2 and re-derivable.
-
-No Docker? `cd pwa && python3 -m http.server 8090` → open the page. Same receipts, browser re-derives every decision.
+(Delegates to run_local.sh if Docker available; else PWA + evidence print.) You will see attack **blocked** vs bypass succeed, same bytes, ASSERT style. Visible terminal outcome.
 
 The point: the external effect had to cross the approval boundary. The model was just the story.
 
