@@ -7,17 +7,30 @@
 // verified verdict the demo narrates. Cert hashes are emitted by the kernel, not
 // encoded here.
 import { stableHashParts } from "./receipt-format.js";
+import { createPrivateKey, sign } from "node:crypto";
 
-export const PUBKEY = "demo-pk";
+// Fixed TEST-ONLY key from RFC 8032 test vector 1. The seed is public because
+// this demo needs byte-stable receipts; it is never an operator credential.
+export const PUBKEY = "d75a980182b10ab7d54bfed3c964073a0ee172f3daa62325af021a68f707511a";
+const PRIVATE_KEY = createPrivateKey({
+  key: Buffer.from(
+    "302e020100300506032b657004220420" +
+    "9d61b19deffd5a60ba844af492ec2cc44449c5697b326919703bac031cae7f60", "hex"),
+  format: "der", type: "pkcs8",
+});
 
 // SHA-256 target commitment, exact mirror of Lean Seal.stableHashParts.
 export function stableHash(parts) {
   return stableHashParts(parts);
 }
 
-export function buildEnvelope(payload, pubkey = PUBKEY) {
-  const compact = JSON.stringify(payload);
-  return JSON.stringify({ payload: compact, signature: `stub-ed25519:${pubkey}:${compact}` });
+// Real Ed25519 over the exact compact payload passed to df42. Returning every
+// representation from one operation prevents producer/receipt byte drift.
+export function buildSignedConfig(config) {
+  const payload = JSON.stringify(config);
+  const signature = sign(null, Buffer.from(payload, "utf8"), PRIVATE_KEY).toString("hex");
+  return { payload, signature, pubkey: PUBKEY,
+    envelope: JSON.stringify({ payload, signature }) };
 }
 
 const safety = (tools) => ({ approval: { control_file: "X", ttl_seconds: 120 }, tools });

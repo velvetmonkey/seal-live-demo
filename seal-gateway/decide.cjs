@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: Apache-2.0
 // seal-gateway decision core. Loads the compiled black-box seal kernel (the SAME
-// audited seal-check wasm, sha256 ebd17c14…) in Node via its emscripten glue, and
+// audited seal-check wasm, sha256 df42cbad…) in Node via its emscripten glue, and
 // decides one db.execute tool-call against the capability policy.
 //
 // There is NO kernel logic here. seal.wasm is the verified mediation DECISION
@@ -14,11 +14,9 @@ const crypto = require("crypto");
 
 const ROOT = __dirname;
 const WASM_DIR = path.join(ROOT, "wasm");
-const KERNEL_WASM_SHA256 = "ebd17c14668176612c49f6e2940b23df82a2c1a7cdef6759f0d6276ae997e9d0";
+const KERNEL_WASM_SHA256 = "df42cbada2297741bfeab99f222b96ac02e43a4ce8695b24922b425b8d66b1e8";
 const LEAN_TOOLCHAIN = "leanprover/lean4:v4.28.0";
 const KERNEL_AXIOMS = ["propext", "Classical.choice", "Quot.sound"];
-// Demo signing key — integrity check ONLY, NOT a production identity (honesty rule).
-const DEMO_KEY = "seal-live-demo-demo-key-v0";
 
 // Load the emscripten glue once to obtain the global SealModule factory. The glue is
 // a classic-script MODULARIZE build that exports nothing under Node, so it is eval'd
@@ -56,6 +54,9 @@ async function createDecider(policyPath) {
   // The SHARED receipt seam (vendored byte-identical from seal-check canonical).
   // Emission goes through assembleReceiptV2 — one schema, no gateway fork.
   const rf = await import(path.join(ROOT, "receipt-format.js"));
+  // Sign the policy exactly once. Every seal_init and every receipt reuses the
+  // same payload/signature/public-key tuple; no reconstruction can drift.
+  const signedConfig = cfg.buildSignedConfig(policy.kernel_config);
 
   // The capability targets the gateway will present (the agent's static grants).
   const granted = policy.granted_capabilities.map((g) =>
@@ -81,18 +82,18 @@ async function createDecider(policyPath) {
     if (bypass) {
       // No mediation. Record honestly that seal was removed from the path.
       // v2 honesty rule: no args_hash, no approval — nothing was mediated.
-      return finalizeReceipt(rf.assembleReceiptV2({
+      return rf.assembleReceiptV2({
         ...base,
         verdict: "ALLOW",
         reason: "SEAL_DECISION_BYPASS=1 — seal removed from the path; no mediation performed",
         deny_kernel: null,
         certs: [],
         kernel_identity: bypassKernelIdentity(),
-      }));
+      });
     }
 
     const ir = JSON.parse(
-      M.ccall("seal_init", "string", ["string", "string"], [cfg.buildEnvelope(policy.kernel_config), cfg.PUBKEY])
+      M.ccall("seal_init", "string", ["string", "string"], [signedConfig.envelope, signedConfig.pubkey])
     );
     if (ir.ok !== true) throw new Error("seal_init failed: " + JSON.stringify(ir));
     const step = cfg.buildStepInput({
@@ -101,9 +102,10 @@ async function createDecider(policyPath) {
     const raw = M.ccall("seal_decide", "string", ["string"], [step]);
     const parsed = cfg.parseVerdict(raw, "db.execute");
     const verdict = parsed.verdict === "DENY" ? "BLOCK" : parsed.verdict; // ALLOW|BLOCK|ERROR
-    return finalizeReceipt(rf.assembleReceiptV2({
+    return rf.assembleReceiptV2({
       ...base,
       verdict,
+      authorization: verdict === "ALLOW" ? "approval" : undefined,
       // §11.2: the gateway's grants are static entries read from the policy FILE;
       // that channel carries no nonce/issued_at/expiry, so none is asserted
       // (unknown = absent, never fabricated). policy_hash and args_hash are
@@ -115,12 +117,17 @@ async function createDecider(policyPath) {
       emitted_bytes: raw,
       kernel_identity: realKernelIdentity(),
       asserted_provenance: assertedProvenance(),
+      signed_config: {
+        payload: signedConfig.payload,
+        signature: signedConfig.signature,
+        pubkey: signedConfig.pubkey,
+      },
       // Self-contained re-derivation inputs: anyone (e.g. seal-check) can reproduce
       // this verdict in-browser from the receipt alone, no access to this gateway.
       policy_id: policy.policy_id,
       kernel_config: policy.kernel_config,
       granted_capabilities: policy.granted_capabilities.map(({ tool, table, operation }) => ({ tool, table, operation })),
-    }));
+    });
   }
 
   // §4 HARD SPLIT: identity = the binary fact only; toolchain/axiom provenance is
@@ -142,25 +149,6 @@ async function createDecider(policyPath) {
   }
   function bypassKernelIdentity() {
     return { wasm_sha256: null, self_verified: false, note: "seal bypassed; the verified kernel did not run." };
-  }
-
-  // demo-key signature = HMAC-SHA256 over the canonical receipt core. Integrity check
-  // for the re-derivation demo, NOT a production identity signature. Keyed on the v2
-  // discriminator since the schema bump: signature bytes CHANGED vs the v0 emitter —
-  // expected and documented, not a regression (the demo key proves nothing but
-  // transport integrity either way).
-  function finalizeReceipt(r) {
-    const core = JSON.stringify({
-      seal_receipt: r.seal_receipt, tool: r.tool, arguments: r.arguments,
-      canonical_request_sha256: r.canonical_request_sha256, verdict: r.verdict,
-      deny_kernel: r.deny_kernel ?? null, certs: r.certs || [], bypass: r.bypass,
-    });
-    r.signature = {
-      alg: "HMAC-SHA256",
-      value: crypto.createHmac("sha256", DEMO_KEY).update(core).digest("hex"),
-      note: "demo-key signed (integrity check, not production identity)",
-    };
-    return r;
   }
 
   return {

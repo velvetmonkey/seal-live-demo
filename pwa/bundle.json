@@ -2,11 +2,11 @@
   "kind": "seal-live-demo-evidence",
   "version": "v0",
   "meta": {
-    "commit": "06ff337e2522978962d6d44711308cba16eb465e",
-    "workflow_hash": "0791b22cc81bf1c3e0ead70b2bd52954832bc7a1babcf38a4055ebba75ccf6b6",
+    "commit": "09f1377055a8568739eea3fec5ee5ea45d096155",
+    "workflow_hash": "41d63ea13de75e6687c2019855a99ed826a85e6f82fcda299616e589b7a487ff",
     "model": "local-synthetic (no GitHub Models)",
     "policy": "seal-live-demo-d0",
-    "kernel_sha256": "ebd17c14668176612c49f6e2940b23df82a2c1a7cdef6759f0d6276ae997e9d0",
+    "kernel_sha256": "df42cbada2297741bfeab99f222b96ac02e43a4ce8695b24922b425b8d66b1e8",
     "generated_by": "run_local.sh"
   },
   "probe": {
@@ -97,6 +97,7 @@
         "canonical_request_sha256": "66330ea2242d45a5a6b32d85007464125608fec7e88430fa3c23d5c5303db756",
         "bypass": false,
         "verdict": "ALLOW",
+        "authorization": "approval",
         "reason": "every gating kernel allows",
         "deny_kernel": null,
         "approval": {
@@ -121,7 +122,7 @@
         ],
         "emitted_bytes": "{\"audit\":\"{\\\"certs\\\":[{\\\"certHash\\\":\\\"11296119294002819579\\\",\\\"kernel\\\":\\\"safety\\\",\\\"reason\\\":\\\"351f47a44bcf935c7242432e24bd11db1536d7c1da873f0ca953c8b80ae02433\\\",\\\"verdict\\\":\\\"allow\\\"},{\\\"certHash\\\":\\\"12756644985251018087\\\",\\\"kernel\\\":\\\"temporal\\\",\\\"reason\\\":\\\"trace ok (1 events)\\\",\\\"verdict\\\":\\\"allow\\\"}],\\\"epoch\\\":1,\\\"tool\\\":\\\"db.execute\\\",\\\"verdict\\\":\\\"allow\\\"}\",\"route\":\"forward\"}",
         "kernel_identity": {
-          "wasm_sha256": "ebd17c14668176612c49f6e2940b23df82a2c1a7cdef6759f0d6276ae997e9d0",
+          "wasm_sha256": "df42cbada2297741bfeab99f222b96ac02e43a4ce8695b24922b425b8d66b1e8",
           "self_verified": true,
           "note": "Verified mediation DECISION FUNCTION (modulo A1-A3, for calls that reach seal). Binary identity only; host/container wiring is NOT verified."
         },
@@ -134,6 +135,11 @@
             "Quot.sound"
           ],
           "note": "What the public Lean proofs ASSERT about the kernel source. NOT re-checked here and NOT part of the binary hash."
+        },
+        "signed_config": {
+          "payload": "{\"epoch\":1,\"safety\":{\"approval\":{\"control_file\":\"X\",\"ttl_seconds\":120},\"tools\":[{\"name\":\"db.execute\",\"mode\":\"guarded\",\"match\":{\"type\":\"always\"},\"target\":[{\"arg\":\"table\"},{\"arg\":\"operation\"}]}]},\"temporal\":{\"policies\":[]}}",
+          "signature": "f7b3c3f83faab477bcec62ddaa745b1f8dc10017ad3d0e54e2077c8d0c43fcaf1cfb446f997ccfe71f9cbff641e4f2715b4eddc326b8bd7317e31d5e9bf99402",
+          "pubkey": "d75a980182b10ab7d54bfed3c964073a0ee172f3daa62325af021a68f707511a"
         },
         "kernel_config": {
           "epoch": 1,
@@ -172,18 +178,13 @@
           }
         ],
         "policy_id": "seal-live-demo-d0",
-        "signature": {
-          "alg": "HMAC-SHA256",
-          "value": "9266d2e06844b1cb72db2968b74569d57436690079ead13b479631f59638346d",
-          "note": "demo-key signed (integrity check, not production identity)"
-        },
         "execution": {
           "executed": true,
           "rows_affected": 1
         },
         "gateway": {
           "bypass": false,
-          "ts_mono_ms": 267888580
+          "ts_mono_ms": 14304787
         }
       }
     },
@@ -223,7 +224,7 @@
         ],
         "emitted_bytes": "{\"audit\":\"{\\\"certs\\\":[{\\\"certHash\\\":\\\"31980135567447998\\\",\\\"kernel\\\":\\\"safety\\\",\\\"reason\\\":\\\"bd320931069ebb98a9b205fa2e9227b3bdcdc9f7e98197cd855089ae5d720ac1\\\",\\\"verdict\\\":\\\"deny\\\"},{\\\"certHash\\\":\\\"12756644985251018087\\\",\\\"kernel\\\":\\\"temporal\\\",\\\"reason\\\":\\\"trace ok (1 events)\\\",\\\"verdict\\\":\\\"allow\\\"}],\\\"epoch\\\":1,\\\"tool\\\":\\\"db.execute\\\",\\\"verdict\\\":\\\"deny\\\"}\",\"response\":\"{\\\"id\\\":1,\\\"jsonrpc\\\":\\\"2.0\\\",\\\"result\\\":{\\\"content\\\":[{\\\"text\\\":\\\"approval required: bd320931069ebb98a9b205fa2e9227b3bdcdc9f7e98197cd855089ae5d720ac1\\\",\\\"type\\\":\\\"text\\\"}],\\\"isError\\\":true}}\\n\",\"route\":\"block\"}",
         "kernel_identity": {
-          "wasm_sha256": "ebd17c14668176612c49f6e2940b23df82a2c1a7cdef6759f0d6276ae997e9d0",
+          "wasm_sha256": "df42cbada2297741bfeab99f222b96ac02e43a4ce8695b24922b425b8d66b1e8",
           "self_verified": true,
           "note": "Verified mediation DECISION FUNCTION (modulo A1-A3, for calls that reach seal). Binary identity only; host/container wiring is NOT verified."
         },
@@ -236,6 +237,11 @@
             "Quot.sound"
           ],
           "note": "What the public Lean proofs ASSERT about the kernel source. NOT re-checked here and NOT part of the binary hash."
+        },
+        "signed_config": {
+          "payload": "{\"epoch\":1,\"safety\":{\"approval\":{\"control_file\":\"X\",\"ttl_seconds\":120},\"tools\":[{\"name\":\"db.execute\",\"mode\":\"guarded\",\"match\":{\"type\":\"always\"},\"target\":[{\"arg\":\"table\"},{\"arg\":\"operation\"}]}]},\"temporal\":{\"policies\":[]}}",
+          "signature": "f7b3c3f83faab477bcec62ddaa745b1f8dc10017ad3d0e54e2077c8d0c43fcaf1cfb446f997ccfe71f9cbff641e4f2715b4eddc326b8bd7317e31d5e9bf99402",
+          "pubkey": "d75a980182b10ab7d54bfed3c964073a0ee172f3daa62325af021a68f707511a"
         },
         "kernel_config": {
           "epoch": 1,
@@ -274,18 +280,13 @@
           }
         ],
         "policy_id": "seal-live-demo-d0",
-        "signature": {
-          "alg": "HMAC-SHA256",
-          "value": "33281e5846ad19dffca5f7a89cb66f514cffe189c2e6467ea15d65c24cc16eda",
-          "note": "demo-key signed (integrity check, not production identity)"
-        },
         "execution": {
           "executed": false,
           "rows_affected": 0
         },
         "gateway": {
           "bypass": false,
-          "ts_mono_ms": 267888723
+          "ts_mono_ms": 14304966
         }
       }
     },
@@ -313,18 +314,13 @@
           "self_verified": false,
           "note": "seal bypassed; the verified kernel did not run."
         },
-        "signature": {
-          "alg": "HMAC-SHA256",
-          "value": "7c5532bd8939080582b63c50e3473e1b36b24bad4199bf35739a086415279a00",
-          "note": "demo-key signed (integrity check, not production identity)"
-        },
         "execution": {
           "executed": true,
           "rows_affected": 10000
         },
         "gateway": {
           "bypass": true,
-          "ts_mono_ms": 267903021
+          "ts_mono_ms": 14319775
         }
       }
     }

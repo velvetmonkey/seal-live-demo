@@ -55,6 +55,8 @@
       <div id="phase-cards" class="cards"></div>
       <div id="receipt-view" class="receipt-view hidden">
         <h3>Receipt <span id="rv-rederive" class="rederive"></span></h3>
+        <ul id="rv-checks" class="verification-checks"></ul>
+        <p id="rv-summary" class="verification-summary"></p>
         <pre id="rv-json" class="receipt"></pre>
       </div>
     </section>
@@ -62,8 +64,8 @@
     <!-- TAMPER TEST (centerpiece) -->
     <section id="tamper">
       <h2>Tamper test — the receipt is not "just JSON"</h2>
-      <p class="muted">Edit the Block receipt below — flip <code>verdict</code> to <code>ALLOW</code>, or change the
-        request. Then re-derive against the verified kernel in your browser. The kernel, not the JSON, decides.</p>
+      <p class="muted">Edit the Block receipt below — flip its verdict, signature, signed payload, or request.
+        Verification replays the exact authenticated bytes through df42; altered receipts fail red.</p>
       <textarea id="tamper-input" spellcheck="false" rows="12"></textarea>
       <div class="row">
         <button id="tamper-run" class="primary">Re-derive against kernel</button>
@@ -84,8 +86,9 @@
         <div class="claim notproves">
           <h3>✗ Does NOT prove</h3>
           <p>It does <strong>not</strong> prove the agent is safe — a fooled agent can still leak what it reads.
-            It tests, but does not prove, the host/container wiring. The receipt is <em>demo-key signed</em>
-            (integrity check, not production identity). No third party (incl. ARIA) certifies anything here.</p>
+            It tests, but does not prove, the host/container wiring. The config has a real Ed25519 signature,
+            but this browser has no independently provisioned operator-key pin, so authority remains visibly
+            <em>unpinned</em>. No third party (incl. ARIA) certifies anything here.</p>
         </div>
       </div>
     </section>

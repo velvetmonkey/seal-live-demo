@@ -21,7 +21,7 @@ button:hover { border-color:var(--accent); }
 button.primary { background:#14304f; border-color:#2b6cb0; color:#dcebff; }
 .boot-error { background:#210f0f; color:var(--red); border-bottom:1px solid #5a2020; padding:10px 20px; font-family:var(--mono); font-size:13px; }
 .deeplink { margin:16px 0; padding:12px 14px; border-radius:10px; border:1px solid var(--line); background:var(--panel); font-size:14px; }
-.deeplink.ok { border-color:#1f5a45; } .deeplink.bad { border-color:#5a2020; color:var(--red); }
+.deeplink.ok { border-color:#1f5a45; } .deeplink.warn { border-color:#5a4720; color:var(--warn); } .deeplink.bad { border-color:#5a2020; color:var(--red); }
 .sw-cache { color:var(--muted); }
 
 /* money shot */
@@ -45,11 +45,16 @@ button.primary { background:#14304f; border-color:#2b6cb0; color:#dcebff; }
 .card.ok .card-verdict { color:var(--green); } .card.block .card-verdict { color:var(--red); } .card.crater .card-verdict { color:var(--warn); }
 .receipt-view { margin-top:16px; }
 .rederive { font-family:var(--mono); font-size:12px; margin-left:6px; }
-.rederive.ok { color:var(--green); } .rederive.bad { color:var(--red); }
+.rederive.ok { color:var(--green); } .rederive.warn { color:var(--warn); } .rederive.bad { color:var(--red); }
+.verification-checks { list-style:none; padding:0; margin:8px 0; font-family:var(--mono); font-size:12px; }
+.verification-checks li { padding:2px 0; }
+.verification-checks .ok { color:var(--green); } .verification-checks .warn { color:var(--warn); } .verification-checks .bad { color:var(--red); }
+.verification-summary { font-size:13px; font-weight:600; }
+.verification-summary.warn { color:var(--warn); } .verification-summary.bad { color:var(--red); }
 .receipt, textarea { width:100%; background:#0b0c10; border:1px solid var(--line); border-radius:8px; padding:12px; font-family:var(--mono); font-size:12px; color:var(--ink); }
 .receipt { overflow:auto; max-height:340px; white-space:pre; } textarea { resize:vertical; }
 .hidden { display:none; }
-#tamper-result.ok { color:var(--green); } #tamper-result.bad { color:var(--red); }
+#tamper-result.ok { color:var(--green); } #tamper-result.warn { color:var(--warn); } #tamper-result.bad { color:var(--red); }
 
 .claim-grid { display:grid; grid-template-columns:1fr 1fr; gap:16px; }
 .claim { border:1px solid var(--line); border-radius:10px; padding:14px; background:var(--panel); }

@@ -2,23 +2,12 @@
 // Evidence-replay controller. Loads the REAL run bundle (bundle.json) and animates
 // only captured values. Re-derives verdicts live in-browser via the same kernel.
 // Drama rule: if it wasn't emitted by the run, it doesn't appear here.
-import { decideConfig, ready } from "./seal-wasm.js";
-import { stableHash } from "./seal-config.js";
-import { sha256Hex } from "./sha256.js";
+import { ready, verifyKernelSha } from "./seal-wasm.js";
+import { verificationPresentation, verifyReceipt } from "./receipt.js";
 
 const $ = (id) => document.getElementById(id);
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
-const KERNEL_SHA = "ebd17c14668176612c49f6e2940b23df82a2c1a7cdef6759f0d6276ae997e9d0";
-let BUNDLE = null, GRANTS = [];
-
-// Self-verify the kernel binary we actually loaded (hash it, compare to the pin).
-async function verifyWasm() {
-  try {
-    const buf = new Uint8Array(await (await fetch("wasm/seal.wasm")).arrayBuffer());
-    const got = await sha256Hex(buf);
-    return { got, match: got === KERNEL_SHA };
-  } catch (e) { return { got: null, match: false, err: e.message }; }
-}
+let BUNDLE = null;
 
 function b64urlDecode(s) {
   s = s.replace(/-/g, "+").replace(/_/g, "/"); while (s.length % 4) s += "=";
@@ -40,27 +29,33 @@ async function handleDeepLink() {
   $("receipt-view").classList.remove("hidden");
   $("rv-json").textContent = JSON.stringify(receipt, null, 2);
   try {
-    const live = await reDerive(receipt.arguments);
-    const got = live.verdict === "DENY" ? "BLOCK" : live.verdict;
-    const claimed = receipt.verdict;
-    const okMatch = !claimed || claimed === got;
-    banner.innerHTML = `<b>Deep-linked Block receipt</b> — re-derived on your device: kernel says <b>${got}</b>${claimed ? ` (receipt claims ${claimed})` : ""}. ${okMatch ? "✓ matches" : "⚠ MISMATCH — receipt rejected"}. Nothing was sent to a server.`;
-    banner.className = "deeplink " + (okMatch ? "ok" : "bad");
-    $("rv-rederive").textContent = okMatch ? `✓ re-derived: kernel says ${got}` : `⚠ re-derived ${got} ≠ receipt ${claimed}`;
-    $("rv-rederive").className = "rederive " + (okMatch ? "ok" : "bad");
+    const result = await verifyReceipt(receipt);
+    renderVerification(receipt, result);
+    const view = verificationPresentation(receipt, result);
+    banner.textContent = view.summary + " Nothing was sent to a server.";
+    banner.className = "deeplink " + view.tone;
   } catch (e) { banner.textContent = "re-derive error: " + e.message; banner.className = "deeplink bad"; }
   return true;
 }
 
 if (location.protocol === "file:") { $("boot-error").hidden = false; }
 
-function grantsFrom(policy) {
-  return (policy?.granted_capabilities || []).map((g) => stableHash([g.tool, g.table, g.operation]));
-}
-
-// Re-derive a db.execute decision in-browser (the kernel, not the JSON, decides).
-async function reDerive(args) {
-  return decideConfig(BUNDLE.policy.kernel_config, { tool: "db.execute", args, approvals: GRANTS });
+function renderVerification(receipt, result) {
+  const view = verificationPresentation(receipt, result);
+  const rv = $("rv-rederive");
+  rv.textContent = view.status;
+  rv.className = "rederive " + view.tone;
+  const checks = $("rv-checks");
+  checks.replaceChildren();
+  const line = (text, cls) => { const li = document.createElement("li"); li.textContent = text; li.className = cls; checks.appendChild(li); };
+  line(`signature_valid: ${result.signature_valid}`, result.signature_valid ? "ok" : "bad");
+  line(`kernel_replay_consistent: ${result.kernel_replay_consistent}`, result.kernel_replay_consistent ? "ok" : "bad");
+  line(`authority_trusted: ${result.authority_trusted === "unpinned" ? "UNPINNED" : result.authority_trusted}`,
+    result.authority_trusted === "unpinned" ? "warn" : "bad");
+  if (result.config_freshness) line(
+    `config freshness: ${result.config_freshness.field}=${result.config_freshness.value}; rollback enforcement=${result.config_freshness.rollback_enforced}`, "muted");
+  $("rv-summary").textContent = view.summary;
+  $("rv-summary").className = "verification-summary " + view.tone;
 }
 
 // --- counter + grid (100 cells = the whole table; caption carries the raw number) ---
@@ -131,14 +126,9 @@ async function showReceipt(key) {
   $("receipt-view").classList.remove("hidden");
   $("rv-json").textContent = JSON.stringify(ph, null, 2);
   const rv = $("rv-rederive");
-  if (r.bypass) { rv.textContent = "— seal was bypassed in this phase; no kernel decision to re-derive"; rv.className = "rederive muted"; return; }
-  rv.textContent = "re-deriving in your browser…"; rv.className = "rederive";
+  rv.textContent = "verifying exact signed bytes…"; rv.className = "rederive";
   try {
-    const live = await reDerive(r.arguments);
-    const want = r.verdict;
-    const got = live.verdict === "DENY" ? "BLOCK" : live.verdict;
-    rv.textContent = got === want ? `✓ re-derived: kernel says ${got} (matches the receipt)` : `⚠ re-derived ${got} ≠ receipt ${want}`;
-    rv.className = "rederive " + (got === want ? "ok" : "bad");
+    renderVerification(r, await verifyReceipt(r));
   } catch (e) { rv.textContent = "re-derive error: " + e.message; rv.className = "rederive bad"; }
 }
 
@@ -147,20 +137,14 @@ async function tamper() {
   const out = $("tamper-result");
   let edited;
   try { edited = JSON.parse($("tamper-input").value); } catch (e) { out.textContent = "invalid JSON: " + e.message; out.className = "mono bad"; return; }
-  const args = edited.arguments || edited.receipt?.arguments;
-  if (!args) { out.textContent = "no .arguments to re-derive"; out.className = "mono bad"; return; }
-  const claimed = edited.verdict || edited.receipt?.verdict;
-  out.textContent = "re-deriving…"; out.className = "mono";
+  const receipt = edited.receipt || edited;
+  if (!receipt.arguments) { out.textContent = "no receipt arguments to verify"; out.className = "mono bad"; return; }
+  out.textContent = "verifying exact signed bytes…"; out.className = "mono";
   try {
-    const live = await reDerive(args);
-    const got = live.verdict === "DENY" ? "BLOCK" : live.verdict;
-    if (claimed && claimed !== got) {
-      out.textContent = `REJECTED — receipt claims ${claimed}, but the kernel says ${got}. The kernel decides, not the JSON.`;
-      out.className = "mono bad";
-    } else {
-      out.textContent = `kernel verdict on these bytes: ${got}${live.deny_kernel ? " (" + live.deny_kernel + ")" : ""} — matches the claim.`;
-      out.className = "mono ok";
-    }
+    const result = await verifyReceipt(receipt);
+    const view = verificationPresentation(receipt, result);
+    out.textContent = view.summary;
+    out.className = "mono " + view.tone;
   } catch (e) { out.textContent = "re-derive error: " + e.message; out.className = "mono bad"; }
 }
 
@@ -169,11 +153,10 @@ async function init() {
   try {
     BUNDLE = await (await fetch("bundle.json")).json();
   } catch (e) { $("narration").textContent = "could not load bundle.json — run scripts/run_local.sh first."; return; }
-  GRANTS = grantsFrom(BUNDLE.policy);
   await ready();
   const m = BUNDLE.meta || {};
-  const v = await verifyWasm();
-  $("meta").textContent = `commit ${(m.commit || "?").slice(0, 12)} · model ${m.model || "?"} · policy ${m.policy || "?"} · kernel ${(v.got || "").slice(0, 12)}… ${v.match ? "self-verified ✓" : "⚠ SHA MISMATCH"}`;
+  const v = await verifyKernelSha();
+  $("meta").textContent = `commit ${(m.commit || "?").slice(0, 12)} · model ${m.model || "?"} · policy ${m.policy || "?"} · kernel ${(v.computed || "").slice(0, 12)}… ${v.match ? "self-verified ✓" : "⚠ SHA MISMATCH"}`;
   buildGrid($("grid-off")); buildGrid($("grid-on"));
   const before = BUNDLE.snapshots.before.rows;
   setGrid($("grid-off"), before, before); setGrid($("grid-on"), before, before);
