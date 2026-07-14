@@ -7,12 +7,32 @@ import { sha256Hex } from "./sha256.js";
 
 export const KERNEL_WASM_SHA256 = "df42cbada2297741bfeab99f222b96ac02e43a4ce8695b24922b425b8d66b1e8";
 
-let _mod = null;
-async function mod() {
-  if (_mod) return _mod;
-  if (!window.SealModule) throw new Error("wasm/seal.js not loaded (need <script src=\"wasm/seal.js\">)");
-  _mod = await window.SealModule({ print: () => {}, printErr: () => {} });
-  return _mod;
+// Memoise the PROMISE, not the resolved value: at load, ready() and an in-flight
+// decide call mod() concurrently, and a resolved-value guard (`if (_mod)`) lets both
+// race past before either sets it, instantiating the kernel (and fetching the wasm)
+// twice. Caching the in-flight promise collapses concurrent callers to one.
+let _modPromise = null;
+let _kernelBytesPromise = null;
+// Fetch the compiled kernel bytes exactly once and share them: emscripten
+// instantiates from these bytes (via Module.wasmBinary, no second network round)
+// and verifyKernelSha re-hashes the SAME bytes for the identity check. Memoise the
+// PROMISE, not the resolved value, so concurrent callers share one fetch.
+export function kernelBytes() {
+  if (!_kernelBytesPromise) {
+    _kernelBytesPromise = (async () =>
+      new Uint8Array(await (await fetch("wasm/seal.wasm")).arrayBuffer()))();
+  }
+  return _kernelBytesPromise;
+}
+function mod() {
+  if (!_modPromise) {
+    _modPromise = (async () => {
+      if (!window.SealModule) throw new Error("wasm/seal.js not loaded (need <script src=\"wasm/seal.js\">)");
+      // Pass a copy so emscripten can never detach the buffer verifyKernelSha hashes.
+      return window.SealModule({ wasmBinary: (await kernelBytes()).slice(), print: () => {}, printErr: () => {} });
+    })();
+  }
+  return _modPromise;
 }
 
 // Load the session config, then decide one step. seal_init is cheap and resets
@@ -39,8 +59,7 @@ export async function decideSignedRaw(signedConfig, { tool, args = {}, approvals
 }
 
 export async function verifyKernelSha() {
-  const bytes = new Uint8Array(await (await fetch("wasm/seal.wasm")).arrayBuffer());
-  const computed = await sha256Hex(bytes);
+  const computed = await sha256Hex(await kernelBytes()); // shared single fetch (also used to instantiate)
   return { computed, pinned: KERNEL_WASM_SHA256, match: computed === KERNEL_WASM_SHA256 };
 }
 
