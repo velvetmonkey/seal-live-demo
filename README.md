@@ -6,7 +6,7 @@ The demo wires an agent to a DB. Attack path: hostile data makes the agent emit 
 
 ## Quick start: run the attack
 
-**Luxury one-command showcase**
+**One-command showcase**
 
 ```bash
 bash scripts/showcase.sh
