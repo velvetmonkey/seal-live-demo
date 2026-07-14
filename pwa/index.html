@@ -66,9 +66,13 @@
       <h2>Policy Lab — the money-block (2-of-3 quorum)</h2>
       <p class="muted">A live £40,000 payment to <span class="mono">supplier-77</span>. Policy:
         <span class="mono">payments.send</span> is high-stakes and requires a <strong>2-of-3 quorum</strong>.
-        One operator has already approved it — but the quorum rule is separate, so the payment cannot execute
+        One operator has already approved it — but the quorum rule is separate, so the call cannot execute
         until enough independent sign-offs land. Add sign-offs and re-decide: the verdict is re-derived live
-        through the same sha256-pinned kernel, signed on-device. Nothing is sent to a server.</p>
+        through the same sha256-pinned kernel, signed on-device. Nothing is sent to a server.
+        <br><strong>Read the binding precisely:</strong> the deployed consensus kernel ratifies the
+        <em>tool name</em> — "<span class="mono">payments.send</span> may run" — not this specific £40,000
+        payment to <span class="mono">supplier-77</span>. Per-argument binding is proven
+        (<span class="mono">byteConsensusKernel</span>) but is not yet the deployed kernel.</p>
       <div class="row">
         <span class="mono">Independent sign-offs:</span>
         <button class="signoff" data-n="0">0</button>
@@ -109,6 +113,11 @@
             It tests, but does not prove, the host/container wiring. The config has a real Ed25519 signature,
             but this browser has no independently provisioned operator-key pin, so authority remains visibly
             <em>unpinned</em>. No third party (incl. ARIA) certifies anything here.</p>
+          <p>In the Policy Lab, the quorum does <strong>not</strong> bind the £40,000 or
+            <span class="mono">supplier-77</span>: the deployed consensus kernel ratifies the
+            <em>tool name</em>, so the same 2-of-3 certificate would admit any other
+            <span class="mono">payments.send</span> call. Argument-level binding is proven
+            (<span class="mono">byteConsensusKernel</span>) and not yet wired.</p>
         </div>
       </div>
     </section>
