@@ -61,6 +61,26 @@
       </div>
     </section>
 
+    <!-- POLICY LAB (interactive money-block) -->
+    <section id="lab">
+      <h2>Policy Lab — the money-block (2-of-3 quorum)</h2>
+      <p class="muted">A live £40,000 payment to <span class="mono">supplier-77</span>. Policy:
+        <span class="mono">payments.send</span> is high-stakes and requires a <strong>2-of-3 quorum</strong>.
+        One operator has already approved it — but the quorum rule is separate, so the payment cannot execute
+        until enough independent sign-offs land. Add sign-offs and re-decide: the verdict is re-derived live
+        through the same sha256-pinned kernel, signed on-device. Nothing is sent to a server.</p>
+      <div class="row">
+        <span class="mono">Independent sign-offs:</span>
+        <button class="signoff" data-n="0">0</button>
+        <button class="signoff" data-n="1">1</button>
+        <button class="signoff" data-n="2">2</button>
+        <button class="signoff" data-n="3">3</button>
+      </div>
+      <div class="row"><span id="lab-verdict" class="lab-verdict mono">—</span></div>
+      <p id="lab-reason" class="narration"></p>
+      <pre id="lab-step" class="receipt" hidden></pre>
+    </section>
+
     <!-- TAMPER TEST (centerpiece) -->
     <section id="tamper">
       <h2>Tamper test — the receipt is not "just JSON"</h2>
@@ -100,5 +120,6 @@
   </footer>
 
   <script type="module" src="replay.js"></script>
+  <script type="module" src="lab.js"></script>
 </body>
 </html>

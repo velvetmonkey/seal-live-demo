@@ -63,3 +63,9 @@ button.primary { background:#14304f; border-color:#2b6cb0; color:#dcebff; }
 .claim p { font-size:13px; margin:0; }
 footer { padding:22px 20px 60px; font-size:12px; }
 @media (max-width:720px){ .stage,.cards,.claim-grid{ grid-template-columns:1fr; } }
+
+/* Policy Lab (interactive money-block) */
+.lab-verdict { font-size:16px; font-weight:700; }
+.lab-verdict.ok { color:var(--green); } .lab-verdict.bad { color:var(--red); }
+button.signoff { min-width:40px; }
+button.signoff.primary { background:#14304f; border-color:#2b6cb0; color:#dcebff; }
