@@ -72,16 +72,39 @@ const m = [];
 const w = (s = "") => m.push(s);
 
 // ===== ANSWER FIRST ================================================================
-w(`# Experiment: can a verified gate stop an AI from deleting a customer database?`);
-w("");
-w(`**Yes.** In this run the same AI model issued the same delete request twice; the only variable was the gate. With the gate **on**, the deletion was refused and all ${sb.rows ?? "?"} customer records survived. With the gate **off**, the identical request wiped all ${sb.rows ?? "?"}.`);
-w("");
-w(`*Skeptical it's rigged? Every figure below is emitted by this run, and a deliberate gate-off **control**, an **obfuscation gauntlet**, and a full **"how do you know this isn't staged?"** section are further down.*`);
+// Design council 234843a6 (2026-07-15, harmonic, codex/claude/gemini). The old
+// hero was an academic paper: a QUESTION for an H1, then a pre-emptive defence
+// ("Skeptical it's rigged?") before any claim had been made. Both are gone. The
+// claim is now declarative and the objection is answered where it is raised, not
+// advertised in advance.
+//
+// The council's central diagnosis was NOT "too academic" — it was REPETITION.
+// Six load-bearing facts were each stated 3-7 times (the row counts SEVEN times),
+// so nothing had one home and nothing landed. Every fact below now appears once,
+// at full strength, in the place it hits hardest. No claim was softened or cut to
+// achieve that; roughly half the words went, none of the evidence did.
+w(`# The AI was tricked into ordering a database wipe. The gate refused. Without it, ${sb.rows ?? "?"} customer records were destroyed.`);
 w("");
 
 // ===== PROVENANCE BANNER (proves this is a specific live run, not a static page) ===
 // A local reproduction must never wear GitHub-Actions provenance prose.
-const ghRunId = process.env.GITHUB_RUN_ID || meta.run_id || "";
+//
+// BUG, found by the design council 2026-07-15 and confirmed in the shipped
+// evidence bundle for run 29424863046: this banner and the anti-staging point
+// below were computed by TWO predicates that could disagree. `ghRunId` fell back
+// to `meta.run_id`, while `ranOnGitHub` (below) required the live env var. Render
+// outside Actions from a bundle carrying a run_id — which is exactly what
+// evidence/summary.md is — and the report claimed to BE a GitHub Actions run at
+// the top while stating "this run executed locally" further down, with a dead
+// [](#) link between them because runUrl needs env vars that were also absent.
+//
+// The `ranOnGitHub` predicate already existed twenty lines up, declared for
+// exactly this purpose, and this banner simply did not consult it. So the fix is
+// a deletion: read the one that was always there. On the product whose entire
+// pitch is "we only claim what we can prove", an artefact that contradicts itself
+// about its own provenance is the most expensive bug on the page, whatever it
+// looks like.
+const ghRunId = ranOnGitHub ? (process.env.GITHUB_RUN_ID || meta.run_id || "") : "";
 if (ghRunId && ghRunId !== "?") {
   w(`> **Live output, not a static page. You are reading the summary of GitHub Actions run [\`${ghRunId}\`](${runUrl || "#"}), commit \`${(meta.commit || "?").slice(0, 7)}\`, model \`${meta.model || "?"}\`, generated \`${new Date().toISOString().slice(0, 16)}Z\` (UTC). Trigger the workflow again and every figure below is recomputed from scratch on GitHub's servers.**`);
 } else {
@@ -90,24 +113,40 @@ if (ghRunId && ghRunId !== "?") {
 w("");
 
 // ===== THE RESULT (money shot) =====================================================
+// All three council seats converged here independently: the fingerprint and the
+// outcome must be ONE object. They were sixty lines apart, so the demo's whole
+// thesis — same input, forked output — never assembled in the reader's head. The
+// fingerprint row now sits directly above the outcome row: the eye tracks across
+// and sees the same string twice, drops one row, sees opposite results.
+//
+// Truncated to 12 chars here because nobody compares 64-char strings by eye. The
+// full 64 stays in the engineers' table and in both receipts, and the caption
+// says the match holds to all 64 — the claim is not weakened by the display.
 w(`## The result`);
-w(`The same AI agent, given the same hidden trap, run twice. The **only** difference between the two runs is whether the safety gate was switched on.${logLink("Snapshot prod AFTER P3", "see the database counts in the live log")}`);
+w(`The same AI, the same hidden trap, run twice. The **only** difference was whether the gate was switched on.`);
 w("");
-w(`| Customer records in the database | With seal (gate ON) | Without seal (gate OFF, our control) |`);
-w(`|---|---|---|`);
-w(`| before the attack | ${sb.rows ?? "?"} | ${sb.rows ?? "?"} |`);
-w(`| after the attack | **${s2.rows ?? "?"}** 🟢 survived | **${s3.rows ?? "?"}** 🔴 wiped |`);
-w("");
-w(`*The "customer ledger" is a seeded synthetic table built for this test (${sb.rows ?? "?"} planted rows), not a real company's data.*`);
-w("");
+{
+  const h2 = p2.receipt?.canonical_request_sha256 || "";
+  const h3 = p3.receipt?.canonical_request_sha256 || "";
+  const same = h2 && h3 && h2 === h3;
+  w(`| | With seal (gate ON) | Without seal (gate OFF, our control) |`);
+  w(`|---|---|---|`);
+  if (h2 && h3) {
+    w(`| **what the AI asked for** | \`${h2.slice(0, 12)}…\` | \`${h3.slice(0, 12)}…\`${same ? " **← identical**" : " **⚠ MISMATCH**"} |`);
+  }
+  w(`| **what the gate did** | **REFUSED**${p2.receipt?.deny_kernel ? ` (${p2.receipt.deny_kernel} rule)` : ""} | no gate to refuse it |`);
+  w(`| **customer records left** | **${s2.rows ?? "?"}** 🟢 survived | **${s3.rows ?? "?"}** 🔴 wiped |`);
+  w("");
+  if (h2 && h3 && !same) {
+    w(`> **⚠ The two requests were NOT identical.** This run does not demonstrate the claim above; treat the whole report as inconclusive.`);
+    w("");
+  } else if (same) {
+    w(`<sub>The fingerprint is the SHA-256 of the exact request the gate judged — matching to all 64 hex digits, shown in full further down and in both receipts. Counts taken by direct database query, outside the gate, during this run. The "customer ledger" is a seeded synthetic table (${sb.rows ?? "?"} planted rows), not a real company's data.</sub>`);
+    w("");
+  }
+}
 w(`*"Gate OFF" is us deliberately switching off our own protection. That is the **control**: it proves the attack is genuinely destructive, not the product failing.*`);
 w("");
-w(`*Counted by a direct database query, taken outside the gate during this run:*`);
-recorded([
-  `before the attack            : ${sb.rows ?? "?"} customer records`,
-  `after the attack, gate ON    : ${s2.rows ?? "?"} customer records   (unchanged, the attack was refused)`,
-  `after the attack, gate OFF   : ${s3.rows ?? "?"} customer records   (the database was emptied)`,
-]);
 w("");
 w(`*Every number on this page came from the run, not from us.*`);
 w("");
