@@ -57,6 +57,37 @@ const UNP_FIELDS = {
       JSON.stringify(["canonical_request_sha256", "request_sha256", "bypass"]));
   }
 
+  // --- §11.1/§11.2 unparseable-request rule: validation (both copies) --------
+  for (const copy of ["seal-gateway", "pwa"]) {
+    const F = await import("file://" + path.resolve(__dirname, "..", copy, "receipt-format.js"));
+    const unp = F.assembleReceiptV2({ ...UNP_FIELDS });
+    let v = F.validateReceipt(unp);
+    check(`${copy}: unparseable-request receipt validates clean (§11.2)`,
+      JSON.stringify([v.ok, v.version, v.errors]), JSON.stringify([true, "v2", []]));
+    for (const [k, vv] of [["tool", "db.execute"], ["arguments", {}],
+      ["args_hash", "0".repeat(64)], ["canonical_request", "{}"],
+      ["canonical_request_sha256", "0".repeat(64)]]) {
+      v = F.validateReceipt({ ...unp, [k]: vv });
+      check(`${copy}: unparseable + ${k} rejected (fabrication)`, v.ok, false);
+    }
+    v = F.validateReceipt({ ...unp, request_sha256: "nothex" });
+    check(`${copy}: unparseable non-hex request_sha256 rejected`, v.ok, false);
+    const noRaw = { ...unp }; delete noRaw.request_sha256;
+    v = F.validateReceipt(noRaw);
+    check(`${copy}: unparseable without request_sha256 rejected`, v.ok, false);
+    v = F.validateReceipt({ ...unp, bypass: true });
+    check(`${copy}: bypass + request_parse_error rejected (mediated receipts only)`,
+      v.errors.some((e) => e.includes("only a mediated receipt")), true);
+  }
+
+  // --- pwa presentation: the reduced-scope state is its own banner ------------
+  const RP = await import("file://" + path.resolve(__dirname, "..", "pwa", "receipt.js"));
+  const pres = RP.verificationPresentation({}, { unparseableRequest: true, verificationCore: true, outcome: "unpinned" });
+  check("pwa: unparseable presentation names the raw-line-identity state",
+    pres.status, "RAW-LINE IDENTITY ONLY");
+  const presFail = RP.verificationPresentation({}, { unparseableRequest: true, verificationCore: false, outcome: "failure" });
+  check("pwa: failed unparseable receipt still presents as FAILED", presFail.status, "FAILED");
+
   console.log(failures === 0 ? "\nALL CHECKS PASS" : `\n${failures} FAILURE(S)`);
   process.exit(failures === 0 ? 0 : 1);
 })().catch((e) => { console.error("ERR", e); process.exit(1); });
