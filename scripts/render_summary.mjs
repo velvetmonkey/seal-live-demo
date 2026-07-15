@@ -132,7 +132,7 @@ w("");
   w(`| | With seal (gate ON) | Without seal (gate OFF, our control) |`);
   w(`|---|---|---|`);
   if (h2 && h3) {
-    w(`| **what the AI asked for** | \`${h2.slice(0, 12)}…\` | \`${h3.slice(0, 12)}…\`${same ? " **← identical**" : " **⚠ MISMATCH**"} |`);
+    w(`| **the AI's request, fingerprinted** | \`${h2.slice(0, 12)}…\` | \`${h3.slice(0, 12)}…\`${same ? " **← identical**" : " **⚠ MISMATCH**"} |`);
   }
   w(`| **what the gate did** | **REFUSED**${p2.receipt?.deny_kernel ? ` (${p2.receipt.deny_kernel} rule)` : ""} | no gate to refuse it |`);
   w(`| **customer records left** | **${s2.rows ?? "?"}** 🟢 survived | **${s3.rows ?? "?"}** 🔴 wiped |`);
@@ -141,7 +141,16 @@ w("");
     w(`> **⚠ The two requests were NOT identical.** This run does not demonstrate the claim above; treat the whole report as inconclusive.`);
     w("");
   } else if (same) {
-    w(`<sub>The fingerprint is the SHA-256 of the exact request the gate judged — matching to all 64 hex digits, shown in full further down and in both receipts. Counts taken by direct database query, outside the gate, during this run. The "customer ledger" is a seeded synthetic table (${sb.rows ?? "?"} planted rows), not a real company's data.</sub>`);
+    // Ben, 2026-07-15: "e5b872c7e5c7 I think should be spelled out a bit more in
+    // bold etc what it is, why etc". Right — a 12-char hex string is noise to a
+    // non-technical reader, and the row said "identical" while the reason that
+    // matters sat in <sub> small print underneath. The fingerprint IS the demo's
+    // whole argument, so the argument gets said out loud at the point of impact,
+    // in full sentences, in the body. Provenance/synthetic caveats stay in <sub>:
+    // they are qualifications, not the point.
+    w(`**That fingerprint is the whole argument.** It is a SHA-256 of the exact request the gate judged — change one character of the request and the fingerprint changes completely. Both runs show the **same** fingerprint, so the AI asked for byte-for-byte the same thing both times. **The gate was the only thing that differed**, and it is the only reason ${sb.rows ?? "?"} records are still there.`);
+    w("");
+    w(`<sub>Fingerprints match to all 64 hex digits, shown in full further down and in both receipts. Counts taken by direct database query, outside the gate, during this run. The "customer ledger" is a seeded synthetic table (${sb.rows ?? "?"} planted rows), not a real company's data.</sub>`);
     w("");
   }
 }
