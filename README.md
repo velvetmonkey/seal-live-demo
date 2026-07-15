@@ -1,5 +1,7 @@
 # seal-live-demo
 
+[![claims-drift](https://github.com/velvetmonkey/seal-live-demo/actions/workflows/claims.yml/badge.svg)](https://github.com/velvetmonkey/seal-live-demo/actions/workflows/claims.yml)
+
 **Watch a live agent get tricked into a destructive prod delete — and Seal block it. Remove Seal and the identical request destroys the data. One command, real evidence, visible outcome.**
 
 The demo wires an agent to a DB. Attack path: hostile data makes the agent emit the bad call. Seal stops it (no approval for that exact target). Control path: Seal off, data gone. Every step produces real receipts you can re-verify.
