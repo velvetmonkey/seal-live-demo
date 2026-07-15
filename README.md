@@ -14,7 +14,7 @@ The demo wires an agent to a DB. Attack path: hostile data makes the agent emit 
 bash scripts/showcase.sh
 ```
 
-One command spins the full live agent + gateway + kernel + DB. Watch P1 ALLOW a staging insert, P2 BLOCK the tricked destructive prod delete (rows unchanged), P3 identical bytes bypass and destroy the table. Real row counts, receipts, and "ASSERT OK: 15/15" land in your terminal. (Requires Docker + compose.)
+One command spins the full live agent + gateway + kernel + DB. Watch P1 ALLOW a staging insert, P2 BLOCK the tricked destructive prod delete (rows unchanged), P3 identical bytes bypass and destroy the table. Real row counts, receipts, and "ASSERT OK: 17/17" land in your terminal. (Requires Docker + compose.)
 
 ## Replay without Docker
 
@@ -44,7 +44,7 @@ The point: the external effect had to cross the approval boundary. The model was
      visible in both panes. Source: run_local.sh stdout. Do NOT fake or mock. -->
 <!-- TODO(asset, shot #2, PROMO-GRADE): PWA money-shot screenshot — SEAL ON grid full (10,000
      rows) vs SEAL OFF grid empty, counts + hash line visible. Source: pwa/index.html #moneyshot. -->
-<!-- TODO(asset, shot #11): terminal tail showing "ASSERT OK: 15/15". -->
+<!-- TODO(asset, shot #11): terminal tail showing "ASSERT OK: 17/17". -->
 
 
 
@@ -76,14 +76,14 @@ receipts, and row counts are all real.
 
 ```sh
 bash scripts/run_local.sh        # builds + runs the full P1/P2/P3 sequence (a few minutes,
-                                 # mostly docker build); ends with "ASSERT OK: 15/15"
+                                 # mostly docker build); ends with "ASSERT OK: 17/17"
 ```
 
 What you will see, in order: **P1** an approved staging insert is ALLOWED; **P2** the agent is
 tricked into a destructive production delete and Seal BLOCKS it (row count provably unchanged);
 **P3** the *byte-identical* request replays with Seal bypassed and the 10,000-row table is
 destroyed. The P2/P3 requests carry the same `canonical_request_sha256` — the only variable is
-Seal. Every phase emits a v2 receipt; `scripts/assert.mjs` gates all 15 invariants.
+Seal. Every phase emits a v2 receipt; `scripts/assert.mjs` gates all 17 invariants.
 
 Then check the evidence yourself — neither checker trusts this repo:
 
