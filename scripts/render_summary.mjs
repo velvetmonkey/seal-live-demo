@@ -307,8 +307,10 @@ w(`| kernel identity | \`sha256(seal.wasm)=${(r.kernel_identity?.wasm_sha256 || 
 w(`| signed config | \`Ed25519\` · pubkey \`${(r.signed_config?.pubkey || "").slice(0, 16)}…\` · exact payload bytes carried |`);
 w(`| canonical request | \`${(r.canonical_request_sha256 || "").slice(0, 24)}…\` |`);
 w("");
-w(`<details><summary>raw agent trace + both receipts (JSON)</summary>\n\n\`\`\`json\n${JSON.stringify(p2, null, 2)}\n\`\`\`\n\n\`\`\`json\n${JSON.stringify(p3, null, 2)}\n\`\`\`\n</details>`);
-w("");
+// The full p2/p3 agent-trace dump that lived here was cut by council 234843a6
+// (item 4): it duplicated the receipts wholesale. The authoritative raw route
+// is the receipts accordion in the re-check section below, plus the evidence
+// bundle itself.
 w(`</details>`);
 w("");
 
