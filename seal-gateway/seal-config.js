@@ -24,7 +24,7 @@ export function stableHash(parts) {
   return stableHashParts(parts);
 }
 
-// Real Ed25519 over the exact compact payload passed to df42. Returning every
+// Real Ed25519 over the exact compact payload passed to the pinned kernel. Returning every
 // representation from one operation prevents producer/receipt byte drift.
 export function buildSignedConfig(config) {
   const payload = JSON.stringify(config);

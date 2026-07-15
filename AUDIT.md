@@ -9,8 +9,8 @@ the checklist must pass before any public flip, which is a separate authorised s
 
 ## Pinned kernel binary
 ```
-sha256(seal-gateway/wasm/seal.wasm) = df42cbada2297741bfeab99f222b96ac02e43a4ce8695b24922b425b8d66b1e8
-size = 3,663,949 bytes   (byte-identical copy under pwa/wasm/seal.wasm)
+sha256(seal-gateway/wasm/seal.wasm) = d3067bc07e74977dedf6bb96d79a710c4b61143f6e8db151655bc88ece8b9d66
+size = 3,666,978 bytes   (byte-identical copy under pwa/wasm/seal.wasm)
 ```
 The gateway recomputes and verifies this on startup (`decide.cjs` → `verifyKernelSha`)
 and fails closed on mismatch.
@@ -36,7 +36,7 @@ and fails closed on mismatch.
 
 ## Re-run the audit
 ```sh
-sha256sum seal-gateway/wasm/seal.wasm pwa/wasm/seal.wasm   # = df42 pin
+sha256sum seal-gateway/wasm/seal.wasm pwa/wasm/seal.wasm   # = d3067bc0 pin
 
 # no private markers in code/config (exclude docs that intentionally name the boundary):
 grep -rEni 'seal-host|seal_host|mcp-seal-dev|wasm-spike|monkey-01|/home/monkey|record.?core' \

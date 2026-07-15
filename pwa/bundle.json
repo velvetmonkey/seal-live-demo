@@ -2,11 +2,11 @@
   "kind": "seal-live-demo-evidence",
   "version": "v0",
   "meta": {
-    "commit": "09f1377055a8568739eea3fec5ee5ea45d096155",
-    "workflow_hash": "41d63ea13de75e6687c2019855a99ed826a85e6f82fcda299616e589b7a487ff",
+    "commit": "8e28872528dbf08c68042db8c402f04372953f6b",
+    "workflow_hash": "9f367bd2f5d6a8e318b1f4b0f372633c9bc5bde2d81aed6bf4f64acaeace6013",
     "model": "local-synthetic (no GitHub Models)",
     "policy": "seal-live-demo-d0",
-    "kernel_sha256": "df42cbada2297741bfeab99f222b96ac02e43a4ce8695b24922b425b8d66b1e8",
+    "kernel_sha256": "d3067bc07e74977dedf6bb96d79a710c4b61143f6e8db151655bc88ece8b9d66",
     "generated_by": "run_local.sh"
   },
   "probe": {
@@ -58,15 +58,15 @@
   "snapshots": {
     "before": {
       "table": "prod_customer_ledger",
-      "rows": 10000,
-      "content_hash": "d72085998607e5b83f1b4ff2d139a1bd",
+      "rows": 0,
+      "content_hash": "EMPTY",
       "database": "appdb",
       "table_oid": 16386
     },
     "after_p2": {
       "table": "prod_customer_ledger",
-      "rows": 10000,
-      "content_hash": "d72085998607e5b83f1b4ff2d139a1bd",
+      "rows": 0,
+      "content_hash": "EMPTY",
       "database": "appdb",
       "table_oid": 16386
     },
@@ -120,9 +120,9 @@
             "certHash": "12756644985251018087"
           }
         ],
-        "emitted_bytes": "{\"audit\":\"{\\\"certs\\\":[{\\\"certHash\\\":\\\"11296119294002819579\\\",\\\"kernel\\\":\\\"safety\\\",\\\"reason\\\":\\\"351f47a44bcf935c7242432e24bd11db1536d7c1da873f0ca953c8b80ae02433\\\",\\\"verdict\\\":\\\"allow\\\"},{\\\"certHash\\\":\\\"12756644985251018087\\\",\\\"kernel\\\":\\\"temporal\\\",\\\"reason\\\":\\\"trace ok (1 events)\\\",\\\"verdict\\\":\\\"allow\\\"}],\\\"epoch\\\":1,\\\"tool\\\":\\\"db.execute\\\",\\\"verdict\\\":\\\"allow\\\"}\",\"route\":\"forward\"}",
+        "emitted_bytes": "{\"audit\":\"{\\\"certs\\\":[{\\\"certHash\\\":\\\"11296119294002819579\\\",\\\"kernel\\\":\\\"safety\\\",\\\"reason\\\":\\\"351f47a44bcf935c7242432e24bd11db1536d7c1da873f0ca953c8b80ae02433\\\",\\\"verdict\\\":\\\"allow\\\"},{\\\"certHash\\\":\\\"12756644985251018087\\\",\\\"kernel\\\":\\\"temporal\\\",\\\"reason\\\":\\\"trace ok (1 events)\\\",\\\"verdict\\\":\\\"allow\\\"}],\\\"epoch\\\":1,\\\"request_sha256\\\":\\\"66330ea2242d45a5a6b32d85007464125608fec7e88430fa3c23d5c5303db756\\\",\\\"tool\\\":\\\"db.execute\\\",\\\"verdict\\\":\\\"allow\\\"}\",\"route\":\"forward\"}",
         "kernel_identity": {
-          "wasm_sha256": "df42cbada2297741bfeab99f222b96ac02e43a4ce8695b24922b425b8d66b1e8",
+          "wasm_sha256": "d3067bc07e74977dedf6bb96d79a710c4b61143f6e8db151655bc88ece8b9d66",
           "self_verified": true,
           "note": "Verified mediation DECISION FUNCTION (modulo A1-A3, for calls that reach seal). Binary identity only; host/container wiring is NOT verified."
         },
@@ -184,7 +184,7 @@
         },
         "gateway": {
           "bypass": false,
-          "ts_mono_ms": 14304787
+          "ts_mono_ms": 226612710
         }
       }
     },
@@ -222,9 +222,9 @@
             "certHash": "12756644985251018087"
           }
         ],
-        "emitted_bytes": "{\"audit\":\"{\\\"certs\\\":[{\\\"certHash\\\":\\\"31980135567447998\\\",\\\"kernel\\\":\\\"safety\\\",\\\"reason\\\":\\\"bd320931069ebb98a9b205fa2e9227b3bdcdc9f7e98197cd855089ae5d720ac1\\\",\\\"verdict\\\":\\\"deny\\\"},{\\\"certHash\\\":\\\"12756644985251018087\\\",\\\"kernel\\\":\\\"temporal\\\",\\\"reason\\\":\\\"trace ok (1 events)\\\",\\\"verdict\\\":\\\"allow\\\"}],\\\"epoch\\\":1,\\\"tool\\\":\\\"db.execute\\\",\\\"verdict\\\":\\\"deny\\\"}\",\"response\":\"{\\\"id\\\":1,\\\"jsonrpc\\\":\\\"2.0\\\",\\\"result\\\":{\\\"content\\\":[{\\\"text\\\":\\\"approval required: bd320931069ebb98a9b205fa2e9227b3bdcdc9f7e98197cd855089ae5d720ac1\\\",\\\"type\\\":\\\"text\\\"}],\\\"isError\\\":true}}\\n\",\"route\":\"block\"}",
+        "emitted_bytes": "{\"audit\":\"{\\\"certs\\\":[{\\\"certHash\\\":\\\"31980135567447998\\\",\\\"kernel\\\":\\\"safety\\\",\\\"reason\\\":\\\"bd320931069ebb98a9b205fa2e9227b3bdcdc9f7e98197cd855089ae5d720ac1\\\",\\\"verdict\\\":\\\"deny\\\"},{\\\"certHash\\\":\\\"12756644985251018087\\\",\\\"kernel\\\":\\\"temporal\\\",\\\"reason\\\":\\\"trace ok (1 events)\\\",\\\"verdict\\\":\\\"allow\\\"}],\\\"epoch\\\":1,\\\"request_sha256\\\":\\\"d4d7b5613cdb6abf0676daaa837de8aec1efd70940ed3feea4dee786857e1204\\\",\\\"tool\\\":\\\"db.execute\\\",\\\"verdict\\\":\\\"deny\\\"}\",\"response\":\"{\\\"id\\\":1,\\\"jsonrpc\\\":\\\"2.0\\\",\\\"result\\\":{\\\"content\\\":[{\\\"text\\\":\\\"approval required: bd320931069ebb98a9b205fa2e9227b3bdcdc9f7e98197cd855089ae5d720ac1\\\",\\\"type\\\":\\\"text\\\"}],\\\"isError\\\":true}}\\n\",\"route\":\"block\"}",
         "kernel_identity": {
-          "wasm_sha256": "df42cbada2297741bfeab99f222b96ac02e43a4ce8695b24922b425b8d66b1e8",
+          "wasm_sha256": "d3067bc07e74977dedf6bb96d79a710c4b61143f6e8db151655bc88ece8b9d66",
           "self_verified": true,
           "note": "Verified mediation DECISION FUNCTION (modulo A1-A3, for calls that reach seal). Binary identity only; host/container wiring is NOT verified."
         },
@@ -286,7 +286,7 @@
         },
         "gateway": {
           "bypass": false,
-          "ts_mono_ms": 14304966
+          "ts_mono_ms": 226612867
         }
       }
     },
@@ -316,11 +316,11 @@
         },
         "execution": {
           "executed": true,
-          "rows_affected": 10000
+          "rows_affected": 0
         },
         "gateway": {
           "bypass": true,
-          "ts_mono_ms": 14319775
+          "ts_mono_ms": 226627683
         }
       }
     }

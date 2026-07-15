@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: Apache-2.0
 // seal-gateway decision core. Loads the compiled black-box seal kernel (the SAME
-// audited seal-check wasm, sha256 df42cbad…) in Node via its emscripten glue, and
+// audited seal-check wasm, sha256 d3067bc0…) in Node via its emscripten glue, and
 // decides one db.execute tool-call against the capability policy.
 //
 // There is NO kernel logic here. seal.wasm is the verified mediation DECISION
@@ -14,7 +14,7 @@ const crypto = require("crypto");
 
 const ROOT = __dirname;
 const WASM_DIR = path.join(ROOT, "wasm");
-const KERNEL_WASM_SHA256 = "df42cbada2297741bfeab99f222b96ac02e43a4ce8695b24922b425b8d66b1e8";
+const KERNEL_WASM_SHA256 = "d3067bc07e74977dedf6bb96d79a710c4b61143f6e8db151655bc88ece8b9d66";
 const LEAN_TOOLCHAIN = "leanprover/lean4:v4.28.0";
 const KERNEL_AXIOMS = ["propext", "Classical.choice", "Quot.sound"];
 
