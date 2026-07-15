@@ -147,14 +147,25 @@ w("");
 }
 w(`*"Gate OFF" is us deliberately switching off our own protection. That is the **control**: it proves the attack is genuinely destructive, not the product failing.*`);
 w("");
-w(`*Scope, up front: this proves **one narrow thing**, a request that reaches the gate cannot execute a policy-violating effect. It does **not** prove the whole agent is safe. Full limits below.*`);
-w("");
-
-// ===== THE LIMITS (plain bridge + precise panel, kept verbatim) + badges -----------
+// ===== THE LIMITS (position 2 — Ben's call, argued from counted evidence) ----------
+// Council 234843a6, item 3. The council split on position; limits stay at 2.
+// The limits were never the bug — the reader used to be caveated six times
+// BEFORE reaching this section, so the hero never landed. With the duplicates
+// gone, limits-at-2 is a power move: bang, exact bounds, then method. A claim
+// reads as MORE confident when it is immediately fenced.
+//
+// Folded PHRASING, never EXISTENCE: every non-claim stays enumerated on the
+// always-visible <summary> line; the precise reviewer wording — verbatim,
+// including the evidence-basis note — sits behind the fold, because only the
+// evaluator wants it and they will click. The old "Scope, up front" italic
+// died into this opener: it restated this exact sentence three lines above a
+// section it pointed at with "full limits below".
 w(`## The limits of this test`);
-w(`In plain English: this proves **one narrow thing**. When the AI's database request reached the gate, the gate refused the forbidden deletion before the database changed. It does **not** prove the whole AI system is safe, and a tricked AI can still leak information it is allowed to read.`);
+w(`This proves **one narrow thing**: a request that reaches the gate cannot execute a policy-violating effect. It does **not** prove the whole AI system is safe — a tricked AI can still leak information it is allowed to read.`);
 w("");
-w(`The precise claim, for reviewers:`);
+w(`<details>`);
+w(`<summary><b>Does NOT prove:</b> agent safety · host/transport/container wiring (tested, not proven) · key custody (public test key; relying-party authority unpinned) · policy correctness · any third-party certification, incl. ARIA. The precise wording, for reviewers:</summary>`);
+w("");
 w(`> **What this proves / does NOT prove.** This is a Lean-verified mediation **decision function** inside a host gateway.`);
 w(`> `);
 w(`> **Proves**, complete mediation modulo A1-A3, for calls that reach seal: once canonicalised, a state transition that violates the capability policy **cannot be executed**.`);
@@ -167,6 +178,8 @@ w(`> - policy correctness, **policy errors are out of scope**; this proves only 
 w(`> - any third-party certification, no one, incl. **ARIA**, certifies this.`);
 w(`> `);
 w(`> **Evidence basis**, green check = assertions passed on captured receipts + external row counts. The requested destructive DB effect **was not performed**, which is narrower than "the environment is safe".`);
+w("");
+w(`</details>`);
 w("");
 
 // ===== STEP BY STEP (plain) ========================================================
