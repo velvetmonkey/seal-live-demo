@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: Apache-2.0
-// Gateway-only adversarial checks for df42 signed-config production.
+// Gateway-only adversarial checks for pinned-kernel (d3067bc0) signed-config production.
 const path = require("node:path");
 const crypto = require("node:crypto");
 const { createDecider } = require("../seal-gateway/decide.cjs");
@@ -45,9 +45,9 @@ const flip = (s) => (s[0] === "0" ? "1" : "0") + s.slice(1);
   const M = await globalThis.SealModule({ locateFile: (p) => path.join(WASM, p), print() {}, printErr() {} });
   const init = (payload, signature) => JSON.parse(M.ccall("seal_init", "string", ["string", "string"],
     [JSON.stringify({ payload, signature }), receipt.signed_config.pubkey]));
-  check("df42 accepts emitted signed_config", init(receipt.signed_config.payload, receipt.signed_config.signature).ok === true);
-  check("df42 rejects signature flip", init(receipt.signed_config.payload, flip(receipt.signed_config.signature)).ok !== true);
-  check("df42 rejects payload flip", init(
+  check("pinned kernel accepts emitted signed_config", init(receipt.signed_config.payload, receipt.signed_config.signature).ok === true);
+  check("pinned kernel rejects signature flip", init(receipt.signed_config.payload, flip(receipt.signed_config.signature)).ok !== true);
+  check("pinned kernel rejects payload flip", init(
     receipt.signed_config.payload.replace('"epoch":1', '"epoch":2'), receipt.signed_config.signature).ok !== true);
 
   const missing = structuredClone(receipt); delete missing.signed_config;

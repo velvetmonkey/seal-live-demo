@@ -2,7 +2,7 @@
 // Minimal offline cache: precache the kernel + shell so the replay runs offline.
 // bundle.json is fetched network-first (it changes per run); everything else
 // cache-first. No telemetry, no external origins.
-const CACHE = "seal-replay-df42-v2";
+const CACHE = "seal-replay-d3067bc0-v1";
 const ASSETS = [
   "./", "index.html", "style.css", "replay.js",
   "seal-wasm.js", "seal-config.js", "lab.js", "vendor/nacl.js", "receipt.js", "receipt-format.js", "sha256.js", "wasm/seal.js", "wasm/seal.wasm", "manifest.json",
