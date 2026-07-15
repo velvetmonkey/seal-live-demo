@@ -147,9 +147,6 @@ w("");
 }
 w(`*"Gate OFF" is us deliberately switching off our own protection. That is the **control**: it proves the attack is genuinely destructive, not the product failing.*`);
 w("");
-w("");
-w(`*Every number on this page came from the run, not from us.*`);
-w("");
 w(`*Scope, up front: this proves **one narrow thing**, a request that reaches the gate cannot execute a policy-violating effect. It does **not** prove the whole agent is safe. Full limits below.*`);
 w("");
 
@@ -170,8 +167,6 @@ w(`> - policy correctness, **policy errors are out of scope**; this proves only 
 w(`> - any third-party certification, no one, incl. **ARIA**, certifies this.`);
 w(`> `);
 w(`> **Evidence basis**, green check = assertions passed on captured receipts + external row counts. The requested destructive DB effect **was not performed**, which is narrower than "the environment is safe".`);
-w("");
-w(`\`✅ gate verified\`  \`🧾 receipt re-checkable\`  \`🛑 destructive action not performed\``);
 w("");
 
 // ===== STEP BY STEP (plain) ========================================================
@@ -253,26 +248,16 @@ if (obf?.rows?.length) {
 w("");
 
 // ===== FOR ENGINEERS (folded) ======================================================
-const p1op = p1.receipt?.arguments?.operation, p1tbl = p1.receipt?.arguments?.table;
-const p2op = p2.receipt?.arguments?.operation || "", p2tbl = p2.receipt?.arguments?.table;
+// The ALLOW-vs-BLOCK (Step 1 vs Step 2) comparison and the naive-filter code
+// block that lived here were cut by council 234843a6: the decisive comparison
+// is Step 2 vs Step 3 — the run-invariants table below, which already makes it
+// — and the naive-filter probe has its home in the gauntlet table above. Step
+// 1's exact bytes remain in the raw receipts accordion (re-check section).
 const r = p2.receipt || {};
 w(`## For engineers`);
 w("");
 w(`<details>`);
-w(`<summary>Exact bytes, run invariants, and the signed decision receipt</summary>`);
-w("");
-w(`**ALLOW vs BLOCK differ only in the canonical request bytes** (same tool, same presented capability):`);
-w("");
-w(`| | operation | table | verdict |`);
-w(`|---|---|---|---|`);
-w(`| Step 1 (allowed) | \`${JSON.stringify(p1op)}\` | \`${p1tbl}\` | \`${p1.receipt?.verdict}\` |`);
-w(`| Step 2 (blocked) | \`${JSON.stringify(p2op)}\` | \`${p2tbl}\` | \`${p2.receipt?.verdict}\` |`);
-w("");
-w("```");
-w(`obfuscated operation bytes : ${JSON.stringify(p2op)}`);
-w(`naive op === "delete_all"  : ${p2op === "delete_all"}`);
-w(`gate verdict (canonical)   : ${p2.receipt?.verdict}  via ${p2.receipt?.deny_kernel} kernel`);
-w("```");
+w(`<summary>Run invariants and the signed decision receipt</summary>`);
 w("");
 w(`**Run invariants (only the gate differs):**`);
 w("");
