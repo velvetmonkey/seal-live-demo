@@ -48,7 +48,20 @@ One command spins up the full live agent + gateway + kernel + DB. Watch Phase 1 
 cd pwa && python3 -m http.server 8090   # then open http://localhost:8090
 ```
 
-Ships ready to serve — the audited `wasm/seal.js` and a real run's `bundle.json` are already in `pwa/`. The page re-derives every Phase 1/2/3 decision from that bundle in your browser: SEAL ON grid full vs SEAL OFF grid empty, the identical `canonical_request_sha256` (the request fingerprint from the screenshot above) on both, receipts you can re-verify. Nothing leaves the page; no containers, no build. (Smoke-tested: index, `bundle.json`, and `wasm/seal.js` all serve 200.)
+Ships ready to serve — the audited `wasm/seal.js` and a run's `bundle.json` are already in `pwa/`. The page re-derives every Phase 1/2/3 decision from that bundle in your browser: SEAL ON grid full vs SEAL OFF grid empty, the identical `canonical_request_sha256` (the request fingerprint from the screenshot above) on both, receipts you can re-verify. Nothing leaves the page; no containers, no build. (Smoke-tested: index, `bundle.json`, and `wasm/seal.js` all serve 200.)
+
+> **Bundle provenance (2026-07-16 kernel repin).** The kernel was repinned from the
+> fail-open `d3067bc0` build to the pathological-number fail-closed `ff1bfd68` build.
+> Because `pwa/receipt.js` re-checks each replayed receipt's `wasm_sha256` against the
+> on-disk wasm, `pwa/bundle.json` was regenerated under the new kernel with
+> `scripts/run_local.sh` — a **local, synthetic-agent** run (`model:
+> "local-synthetic"`, `synthetic_agent: true`): the kernel decisions, receipts and DB
+> row counts are REAL, only the agent's tool-call is scripted rather than model-driven.
+> The screenshot above and the "real model (`openai/gpt-4o-mini`)" narrative describe
+> the previous CI capture, archived unmodified at
+> [`archive/bundle-d3067bc0-historical.json`](archive/README.md). A **real-CI
+> re-capture under `ff1bfd68`** (GitHub Models in the loop) is queued post-merge and
+> will replace the synthetic bundle.
 
 The point: the external effect had to cross the approval boundary. The model was just the story.
 
