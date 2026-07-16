@@ -8,6 +8,19 @@ import {
   sha256Hex, validateReceipt,
 } from "./receipt-format.js";
 
+// Declared verification profile of THIS copy (seal-assurance-kit
+// docs/VERIFY-PROFILES.md): P-ENFORCE — the production receipt gate core:
+// signed_config binding required, the top verdict requires the trust-anchor
+// pin (`expectedConfigPubkey`), outcome set {authorised,
+// authorised-unparseable, unpinned, failure}. DEPLOYED AS AN EXHIBIT (ENF-4,
+// deliberately stricter): this replay surface supplies no pin (ceiling
+// UNPINNED) and `verificationPresentation` renders even a pinned-authorised
+// result as "PIN NOT ACCEPTED HERE" — never authorised-green; operator
+// authority is the pinned CLI/CI gates' job. The fleet differentials key
+// their expected agreement/divergence off this declaration; changing it is a
+// design decision, not a refactor.
+export const VERIFY_PROFILE = "P-ENFORCE";
+
 // §11.1 helpers for unparseable-request receipts -----------------------------
 
 // Ed25519 over the exact signed_config payload bytes — the same check

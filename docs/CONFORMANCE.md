@@ -21,6 +21,7 @@ Local checks for this repo:
 ```sh
 node test/local-harness.cjs
 node test/gateway-signed-config.cjs
+node test/verify-profile.cjs
 bash scripts/run_local.sh
 cd pwa && python3 -m http.server 8090
 # open http://localhost:8090
