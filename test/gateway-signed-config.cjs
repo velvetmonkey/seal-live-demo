@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: Apache-2.0
-// Gateway-only adversarial checks for pinned-kernel (ff1bfd68) signed-config production.
+// Gateway-only adversarial checks for pinned-kernel (a3790181) signed-config production.
 const path = require("node:path");
 const crypto = require("node:crypto");
 const { createDecider } = require("../seal-gateway/decide.cjs");
