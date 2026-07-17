@@ -55,15 +55,16 @@ Ships ready to serve — the audited `wasm/seal.js` and a run's `bundle.json` ar
 > (2026-07-16), then to the 7-kernel policy-bundle DX build `a3790181` (2026-07-17;
 > the fail-closed guard carries forward unchanged).
 > Because `pwa/receipt.js` re-checks each replayed receipt's `wasm_sha256` against the
-> on-disk wasm, `pwa/bundle.json` was regenerated under the new kernel with
-> `scripts/run_local.sh` — a **local, synthetic-agent** run (`model:
-> "local-synthetic"`, `synthetic_agent: true`): the kernel decisions, receipts and DB
-> row counts are REAL, only the agent's tool-call is scripted rather than model-driven.
-> The screenshot above and the "real model (`openai/gpt-4o-mini`)" narrative describe
-> the previous CI capture, archived unmodified at
-> [`archive/bundle-d3067bc0-historical.json`](archive/README.md). A **real-CI
-> re-capture under `a3790181`** (GitHub Models in the loop) is queued post-merge and
-> will replace the synthetic bundle.
+> on-disk wasm, `pwa/bundle.json` is a **real-CI capture under `a3790181`** with
+> **GitHub Models in the loop** (`model: "openai/gpt-4o-mini"`, no `synthetic_agent`
+> flag): the agent's tool-call is model-driven, and the kernel decisions, receipts and
+> DB row counts are REAL. Captured on a clean GitHub Actions runner by
+> [`.github/workflows/demo.yml`](.github/workflows/demo.yml) run `29568438935`
+> (2026-07-17, commit `abce1fa`), which fails loud if Models is unavailable (never a
+> canned fallback) and asserts every Phase 1/2/3 invariant green before uploading the
+> bundle. The prior local synthetic bundle and the older `d3067bc0` CI capture are
+> archived unmodified at
+> [`archive/bundle-d3067bc0-historical.json`](archive/README.md).
 
 The point: the external effect had to cross the approval boundary. The model was just the story.
 
