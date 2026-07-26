@@ -40,7 +40,7 @@ call() { node scripts/mcp_call.mjs --url "$GW" --operation "$1" --table "$2" --p
 wrap() { node -e 'const fs=require("fs");let s="";process.stdin.on("data",d=>s+=d).on("end",()=>{const r=JSON.parse(s);fs.writeFileSync(process.argv[1],JSON.stringify({phase:process.argv[2],synthetic_agent:true,agent_emitted_call:true,note:"LOCAL verify: scripted tool-call (no model). Real kernel/DB receipt.",receipt:r},null,2));});' "$1" "$2"; }
 
 echo "== run-meta =="
-node -e 'const fs=require("fs"),cp=require("child_process");const c=(x)=>{try{return cp.execSync(x).toString().trim()}catch{return"?"}};fs.writeFileSync("evidence/run-meta.json",JSON.stringify({commit:c("git rev-parse HEAD"),workflow_hash:c("sha256sum .github/workflows/demo.yml 2>/dev/null | cut -d\" \" -f1"),model:"local-synthetic (no GitHub Models)",policy:"seal-live-demo-d0",kernel_sha256:"a37901811df4767fd08142243622b8372254e6ec5bd2d3aca18f0e61d0f109af",generated_by:"run_local.sh"},null,2))'
+node -e 'const fs=require("fs"),cp=require("child_process");const c=(x)=>{try{return cp.execSync(x).toString().trim()}catch{return"?"}};fs.writeFileSync("evidence/run-meta.json",JSON.stringify({commit:c("git rev-parse HEAD"),workflow_hash:c("sha256sum .github/workflows/demo.yml 2>/dev/null | cut -d\" \" -f1"),model:"local-synthetic (no GitHub Models)",policy:"seal-live-demo-d0",kernel_sha256:"d7d81e277ba0b5e9df385129d86abf6f7469e6da2a65bb2ec35626caa44ea2be",generated_by:"run_local.sh"},null,2))'
 
 echo "== build images =="
 "${DC[@]}" build target-db seal-gateway agent >/dev/null 2>&1 || "${DC[@]}" build seal-gateway agent >/dev/null 2>&1 || true

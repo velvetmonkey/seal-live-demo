@@ -12,17 +12,18 @@ fail-closed build
 
     seal.wasm sha256 = ff1bfd68d7be51b6a395f94dfc46b2fb27ed11dc5833af6a84675f42f9730546
 
-on 2026-07-16, and then to the 7-kernel policy-bundle DX build
+on 2026-07-16, through the 7-kernel policy-bundle DX build on 2026-07-17,
+and then to the current build
 
-    seal.wasm sha256 = a37901811df4767fd08142243622b8372254e6ec5bd2d3aca18f0e61d0f109af
+    seal.wasm sha256 = d7d81e277ba0b5e9df385129d86abf6f7469e6da2a65bb2ec35626caa44ea2be
 
-on 2026-07-17 (the fail-closed guard carries forward unchanged). Because
+on 2026-07-26 (the fail-closed guard carries forward unchanged). Because
 `pwa/receipt.js` cross-checks each replayed receipt's
 `kernel_identity.wasm_sha256` against the on-disk wasm, the shipped
 `pwa/bundle.json` is regenerated under each new kernel via
 `scripts/run_local.sh` (a LOCAL, synthetic-agent run — real kernel/DB receipts,
-scripted tool-calls, no GitHub Models). A real-CI re-capture under a3790181 is
-queued post-merge and will replace the synthetic bundle (see README).
+scripted tool-calls, no GitHub Models). See README for the current bundle's
+provenance.
 
 This file is retained UNMODIFIED as historical evidence of the d3067bc0 run. It
 is not shipped or replayed by the PWA.
