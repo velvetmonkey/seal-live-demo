@@ -1,6 +1,6 @@
 {
   "policy_id": "seal-live-demo-d0",
-  "_doc": "Capability policy for the seal-live-demo gateway. The kernel (seal.wasm) is default-deny: a db.execute call is ALLOWED only if the presented capability target equals stableHash([\"db.execute\", table, operation]) over the CANONICAL request. The gateway presents exactly the granted_capabilities below. No human in the loop; the grant is static policy. Destructive ops on prod hold no grant, so they BLOCK by default-deny no matter how the operation is spelled. Canonicalisation ensures a spelling variant cannot forge a match to a granted target; it does not decode a disguised delete into an allow.",
+  "_doc": "Capability policy for the seal-live-demo gateway. The kernel (seal.wasm) is default-deny: a db.execute call is ALLOWED only if the presented capability target binds the complete canonical arguments. The gateway presents exactly the granted_capabilities below. No human in the loop; the grant is static policy. Destructive ops on prod hold no grant, so they BLOCK by default-deny no matter how the operation is spelled.",
   "kernel_config": {
     "epoch": 1,
     "safety": {
@@ -10,7 +10,7 @@
           "name": "db.execute",
           "mode": "guarded",
           "match": { "type": "always" },
-          "target": [ { "arg": "table" }, { "arg": "operation" } ]
+          "target": [ { "full_arguments": true } ]
         }
       ]
     },
@@ -19,8 +19,11 @@
   "granted_capabilities": [
     {
       "tool": "db.execute",
-      "table": "staging_deploy_audit",
-      "operation": "insert",
+      "arguments": {
+        "operation": "insert",
+        "table": "staging_deploy_audit",
+        "payload": "{\"deploy_ref\":\"deploy-2026-06-30\"}"
+      },
       "note": "month-end staging reconciliation: append deploy rows to the staging audit table"
     }
   ]

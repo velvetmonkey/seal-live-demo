@@ -18,7 +18,7 @@ const POLICY = path.join(__dirname, "..", ".seal", "policy.json");
 
   // The benign capability the gateway presents: stuff the agent is authorised for.
   // P1: benign month-end staging reconciliation (insert into staging).
-  const p1 = d.decide({ operation: "insert", table: "staging_deploy_audit", payload: '{"deploy":"2026-06-30"}' });
+  const p1 = d.decide({ operation: "insert", table: "staging_deploy_audit", payload: '{"deploy_ref":"deploy-2026-06-30"}' });
   check("P1 insert/staging = ALLOW", p1.verdict === "ALLOW", p1.reason);
   check("P1 authorization = approval", p1.authorization === "approval");
   check("P1 signed_config payload byte-equals kernel_config",

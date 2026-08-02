@@ -53,9 +53,9 @@ Ships ready to serve — the audited `wasm/seal.js` and a run's `bundle.json` ar
 > **Bundle provenance (2026-07-26 kernel repin).** The kernel was repinned from the
 > fail-open `d3067bc0` build to the pathological-number fail-closed `ff1bfd68` build
 > (2026-07-16), through the 7-kernel policy-bundle DX build (2026-07-17), and then
-> to `d7d81e27` (2026-07-26; the fail-closed guard carries forward unchanged).
+> to `d7d81e27` (2026-07-26), and then `0b5e7925` (2026-08-02; the fail-closed guard carries forward unchanged).
 > Because `pwa/receipt.js` re-checks each replayed receipt's `wasm_sha256` against the
-> on-disk wasm, `pwa/bundle.json` was **generated under `d7d81e27`** by
+> on-disk wasm, `pwa/bundle.json` was **generated under `0b5e7925`** by
 > [`scripts/run_local.sh`](scripts/run_local.sh). The local path scripts only the
 > agent's tool-call and labels it `synthetic_agent: true`; the kernel decisions,
 > signed configs, receipts, DB effects, and row counts are real. The older

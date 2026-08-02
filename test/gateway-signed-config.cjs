@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: Apache-2.0
-// Gateway-only adversarial checks for pinned-kernel (d7d81e27) signed-config production.
+// Gateway-only adversarial checks for pinned-kernel (0b5e7925) signed-config production.
 const path = require("node:path");
 const crypto = require("node:crypto");
 const { createDecider } = require("../seal-gateway/decide.cjs");
@@ -17,7 +17,8 @@ const flip = (s) => (s[0] === "0" ? "1" : "0") + s.slice(1);
 (async () => {
   const d = await createDecider(POLICY);
   const rf = await import(path.join(ROOT, "seal-gateway", "receipt-format.js"));
-  const receipt = d.decide({ operation: "insert", table: "staging_deploy_audit", payload: "{}" });
+  const receipt = d.decide({ operation: "insert", table: "staging_deploy_audit",
+    payload: '{"deploy_ref":"deploy-2026-06-30"}' });
   const bypass = d.decide({ operation: "delete_all", table: "prod_customer_ledger", payload: "{}" }, { bypass: true });
 
   check("mediated receipt validates", rf.validateReceipt(receipt).ok);

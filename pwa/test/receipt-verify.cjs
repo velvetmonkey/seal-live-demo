@@ -11,7 +11,7 @@ const emit = spawnSync(process.execPath, ["-e", `
   const path=require("node:path");
   const {createDecider}=require("./seal-gateway/decide.cjs");
   (async()=>{const d=await createDecider(path.resolve(".seal/policy.json"));
-    process.stdout.write(JSON.stringify(d.decide({operation:"insert",table:"staging_deploy_audit",payload:"{}"})));})();
+    process.stdout.write(JSON.stringify(d.decide({operation:"insert",table:"staging_deploy_audit",payload:"{\\\"deploy_ref\\\":\\\"deploy-2026-06-30\\\"}"})));})();
 `], { cwd: REPO, encoding: "utf8" });
 if (emit.status !== 0) throw new Error(emit.stderr || `gateway producer exited ${emit.status}`);
 const genuine = JSON.parse(emit.stdout);

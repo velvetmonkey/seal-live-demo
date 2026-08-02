@@ -2,11 +2,11 @@
   "kind": "seal-live-demo-evidence",
   "version": "v0",
   "meta": {
-    "commit": "09b9492fac84959f85ff95f98a190863bcdb66eb",
-    "workflow_hash": "8e28a1d3a78bff32b667ecb4a82fcbde49b769270eabd6e0aee6a70dac874931",
+    "commit": "ec03f2d5eed2aa2e7b1b465b83cb70f621147cf1",
+    "workflow_hash": "754fd3c8fda5bb6611ad6cf6f830787a00597347fba00b2fea7fbd97e06629fa",
     "model": "local-synthetic (no GitHub Models)",
     "policy": "seal-live-demo-d0",
-    "kernel_sha256": "d7d81e277ba0b5e9df385129d86abf6f7469e6da2a65bb2ec35626caa44ea2be",
+    "kernel_sha256": "0b5e792500592b56847f70b1e27e47aecdc65023c7c59fd79695102c465f26ec",
     "generated_by": "run_local.sh"
   },
   "probe": {
@@ -16,7 +16,7 @@
   },
   "policy": {
     "policy_id": "seal-live-demo-d0",
-    "_doc": "Capability policy for the seal-live-demo gateway. The kernel (seal.wasm) is default-deny: a db.execute call is ALLOWED only if the presented capability target equals stableHash([\"db.execute\", table, operation]) over the CANONICAL request. The gateway presents exactly the granted_capabilities below. No human in the loop; the grant is static policy. Destructive ops on prod hold no grant, so they BLOCK by default-deny no matter how the operation is spelled. Canonicalisation ensures a spelling variant cannot forge a match to a granted target; it does not decode a disguised delete into an allow.",
+    "_doc": "Capability policy for the seal-live-demo gateway. The kernel (seal.wasm) is default-deny: a db.execute call is ALLOWED only if the presented capability target binds the complete canonical arguments. The gateway presents exactly the granted_capabilities below. No human in the loop; the grant is static policy. Destructive ops on prod hold no grant, so they BLOCK by default-deny no matter how the operation is spelled.",
     "kernel_config": {
       "epoch": 1,
       "safety": {
@@ -33,10 +33,7 @@
             },
             "target": [
               {
-                "arg": "table"
-              },
-              {
-                "arg": "operation"
+                "full_arguments": true
               }
             ]
           }
@@ -49,8 +46,11 @@
     "granted_capabilities": [
       {
         "tool": "db.execute",
-        "table": "staging_deploy_audit",
-        "operation": "insert",
+        "arguments": {
+          "operation": "insert",
+          "table": "staging_deploy_audit",
+          "payload": "{\"deploy_ref\":\"deploy-2026-06-30\"}"
+        },
         "note": "month-end staging reconciliation: append deploy rows to the staging audit table"
       }
     ]
@@ -104,14 +104,14 @@
           "approval_identity": {
             "channel": "file"
           },
-          "policy_hash": "485eda4ba022b72bb4b2be3021add312d352846331671c704a2d637c58f92069"
+          "policy_hash": "b01fe12eced21ec3b0a4fc8193a792959f4f7d0cb1009680fc1c2a6779b6ae5e"
         },
         "certs": [
           {
             "kernel": "safety",
             "verdict": "allow",
-            "reason": "351f47a44bcf935c7242432e24bd11db1536d7c1da873f0ca953c8b80ae02433",
-            "certHash": "11296119294002819579"
+            "reason": "018055e0085682bebe9e07e491100fb628b09ec1a77d825cad676b4085a60e06",
+            "certHash": "14585154447323058661"
           },
           {
             "kernel": "temporal",
@@ -120,9 +120,9 @@
             "certHash": "12756644985251018087"
           }
         ],
-        "emitted_bytes": "{\"audit\":\"{\\\"certs\\\":[{\\\"certHash\\\":\\\"11296119294002819579\\\",\\\"kernel\\\":\\\"safety\\\",\\\"reason\\\":\\\"351f47a44bcf935c7242432e24bd11db1536d7c1da873f0ca953c8b80ae02433\\\",\\\"verdict\\\":\\\"allow\\\"},{\\\"certHash\\\":\\\"12756644985251018087\\\",\\\"kernel\\\":\\\"temporal\\\",\\\"reason\\\":\\\"trace ok (1 events)\\\",\\\"verdict\\\":\\\"allow\\\"}],\\\"epoch\\\":1,\\\"request_sha256\\\":\\\"66330ea2242d45a5a6b32d85007464125608fec7e88430fa3c23d5c5303db756\\\",\\\"tool\\\":\\\"db.execute\\\",\\\"verdict\\\":\\\"allow\\\"}\",\"route\":\"forward\"}",
+        "emitted_bytes": "{\"audit\":\"{\\\"certs\\\":[{\\\"certHash\\\":\\\"14585154447323058661\\\",\\\"kernel\\\":\\\"safety\\\",\\\"reason\\\":\\\"018055e0085682bebe9e07e491100fb628b09ec1a77d825cad676b4085a60e06\\\",\\\"verdict\\\":\\\"allow\\\"},{\\\"certHash\\\":\\\"12756644985251018087\\\",\\\"kernel\\\":\\\"temporal\\\",\\\"reason\\\":\\\"trace ok (1 events)\\\",\\\"verdict\\\":\\\"allow\\\"}],\\\"epoch\\\":1,\\\"request_sha256\\\":\\\"66330ea2242d45a5a6b32d85007464125608fec7e88430fa3c23d5c5303db756\\\",\\\"tool\\\":\\\"db.execute\\\",\\\"verdict\\\":\\\"allow\\\"}\",\"route\":\"forward\"}",
         "kernel_identity": {
-          "wasm_sha256": "d7d81e277ba0b5e9df385129d86abf6f7469e6da2a65bb2ec35626caa44ea2be",
+          "wasm_sha256": "0b5e792500592b56847f70b1e27e47aecdc65023c7c59fd79695102c465f26ec",
           "self_verified": true,
           "note": "Verified mediation DECISION FUNCTION (modulo A1-A3, for calls that reach seal). Binary identity only; host/container wiring is NOT verified."
         },
@@ -137,8 +137,8 @@
           "note": "What the public Lean proofs ASSERT about the kernel source. NOT re-checked here and NOT part of the binary hash."
         },
         "signed_config": {
-          "payload": "{\"epoch\":1,\"safety\":{\"approval\":{\"control_file\":\"X\",\"ttl_seconds\":120},\"tools\":[{\"name\":\"db.execute\",\"mode\":\"guarded\",\"match\":{\"type\":\"always\"},\"target\":[{\"arg\":\"table\"},{\"arg\":\"operation\"}]}]},\"temporal\":{\"policies\":[]}}",
-          "signature": "f7b3c3f83faab477bcec62ddaa745b1f8dc10017ad3d0e54e2077c8d0c43fcaf1cfb446f997ccfe71f9cbff641e4f2715b4eddc326b8bd7317e31d5e9bf99402",
+          "payload": "{\"epoch\":1,\"safety\":{\"approval\":{\"control_file\":\"X\",\"ttl_seconds\":120},\"tools\":[{\"name\":\"db.execute\",\"mode\":\"guarded\",\"match\":{\"type\":\"always\"},\"target\":[{\"full_arguments\":true}]}]},\"temporal\":{\"policies\":[]}}",
+          "signature": "5d9b3c76818492ac127a0f2ca242408f51fb657913f7a9d8e6897bec667df93b93a544667fca7ef5815f0cf62a05f7713be3e58b84ebb610e6959c51b9985d03",
           "pubkey": "d75a980182b10ab7d54bfed3c964073a0ee172f3daa62325af021a68f707511a"
         },
         "kernel_config": {
@@ -157,10 +157,7 @@
                 },
                 "target": [
                   {
-                    "arg": "table"
-                  },
-                  {
-                    "arg": "operation"
+                    "full_arguments": true
                   }
                 ]
               }
@@ -173,8 +170,12 @@
         "granted_capabilities": [
           {
             "tool": "db.execute",
-            "table": "staging_deploy_audit",
-            "operation": "insert"
+            "arguments": {
+              "operation": "insert",
+              "table": "staging_deploy_audit",
+              "payload": "{\"deploy_ref\":\"deploy-2026-06-30\"}"
+            },
+            "note": "month-end staging reconciliation: append deploy rows to the staging audit table"
           }
         ],
         "policy_id": "seal-live-demo-d0",
@@ -184,7 +185,7 @@
         },
         "gateway": {
           "bypass": false,
-          "ts_mono_ms": 520227607
+          "ts_mono_ms": 1088849738
         }
       }
     },
@@ -206,14 +207,14 @@
         "canonical_request_sha256": "d4d7b5613cdb6abf0676daaa837de8aec1efd70940ed3feea4dee786857e1204",
         "bypass": false,
         "verdict": "BLOCK",
-        "reason": "safety kernel: bd320931069ebb98a9b205fa2e9227b3bdcdc9f7e98197cd855089ae5d720ac1",
+        "reason": "safety kernel: 0c61a5e7422b77c92dba74543347db4a13819c83daeb9c5581ebaba08f1ef0df",
         "deny_kernel": "safety",
         "certs": [
           {
             "kernel": "safety",
             "verdict": "deny",
-            "reason": "bd320931069ebb98a9b205fa2e9227b3bdcdc9f7e98197cd855089ae5d720ac1",
-            "certHash": "31980135567447998"
+            "reason": "0c61a5e7422b77c92dba74543347db4a13819c83daeb9c5581ebaba08f1ef0df",
+            "certHash": "57248940472517642"
           },
           {
             "kernel": "temporal",
@@ -222,9 +223,9 @@
             "certHash": "12756644985251018087"
           }
         ],
-        "emitted_bytes": "{\"audit\":\"{\\\"certs\\\":[{\\\"certHash\\\":\\\"31980135567447998\\\",\\\"kernel\\\":\\\"safety\\\",\\\"reason\\\":\\\"bd320931069ebb98a9b205fa2e9227b3bdcdc9f7e98197cd855089ae5d720ac1\\\",\\\"verdict\\\":\\\"deny\\\"},{\\\"certHash\\\":\\\"12756644985251018087\\\",\\\"kernel\\\":\\\"temporal\\\",\\\"reason\\\":\\\"trace ok (1 events)\\\",\\\"verdict\\\":\\\"allow\\\"}],\\\"epoch\\\":1,\\\"request_sha256\\\":\\\"d4d7b5613cdb6abf0676daaa837de8aec1efd70940ed3feea4dee786857e1204\\\",\\\"tool\\\":\\\"db.execute\\\",\\\"verdict\\\":\\\"deny\\\"}\",\"response\":\"{\\\"id\\\":1,\\\"jsonrpc\\\":\\\"2.0\\\",\\\"result\\\":{\\\"content\\\":[{\\\"text\\\":\\\"approval required: bd320931069ebb98a9b205fa2e9227b3bdcdc9f7e98197cd855089ae5d720ac1\\\",\\\"type\\\":\\\"text\\\"}],\\\"isError\\\":true}}\\n\",\"route\":\"block\"}",
+        "emitted_bytes": "{\"audit\":\"{\\\"certs\\\":[{\\\"certHash\\\":\\\"57248940472517642\\\",\\\"kernel\\\":\\\"safety\\\",\\\"reason\\\":\\\"0c61a5e7422b77c92dba74543347db4a13819c83daeb9c5581ebaba08f1ef0df\\\",\\\"verdict\\\":\\\"deny\\\"},{\\\"certHash\\\":\\\"12756644985251018087\\\",\\\"kernel\\\":\\\"temporal\\\",\\\"reason\\\":\\\"trace ok (1 events)\\\",\\\"verdict\\\":\\\"allow\\\"}],\\\"epoch\\\":1,\\\"request_sha256\\\":\\\"d4d7b5613cdb6abf0676daaa837de8aec1efd70940ed3feea4dee786857e1204\\\",\\\"tool\\\":\\\"db.execute\\\",\\\"verdict\\\":\\\"deny\\\"}\",\"response\":\"{\\\"id\\\":1,\\\"jsonrpc\\\":\\\"2.0\\\",\\\"result\\\":{\\\"content\\\":[{\\\"text\\\":\\\"approval required: 0c61a5e7422b77c92dba74543347db4a13819c83daeb9c5581ebaba08f1ef0df\\\",\\\"type\\\":\\\"text\\\"}],\\\"isError\\\":true}}\\n\",\"route\":\"block\"}",
         "kernel_identity": {
-          "wasm_sha256": "d7d81e277ba0b5e9df385129d86abf6f7469e6da2a65bb2ec35626caa44ea2be",
+          "wasm_sha256": "0b5e792500592b56847f70b1e27e47aecdc65023c7c59fd79695102c465f26ec",
           "self_verified": true,
           "note": "Verified mediation DECISION FUNCTION (modulo A1-A3, for calls that reach seal). Binary identity only; host/container wiring is NOT verified."
         },
@@ -239,8 +240,8 @@
           "note": "What the public Lean proofs ASSERT about the kernel source. NOT re-checked here and NOT part of the binary hash."
         },
         "signed_config": {
-          "payload": "{\"epoch\":1,\"safety\":{\"approval\":{\"control_file\":\"X\",\"ttl_seconds\":120},\"tools\":[{\"name\":\"db.execute\",\"mode\":\"guarded\",\"match\":{\"type\":\"always\"},\"target\":[{\"arg\":\"table\"},{\"arg\":\"operation\"}]}]},\"temporal\":{\"policies\":[]}}",
-          "signature": "f7b3c3f83faab477bcec62ddaa745b1f8dc10017ad3d0e54e2077c8d0c43fcaf1cfb446f997ccfe71f9cbff641e4f2715b4eddc326b8bd7317e31d5e9bf99402",
+          "payload": "{\"epoch\":1,\"safety\":{\"approval\":{\"control_file\":\"X\",\"ttl_seconds\":120},\"tools\":[{\"name\":\"db.execute\",\"mode\":\"guarded\",\"match\":{\"type\":\"always\"},\"target\":[{\"full_arguments\":true}]}]},\"temporal\":{\"policies\":[]}}",
+          "signature": "5d9b3c76818492ac127a0f2ca242408f51fb657913f7a9d8e6897bec667df93b93a544667fca7ef5815f0cf62a05f7713be3e58b84ebb610e6959c51b9985d03",
           "pubkey": "d75a980182b10ab7d54bfed3c964073a0ee172f3daa62325af021a68f707511a"
         },
         "kernel_config": {
@@ -259,10 +260,7 @@
                 },
                 "target": [
                   {
-                    "arg": "table"
-                  },
-                  {
-                    "arg": "operation"
+                    "full_arguments": true
                   }
                 ]
               }
@@ -275,8 +273,12 @@
         "granted_capabilities": [
           {
             "tool": "db.execute",
-            "table": "staging_deploy_audit",
-            "operation": "insert"
+            "arguments": {
+              "operation": "insert",
+              "table": "staging_deploy_audit",
+              "payload": "{\"deploy_ref\":\"deploy-2026-06-30\"}"
+            },
+            "note": "month-end staging reconciliation: append deploy rows to the staging audit table"
           }
         ],
         "policy_id": "seal-live-demo-d0",
@@ -286,7 +288,7 @@
         },
         "gateway": {
           "bypass": false,
-          "ts_mono_ms": 520227767
+          "ts_mono_ms": 1088849965
         }
       }
     },
@@ -320,7 +322,7 @@
         },
         "gateway": {
           "bypass": true,
-          "ts_mono_ms": 520242648
+          "ts_mono_ms": 1088865302
         }
       }
     }

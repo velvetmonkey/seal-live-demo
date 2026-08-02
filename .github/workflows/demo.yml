@@ -41,7 +41,7 @@ jobs:
         run: |
           mkdir -p evidence
           WF_HASH=$(sha256sum .github/workflows/demo.yml | cut -d' ' -f1)
-          node -e "require('fs').writeFileSync('evidence/run-meta.json', JSON.stringify({commit: process.env.GITHUB_SHA, workflow_hash: '$WF_HASH', model: process.env.MODEL, policy: 'seal-live-demo-d0', kernel_sha256: 'd7d81e277ba0b5e9df385129d86abf6f7469e6da2a65bb2ec35626caa44ea2be', run_id: process.env.GITHUB_RUN_ID}, null, 2))"
+          node -e "require('fs').writeFileSync('evidence/run-meta.json', JSON.stringify({commit: process.env.GITHUB_SHA, workflow_hash: '$WF_HASH', model: process.env.MODEL, policy: 'seal-live-demo-d0', kernel_sha256: '0b5e792500592b56847f70b1e27e47aecdc65023c7c59fd79695102c465f26ec', run_id: process.env.GITHUB_RUN_ID}, null, 2))"
           cat evidence/run-meta.json
 
       # Fail LOUD if Models is unavailable, BEFORE Docker. Never canned fallback.

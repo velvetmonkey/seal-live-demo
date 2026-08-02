@@ -15,7 +15,7 @@ fail-closed build
 on 2026-07-16, through the 7-kernel policy-bundle DX build on 2026-07-17,
 and then to the current build
 
-    seal.wasm sha256 = d7d81e277ba0b5e9df385129d86abf6f7469e6da2a65bb2ec35626caa44ea2be
+    seal.wasm sha256 = 0b5e792500592b56847f70b1e27e47aecdc65023c7c59fd79695102c465f26ec
 
 on 2026-07-26 (the fail-closed guard carries forward unchanged). Because
 `pwa/receipt.js` cross-checks each replayed receipt's
