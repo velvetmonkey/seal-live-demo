@@ -1,0 +1,8 @@
+{
+  "commit": "e8ba1fd9ba9d7d9e2ed4c8ee88b5c5bc785283f6",
+  "workflow_hash": "754fd3c8fda5bb6611ad6cf6f830787a00597347fba00b2fea7fbd97e06629fa",
+  "model": "local-synthetic (no GitHub Models)",
+  "policy": "seal-live-demo-d0",
+  "kernel_sha256": "0b5e792500592b56847f70b1e27e47aecdc65023c7c59fd79695102c465f26ec",
+  "generated_by": "run_local.sh"
+}

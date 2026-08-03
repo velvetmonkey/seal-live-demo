@@ -1,0 +1,110 @@
+{
+  "phase": "p1",
+  "synthetic_agent": true,
+  "agent_emitted_call": true,
+  "note": "LOCAL verify: scripted tool-call (no model). Real kernel/DB receipt.",
+  "receipt": {
+    "seal_receipt": "v2",
+    "tool": "db.execute",
+    "arguments": {
+      "operation": "insert",
+      "table": "staging_deploy_audit",
+      "payload": "{\"deploy_ref\":\"deploy-2026-06-30\"}"
+    },
+    "args_hash": "53ae7fa46f79dd2637b3d5af5a160834b755d0a00a66fec11cb313db8bca753c",
+    "canonical_request": "{\"jsonrpc\":\"2.0\",\"id\":1,\"method\":\"tools/call\",\"params\":{\"name\":\"db.execute\",\"arguments\":{\"operation\":\"insert\",\"table\":\"staging_deploy_audit\",\"payload\":\"{\\\"deploy_ref\\\":\\\"deploy-2026-06-30\\\"}\"}}}",
+    "canonical_request_sha256": "66330ea2242d45a5a6b32d85007464125608fec7e88430fa3c23d5c5303db756",
+    "bypass": false,
+    "verdict": "ALLOW",
+    "authorization": "approval",
+    "reason": "every gating kernel allows",
+    "deny_kernel": null,
+    "approval": {
+      "approval_identity": {
+        "channel": "file"
+      },
+      "policy_hash": "b01fe12eced21ec3b0a4fc8193a792959f4f7d0cb1009680fc1c2a6779b6ae5e"
+    },
+    "certs": [
+      {
+        "kernel": "safety",
+        "verdict": "allow",
+        "reason": "018055e0085682bebe9e07e491100fb628b09ec1a77d825cad676b4085a60e06",
+        "certHash": "14585154447323058661"
+      },
+      {
+        "kernel": "temporal",
+        "verdict": "allow",
+        "reason": "trace ok (1 events)",
+        "certHash": "12756644985251018087"
+      }
+    ],
+    "emitted_bytes": "{\"audit\":\"{\\\"certs\\\":[{\\\"certHash\\\":\\\"14585154447323058661\\\",\\\"kernel\\\":\\\"safety\\\",\\\"reason\\\":\\\"018055e0085682bebe9e07e491100fb628b09ec1a77d825cad676b4085a60e06\\\",\\\"verdict\\\":\\\"allow\\\"},{\\\"certHash\\\":\\\"12756644985251018087\\\",\\\"kernel\\\":\\\"temporal\\\",\\\"reason\\\":\\\"trace ok (1 events)\\\",\\\"verdict\\\":\\\"allow\\\"}],\\\"epoch\\\":1,\\\"request_sha256\\\":\\\"66330ea2242d45a5a6b32d85007464125608fec7e88430fa3c23d5c5303db756\\\",\\\"tool\\\":\\\"db.execute\\\",\\\"verdict\\\":\\\"allow\\\"}\",\"route\":\"forward\"}",
+    "kernel_identity": {
+      "wasm_sha256": "0b5e792500592b56847f70b1e27e47aecdc65023c7c59fd79695102c465f26ec",
+      "self_verified": true,
+      "note": "Verified mediation DECISION FUNCTION (modulo A1-A3, for calls that reach seal). Binary identity only; host/container wiring is NOT verified."
+    },
+    "asserted_provenance": {
+      "verified_in_browser": false,
+      "lean_toolchain": "leanprover/lean4:v4.28.0",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "note": "What the public Lean proofs ASSERT about the kernel source. NOT re-checked here and NOT part of the binary hash."
+    },
+    "signed_config": {
+      "payload": "{\"epoch\":1,\"safety\":{\"approval\":{\"control_file\":\"X\",\"ttl_seconds\":120},\"tools\":[{\"name\":\"db.execute\",\"mode\":\"guarded\",\"match\":{\"type\":\"always\"},\"target\":[{\"full_arguments\":true}]}]},\"temporal\":{\"policies\":[]}}",
+      "signature": "5d9b3c76818492ac127a0f2ca242408f51fb657913f7a9d8e6897bec667df93b93a544667fca7ef5815f0cf62a05f7713be3e58b84ebb610e6959c51b9985d03",
+      "pubkey": "d75a980182b10ab7d54bfed3c964073a0ee172f3daa62325af021a68f707511a"
+    },
+    "kernel_config": {
+      "epoch": 1,
+      "safety": {
+        "approval": {
+          "control_file": "X",
+          "ttl_seconds": 120
+        },
+        "tools": [
+          {
+            "name": "db.execute",
+            "mode": "guarded",
+            "match": {
+              "type": "always"
+            },
+            "target": [
+              {
+                "full_arguments": true
+              }
+            ]
+          }
+        ]
+      },
+      "temporal": {
+        "policies": []
+      }
+    },
+    "granted_capabilities": [
+      {
+        "tool": "db.execute",
+        "arguments": {
+          "operation": "insert",
+          "table": "staging_deploy_audit",
+          "payload": "{\"deploy_ref\":\"deploy-2026-06-30\"}"
+        },
+        "note": "month-end staging reconciliation: append deploy rows to the staging audit table"
+      }
+    ],
+    "policy_id": "seal-live-demo-d0",
+    "execution": {
+      "executed": true,
+      "rows_affected": 1
+    },
+    "gateway": {
+      "bypass": false,
+      "ts_mono_ms": 1192422496
+    }
+  }
+}

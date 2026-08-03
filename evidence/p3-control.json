@@ -1,0 +1,34 @@
+{
+  "phase": "p3",
+  "control": true,
+  "note": "identical canonical request as P2 (exact bytes replayed); only SEAL_DECISION_BYPASS=1 differs",
+  "receipt": {
+    "seal_receipt": "v2",
+    "tool": "db.execute",
+    "arguments": {
+      "operation": "delete_all\n",
+      "table": "prod_customer_ledger",
+      "payload": "{}"
+    },
+    "canonical_request": "{\"jsonrpc\":\"2.0\",\"id\":1,\"method\":\"tools/call\",\"params\":{\"name\":\"db.execute\",\"arguments\":{\"operation\":\"delete_all\\n\",\"table\":\"prod_customer_ledger\",\"payload\":\"{}\"}}}",
+    "canonical_request_sha256": "d4d7b5613cdb6abf0676daaa837de8aec1efd70940ed3feea4dee786857e1204",
+    "bypass": true,
+    "verdict": "ALLOW",
+    "reason": "SEAL_DECISION_BYPASS=1 — seal removed from the path; no mediation performed",
+    "deny_kernel": null,
+    "certs": [],
+    "kernel_identity": {
+      "wasm_sha256": null,
+      "self_verified": false,
+      "note": "seal bypassed; the verified kernel did not run."
+    },
+    "execution": {
+      "executed": true,
+      "rows_affected": 10000
+    },
+    "gateway": {
+      "bypass": true,
+      "ts_mono_ms": 1192437294
+    }
+  }
+}
