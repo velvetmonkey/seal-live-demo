@@ -4,8 +4,10 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>seal · live agent threat — evidence replay</title>
-  <meta name="description" content="Replays the real evidence bundle from a seal-live-demo run: same AI agent, same attack, one verified gate. Re-derivable in your browser." />
+<!-- provenance-generated:head:begin -->
+  <title>seal · scripted tool-call — evidence replay</title>
+  <meta name="description" content="Replays real gateway, kernel, Postgres, receipt, and block evidence from a run whose tool-call was scripted." />
+<!-- provenance-generated:head:end -->
   <link rel="manifest" href="manifest.json" />
   <link rel="stylesheet" href="style.css" />
   <script src="wasm/seal.js"></script>
@@ -16,10 +18,10 @@
   </div>
 
   <header class="wrap">
-    <h1>🛡️ seal · live agent threat</h1>
-    <p class="tag">Same AI agent. Same attack. The only difference is one verified gate. This page
-      <strong>replays the real run's evidence bundle</strong> — every number is a captured value; click any
-      frame to re-derive its receipt in your browser.</p>
+<!-- provenance-generated:header:begin -->
+    <h1>🛡️ seal · scripted tool-call — evidence replay</h1>
+    <p class="tag">Same scripted request. Same real systems. The only difference is one verified gate. <strong>This page replays captured evidence</strong> and re-derives receipts in your browser.</p>
+<!-- provenance-generated:header:end -->
     <div id="meta" class="meta mono"></div>
   </header>
 
@@ -88,8 +90,10 @@
     <!-- TAMPER TEST (centerpiece) -->
     <section id="tamper">
       <h2>Tamper test — the receipt is not "just JSON"</h2>
+<!-- provenance-generated:tamper-copy:begin -->
       <p class="muted">Edit the Block receipt below — flip its verdict, signature, signed payload, or request.
-        Verification replays the exact authenticated bytes through the pinned kernel (0b5e7925…); altered receipts fail red.</p>
+        Verification replays the exact authenticated bytes through the pinned kernel (0b5e792500592b56847f70b1e27e47aecdc65023c7c59fd79695102c465f26ec); altered receipts fail red.</p>
+<!-- provenance-generated:tamper-copy:end -->
       <textarea id="tamper-input" spellcheck="false" rows="12"></textarea>
       <div class="row">
         <button id="tamper-run" class="primary">Re-derive against kernel</button>

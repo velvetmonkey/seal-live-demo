@@ -1,8 +1,8 @@
 {
   "phase": "p2",
-  "synthetic_agent": true,
-  "agent_emitted_call": true,
-  "note": "LOCAL verify: scripted tool-call (no model). Real kernel/DB receipt.",
+  "tool_call_provenance": "synthetic",
+  "tool_call_generated_by": "scripts/mcp_call.mjs",
+  "agent_emitted_call": false,
   "receipt": {
     "seal_receipt": "v2",
     "tool": "db.execute",
@@ -97,7 +97,7 @@
     },
     "gateway": {
       "bypass": false,
-      "ts_mono_ms": 1192422639
+      "ts_mono_ms": 138515421
     }
   }
 }

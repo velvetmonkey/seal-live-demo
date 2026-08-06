@@ -1,0 +1,23 @@
+{
+  "source": "provenance.json",
+  "generated": [
+    { "surface": "README opener", "file": "README.md", "marker": "opener" },
+    { "surface": "README phase narrative", "file": "README.md", "marker": "phases" },
+    { "surface": "README one-command copy", "file": "README.md", "marker": "one-command" },
+    { "surface": "README replay and provenance copy", "file": "README.md", "marker": "replay-provenance" },
+    { "surface": "README mode badge", "file": "README.md", "marker": "badge" },
+    { "surface": "README verification copy", "file": "README.md", "marker": "verify" },
+    { "surface": "README terminal reading", "file": "README.md", "marker": "terminal-reading" },
+    { "surface": "findings sampled-run row", "file": "FINDINGS.md", "marker": "sampled-run" },
+    { "surface": "historical archive producer and current comparison", "file": "archive/README.md", "markers": ["historical-archive", "archive-current"] },
+    { "surface": "evidence summary", "file": "evidence/summary.md", "writer": "scripts/render_summary.mjs" },
+    { "surface": "PWA document metadata and header", "file": "pwa/index.html", "markers": ["head", "header", "tamper-copy"] },
+    { "surface": "PWA manifest", "file": "pwa/manifest.json", "writer": "scripts/generate_provenance_surfaces.mjs" },
+    { "surface": "PWA provenance fact", "file": "pwa/provenance.json", "writer": "scripts/generate_provenance_surfaces.mjs" },
+    { "surface": "PWA replay narration and meta", "file": "pwa/provenance-copy.js", "consumer": "pwa/replay.js" },
+    { "surface": "terminal assertion producer copy", "consumer": "scripts/assert.mjs" },
+    { "surface": "run evidence producer fields", "consumers": ["scripts/capture_local_phase.mjs", "agent/agent.mjs"] },
+    { "surface": "evidence-local provenance fact", "file": "evidence/provenance.json", "writer": "scripts/prepare_run_provenance.mjs" }
+  ],
+  "hand_written_exceptions": []
+}

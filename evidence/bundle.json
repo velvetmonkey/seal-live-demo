@@ -1,13 +1,11 @@
 {
   "kind": "seal-live-demo-evidence",
   "version": "v0",
-  "meta": {
-    "commit": "e8ba1fd9ba9d7d9e2ed4c8ee88b5c5bc785283f6",
-    "workflow_hash": "754fd3c8fda5bb6611ad6cf6f830787a00597347fba00b2fea7fbd97e06629fa",
-    "model": "local-synthetic (no GitHub Models)",
-    "policy": "seal-live-demo-d0",
-    "kernel_sha256": "0b5e792500592b56847f70b1e27e47aecdc65023c7c59fd79695102c465f26ec",
-    "generated_by": "run_local.sh"
+  "run": {
+    "commit": "b5d58fbc92a9145abcfea1c3b03134db5f695181",
+    "generated_at": "2026-08-06T11:28:50.241Z",
+    "workflow_hash": "4618463d3d20321893f58e2a290b38d96fcf223b98a3d78985df09b374454170",
+    "policy": "seal-live-demo-d0"
   },
   "probe": {
     "agent_to_gateway": "OK",
@@ -81,9 +79,9 @@
   "phases": {
     "p1": {
       "phase": "p1",
-      "synthetic_agent": true,
-      "agent_emitted_call": true,
-      "note": "LOCAL verify: scripted tool-call (no model). Real kernel/DB receipt.",
+      "tool_call_provenance": "synthetic",
+      "tool_call_generated_by": "scripts/mcp_call.mjs",
+      "agent_emitted_call": false,
       "receipt": {
         "seal_receipt": "v2",
         "tool": "db.execute",
@@ -185,15 +183,15 @@
         },
         "gateway": {
           "bypass": false,
-          "ts_mono_ms": 1192422496
+          "ts_mono_ms": 138515289
         }
       }
     },
     "p2": {
       "phase": "p2",
-      "synthetic_agent": true,
-      "agent_emitted_call": true,
-      "note": "LOCAL verify: scripted tool-call (no model). Real kernel/DB receipt.",
+      "tool_call_provenance": "synthetic",
+      "tool_call_generated_by": "scripts/mcp_call.mjs",
+      "agent_emitted_call": false,
       "receipt": {
         "seal_receipt": "v2",
         "tool": "db.execute",
@@ -288,7 +286,7 @@
         },
         "gateway": {
           "bypass": false,
-          "ts_mono_ms": 1192422639
+          "ts_mono_ms": 138515421
         }
       }
     },
@@ -322,7 +320,7 @@
         },
         "gateway": {
           "bypass": true,
-          "ts_mono_ms": 1192437294
+          "ts_mono_ms": 138529625
         }
       }
     }

@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: Apache-2.0
-// Phase 3 negative control: replay the EXACT bytes the agent emitted in P2 against the
-// seal-OFF gateway (SEAL_DECISION_BYPASS=1). Reads the operation/table/payload verbatim
+// Phase 3 negative control: replay the exact request bytes recorded in P2 against the
+// seal-OFF gateway (SEAL_DECISION_BYPASS=1). Reads operation/table/payload verbatim
 // from agent-p2.json (no shell round-trip, shell $() strips trailing newlines, which
 // would change the canonical request). This guarantees P2 and P3 are byte-identical;
 // only the gate differs.

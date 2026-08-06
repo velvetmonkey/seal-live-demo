@@ -10,7 +10,9 @@ All "block vs bypass on identical bytes", "ASSERT OK", "real receipts" preserved
 
 | Claim | Backed? | Evidence | Action |
 |-------|---------|----------|--------|
-| Live-agent demo: Seal blocks unapproved destructive call; same request succeeds when bypassed. | Yes (runnable + asserted) | scripts/run_local.sh + assert.mjs (P2 block vs P3), scenarios/p2_attack, evidence/ | keep |
+<!-- provenance-generated:sampled-run:begin -->
+| Scripted-tool-call demo: Seal blocks the destructive call; the same request succeeds when bypassed. | Yes (runnable + asserted) | `scripts/run_local.sh` + assert.mjs (P2 block vs P3), scenarios/p2_attack, evidence/ | keep |
+<!-- provenance-generated:sampled-run:end -->
 | Ends with ASSERT OK: 17/17. Byte-identical requests. | Yes (tested; re-executed 2026-08-06: `EVIDENCE_DIR=evidence node scripts/assert.mjs` → 17/17, exit 0) | assert.mjs + run output | keep |
 | PWA replay re-derives from committed bundle, no containers. | Yes | pwa/ + evidence/ | keep |
 | Proves kernel rules; deployed tied by conformance. | Yes (documented) | non-claims + family | keep |

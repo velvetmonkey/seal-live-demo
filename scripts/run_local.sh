@@ -1,11 +1,7 @@
 #!/usr/bin/env bash
 # SPDX-License-Identifier: Apache-2.0
-# LOCAL VERIFICATION ORCHESTRATOR (no GitHub Models). Produces a REAL evidence bundle
-# by driving the live gateway + Postgres exactly as the workflow does, but substitutes
-# a scripted tool-call for the model (clearly marked synthetic_agent:true). The
-# receipts, DB row counts and verdicts are REAL — only the agent's reasoning is
-# stubbed here. The actual workflow uses the live model; this verifies the
-# orchestration, asserts, summary and PWA against real kernel output.
+# Local verification orchestrator. Producer identity and all copy come from
+# provenance.json; this file contains orchestration, not a second provenance story.
 set -euo pipefail
 cd "$(dirname "$0")/.."
 
@@ -25,6 +21,9 @@ export DB_PASSWORD=synthpw
 DC=(docker compose -f docker-compose.yml -f docker-compose.verify.yml)
 EV=evidence
 rm -rf "$EV"; mkdir -p "$EV"
+EVIDENCE_DIR=$EV node scripts/prepare_run_provenance.mjs
+export EVIDENCE_DIR=$EV
+export PROVENANCE_FILE=$EV/provenance.json
 GW=http://localhost:8800/mcp
 
 psqlq() { "${DC[@]}" exec -T target-db psql -U appuser -d appdb -tA -c "$1" | tr -d '\r' | head -1; }
@@ -37,10 +36,7 @@ snap() {
   printf '{"table":"prod_customer_ledger","rows":%s,"content_hash":"%s","database":"%s","table_oid":%s}\n' "$rows" "$hash" "$db" "$oid"
 }
 call() { node scripts/mcp_call.mjs --url "$GW" --operation "$1" --table "$2" --payload "$3"; }
-wrap() { node -e 'const fs=require("fs");let s="";process.stdin.on("data",d=>s+=d).on("end",()=>{const r=JSON.parse(s);fs.writeFileSync(process.argv[1],JSON.stringify({phase:process.argv[2],synthetic_agent:true,agent_emitted_call:true,note:"LOCAL verify: scripted tool-call (no model). Real kernel/DB receipt.",receipt:r},null,2));});' "$1" "$2"; }
-
-echo "== run-meta =="
-node -e 'const fs=require("fs"),cp=require("child_process");const c=(x)=>{try{return cp.execSync(x).toString().trim()}catch{return"?"}};fs.writeFileSync("evidence/run-meta.json",JSON.stringify({commit:c("git rev-parse HEAD"),workflow_hash:c("sha256sum .github/workflows/demo.yml 2>/dev/null | cut -d\" \" -f1"),model:"local-synthetic (no GitHub Models)",policy:"seal-live-demo-d0",kernel_sha256:"0b5e792500592b56847f70b1e27e47aecdc65023c7c59fd79695102c465f26ec",generated_by:"run_local.sh"},null,2))'
+wrap() { node scripts/capture_local_phase.mjs "$1" "$2"; }
 
 echo "== build images =="
 "${DC[@]}" build target-db seal-gateway agent >/dev/null 2>&1 || "${DC[@]}" build seal-gateway agent >/dev/null 2>&1 || true
@@ -64,14 +60,16 @@ echo "probe: $(cat $EV/probe.json)"
 echo "== P3 control: SAME request, seal OFF (bypass) =="
 SEAL_DECISION_BYPASS=1 "${DC[@]}" up -d seal-gateway >/dev/null
 for i in $(seq 1 30); do curl -sf http://localhost:8800/healthz >/dev/null && break; sleep 1; done
-# replay the EXACT bytes the agent emitted in P2 (in Node — shell $() would strip \n)
-EVIDENCE_DIR=$EV MCP_URL="$GW" node scripts/replay_p3.mjs
+# Replay the exact P2 request bytes in Node; a shell round-trip would strip \n.
+MCP_URL="$GW" node scripts/replay_p3.mjs
 snap > "$EV/snap-after-p3.json"; echo "after p3: $(cat $EV/snap-after-p3.json)"
 
 echo "== teardown =="
 "${DC[@]}" down -v >/dev/null 2>&1 || true
 
-echo "== ASSERT =="; EVIDENCE_DIR=$EV node scripts/assert.mjs
-echo "== RENDER =="; EVIDENCE_DIR=$EV node scripts/render_summary.mjs
-echo "== BUNDLE-JSON (PWA) =="; EVIDENCE_DIR=$EV node scripts/assemble_bundle_json.mjs; cp "$EV/bundle.json" pwa/bundle.json
-echo "== BUNDLE =="; EVIDENCE_DIR=$EV bash scripts/make_bundle.sh evidence.tar.gz
+echo "== BUNDLE-JSON =="; node scripts/assemble_bundle_json.mjs
+echo "== RECORD PROVENANCE =="; node scripts/record_run_provenance.mjs
+echo "== ASSERT =="; node scripts/assert.mjs
+echo "== PUBLISH GENERATED SURFACES =="; node scripts/record_run_provenance.mjs --publish
+PROVENANCE_FILE=provenance.json node scripts/generate_provenance_surfaces.mjs
+echo "== BUNDLE =="; bash scripts/make_bundle.sh evidence.tar.gz
