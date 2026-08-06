@@ -17,7 +17,7 @@
     { "surface": "PWA replay narration and meta", "file": "pwa/provenance-copy.js", "consumer": "pwa/replay.js" },
     { "surface": "terminal assertion producer copy", "consumer": "scripts/assert.mjs" },
     { "surface": "run evidence producer fields", "consumers": ["scripts/capture_local_phase.mjs", "agent/agent.mjs"] },
-    { "surface": "evidence-local provenance fact", "file": "evidence/provenance.json", "writer": "scripts/prepare_run_provenance.mjs" }
+    { "surface": "evidence-local provenance fact", "file": "evidence/provenance.json", "writer": "scripts/prepare_run_provenance.mjs", "checkout": "per-run" }
   ],
   "hand_written_exceptions": []
 }
