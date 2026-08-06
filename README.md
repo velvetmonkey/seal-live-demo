@@ -101,6 +101,7 @@ Mandatory non-claims:
 - Seal's audit chain is tamper-EVIDENT, not tamper-IMPOSSIBLE.
 - Seal does NOT make the AI smarter or prevent hallucinations; it stops an unapproved effect.
 - Axiom footprint {propext, Classical.choice, Quot.sound} is the minimal classical fragment; no extra axioms.
+- The axiom-footprint line is a per-theorem ceiling for theorems named in the family's axiom-pin gates; it is not a repository-wide census. Pin scope and named exceptions are indexed in the seal claims matrix (seal/docs/CLAIMS-MATRIX.md).
 <!-- claims:end -->
 
 ## Verify in five minutes
@@ -133,8 +134,10 @@ cd pwa && python3 -m http.server 8090     # open http://localhost:8090 — the b
 ```
 
 Receipts in `evidence/receipts.jsonl` also verify through `seal-assurance-kit`'s
-`node bin/seal verify` — and in CI: `seal-verify-action` runs the same pinned verify closure
-in GitHub Actions and fails the build on an unverifiable receipt. (Both tools live in private
+`node bin/seal verify` — and in CI: `seal-verify-action` runs a sha256-pinned,
+downstream-stricter fork of that verify closure (it additionally requires a valid
+`signed_config`; see seal-verify-action/VENDORED.md) in GitHub Actions and fails the build
+on an unverifiable receipt. (Both tools live in private
 repos today; the install-to-first-PASS deployment guide is available to authorised evaluators.)
 
 ## The Seal family
