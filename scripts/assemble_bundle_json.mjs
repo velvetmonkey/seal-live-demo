@@ -13,7 +13,7 @@ const policy = (() => { try { return JSON.parse(fs.readFileSync(POLICY_PATH, "ut
 const bundle = {
   kind: "seal-live-demo-evidence",
   version: "v0",
-  meta: read("run-meta.json"),
+  run: read("run-meta.json"),
   probe: read("probe.json"),
   policy,
   snapshots: { before: read("snap-before.json"), after_p2: read("snap-after-p2.json"), after_p3: read("snap-after-p3.json") },

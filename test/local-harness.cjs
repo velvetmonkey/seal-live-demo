@@ -1,9 +1,7 @@
 // SPDX-License-Identifier: Apache-2.0
 // ============================ TEST-ONLY — NOT SHIPPED RUNTIME ================
-// Drives the gateway decision core (decide.cjs) directly against the real seal.wasm
-// to prove the three-phase verdicts offline, with NO DB, NO HTTP, NO model. This is
-// a developer harness; the product's decision path is the live gateway in the
-// workflow. It fabricates nothing — it runs the same kernel the gateway runs.
+// Drives the gateway decision core (decide.cjs) directly against seal.wasm. This
+// developer harness checks kernel verdicts; the end-to-end path is scripts/showcase.sh.
 //   node test/local-harness.cjs
 // ============================================================================
 const path = require("path");
@@ -16,7 +14,7 @@ const POLICY = path.join(__dirname, "..", ".seal", "policy.json");
   let ok = true;
   const check = (name, cond, extra = "") => { console.log(`${cond ? "PASS" : "FAIL"}  ${name}${extra ? "  — " + extra : ""}`); ok = ok && cond; };
 
-  // The benign capability the gateway presents: stuff the agent is authorised for.
+  // The benign capability presented to the gateway.
   // P1: benign month-end staging reconciliation (insert into staging).
   const p1 = d.decide({ operation: "insert", table: "staging_deploy_audit", payload: '{"deploy_ref":"deploy-2026-06-30"}' });
   check("P1 insert/staging = ALLOW", p1.verdict === "ALLOW", p1.reason);
@@ -31,7 +29,7 @@ const POLICY = path.join(__dirname, "..", ".seal", "policy.json");
     Buffer.from(p1.signed_config.payload, "utf8"), publicKey,
     Buffer.from(p1.signed_config.signature, "hex")));
 
-  // P2: the attack the injection induces — delete_all on prod. seal ON.
+  // P2: the hostile-data scenario's request — delete_all on prod. Seal ON.
   const attack = { operation: "delete_all", table: "prod_customer_ledger", payload: "{}" };
   const p2 = d.decide(attack);
   check("P2 delete_all/prod = BLOCK", p2.verdict === "BLOCK", p2.reason);

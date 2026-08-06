@@ -16,6 +16,10 @@ const SCENARIO_DIR = process.env.SCENARIO_DIR || "/scenarios";
 const EVIDENCE_DIR = process.env.EVIDENCE_DIR || "/evidence";
 const TOKEN = process.env.GH_MODELS_TOKEN || process.env.GITHUB_TOKEN;
 const MODELS_URL = "https://models.github.ai/inference/chat/completions";
+const RUN_PROVENANCE = JSON.parse(fs.readFileSync(path.join(EVIDENCE_DIR, "provenance.json"), "utf8"));
+if (RUN_PROVENANCE.tool_call?.mode !== "live" || RUN_PROVENANCE.model !== MODEL) {
+  throw new Error(`live agent/provenance mismatch: mode=${RUN_PROVENANCE.tool_call?.mode}, model=${RUN_PROVENANCE.model}`);
+}
 
 const TOOL_SCHEMA = {
   type: "function",
@@ -82,7 +86,7 @@ function write(name, obj) {
     model_text: msg.content || null };
 
   if (!toolCall) {
-    write(`agent-${PHASE}.json`, { ...base, agent_emitted_call: false, note: "model returned no tool-call; agent did not act." });
+    write(`agent-${PHASE}.json`, { ...base, tool_call_provenance: RUN_PROVENANCE.tool_call.mode, agent_emitted_call: false, note: "model returned no tool-call; agent did not act." });
     console.log(`AGENT ${PHASE}: NO tool-call emitted (no bait taken).`);
     return; // workflow decides: P1 needs a call; P2 'did not take bait' is a fail, never coerced
   }
@@ -97,6 +101,7 @@ function write(name, obj) {
 
   write(`agent-${PHASE}.json`, {
     ...base,
+    tool_call_provenance: RUN_PROVENANCE.tool_call.mode,
     agent_emitted_call: true,
     model_tool_call: { name: toolCall.function.name, arguments_raw: toolCall.function.arguments },
     wire_request,                       // the EXACT bytes the agent transmitted to the gateway

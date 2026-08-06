@@ -1,7 +1,7 @@
 {
-  "name": "seal · live agent threat — evidence replay",
+  "name": "seal · scripted tool-call — evidence replay",
   "short_name": "seal-replay",
-  "description": "Replays the real evidence bundle from a seal-live-demo run; re-derivable in your browser.",
+  "description": "Replays real gateway, kernel, Postgres, receipt, and block evidence from a run whose tool-call was scripted.",
   "start_url": ".",
   "display": "standalone",
   "background_color": "#0e0f13",

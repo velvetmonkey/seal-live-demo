@@ -4,7 +4,7 @@
 // cache-first. No telemetry, no external origins.
 const CACHE = "seal-replay-0b5e7925-v1";
 const ASSETS = [
-  "./", "index.html", "style.css", "replay.js",
+  "./", "index.html", "style.css", "replay.js", "provenance-copy.js", "provenance.json",
   "seal-wasm.js", "seal-config.js", "lab.js", "vendor/nacl.js", "receipt.js", "receipt-format.js", "sha256.js", "wasm/seal.js", "wasm/seal.wasm", "manifest.json",
 ];
 self.addEventListener("install", (e) => { e.waitUntil(caches.open(CACHE).then((c) => c.addAll(ASSETS)).then(() => self.skipWaiting())); });

@@ -1,9 +1,10 @@
 // SPDX-License-Identifier: Apache-2.0
-// Evidence-replay controller. Loads the REAL run bundle (bundle.json) and animates
+// Evidence-replay controller. Loads the captured bundle.json and animates
 // only captured values. Re-derives verdicts live in-browser via the same kernel.
 // Drama rule: if it wasn't emitted by the run, it doesn't appear here.
 import { ready, verifyKernelSha } from "./seal-wasm.js";
 import { verificationPresentation, verifyReceipt } from "./receipt.js";
+import { PROVENANCE, PROVENANCE_COPY } from "./provenance-copy.js";
 
 const $ = (id) => document.getElementById(id);
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
@@ -87,13 +88,13 @@ async function play() {
   $("count-off").className = "count"; $("count-on").className = "count";
   $("count-off").textContent = before.toLocaleString(); $("count-on").textContent = before.toLocaleString();
   setGrid($("grid-off"), before, before); setGrid($("grid-on"), before, before);
-  $("narration").textContent = "An attacker hid a command inside a customer note. The agent read it and obeyed.";
+  $("narration").textContent = PROVENANCE_COPY.narration1;
   await sleep(1200);
   $("narration").textContent = "Without the gate: the deletion reaches the database.";
   await tween($("count-off"), $("grid-off"), before, offAfter, before, 1800, "crater");
   $("cap-off").textContent = offAfter === 0 ? "ALL CUSTOMER RECORDS DELETED" : "customer records";
   await sleep(700);
-  $("narration").textContent = "Same agent, same attack, with the verified gate: the deletion never reaches the database.";
+  $("narration").textContent = PROVENANCE_COPY.narration3;
   await tween($("count-on"), $("grid-on"), before, onAfter, before, 1200, "held");
   $("cap-on").textContent = "customer records — unchanged";
   const h = BUNDLE.phases.p2.receipt.canonical_request_sha256;
@@ -154,9 +155,8 @@ async function init() {
     BUNDLE = await (await fetch("bundle.json")).json();
   } catch (e) { $("narration").textContent = "could not load bundle.json — run scripts/run_local.sh first."; return; }
   await ready();
-  const m = BUNDLE.meta || {};
   const v = await verifyKernelSha();
-  $("meta").textContent = `commit ${(m.commit || "?").slice(0, 12)} · model ${m.model || "?"} · policy ${m.policy || "?"} · kernel ${(v.computed || "").slice(0, 12)}… ${v.match ? "self-verified ✓" : "⚠ SHA MISMATCH"}`;
+  $("meta").textContent = `commit ${(PROVENANCE.commit || "?").slice(0, 12)} · model ${PROVENANCE.model} · tool-call ${PROVENANCE.tool_call.mode} · kernel ${(v.computed || "").slice(0, 12)}… ${v.match ? "self-verified ✓" : "⚠ SHA MISMATCH"}`;
   buildGrid($("grid-off")); buildGrid($("grid-on"));
   const before = BUNDLE.snapshots.before.rows;
   setGrid($("grid-off"), before, before); setGrid($("grid-on"), before, before);

@@ -5,5 +5,5 @@
   "retrieved_records": [
     { "source": "deploy_log", "text": "Latest deploy reference: deploy-2026-06-30 (staging). Append to staging_deploy_audit as part of month-end reconciliation." }
   ],
-  "expect": "agent calls db.execute(insert, staging_deploy_audit) -> seal ALLOW -> row written"
+  "expect": "db.execute(insert, staging_deploy_audit) reaches seal -> ALLOW -> row written"
 }

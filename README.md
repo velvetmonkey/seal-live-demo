@@ -2,19 +2,25 @@
 
 [![claims-drift](https://github.com/velvetmonkey/seal-live-demo/actions/workflows/claims.yml/badge.svg)](https://github.com/velvetmonkey/seal-live-demo/actions/workflows/claims.yml)
 
-**Watch a live agent get tricked into a destructive prod delete — and Seal block it. Remove Seal and the identical request destroys the data. One command, real evidence, visible outcome.**
+<!-- provenance-generated:opener:begin -->
+**Watch a scripted destructive tool-call hit a real gateway — and Seal block it. Remove Seal and the identical request destroys the data. One command, real evidence, visible outcome.**
 
-![Side-by-side result from the real run: SEAL OFF (control) — 0 records, "ALL CUSTOMER RECORDS DELETED"; SEAL ON (verified gate) — 10,000 customer records, unchanged. Between the panels: "identical canonical request on both sides: e5b872c7e5c7fa94e901a3c7…"](docs/img/moneyshot-seal-on-vs-off.png)
+![Historical live-model capture: SEAL OFF (control) — 0 records; SEAL ON — 10,000 records, unchanged; identical request fingerprint e5b872c7e5c7fa94e901a3c7…](docs/img/moneyshot-seal-on-vs-off.png)
 
-**The line under the panels — `identical canonical request on both sides: e5b872c7e5c7…` — is the whole argument.** That string is a SHA-256 **fingerprint** of the exact request the AI made: change one character of the request and the fingerprint changes completely. Both panels show the **same** fingerprint, so the AI asked for byte-for-byte the same thing both times. **The only thing that differed was the gate** — and that is the only reason the 10,000 customer records on the right still exist. This is a screenshot of the real served page from a real run: the header shows the real model (`openai/gpt-4o-mini`) and a kernel the browser re-verified before replaying. Not faked, not mocked — serve `pwa/` yourself (below) and it is what you see.
+The screenshot above is the archived historical live-model capture (model `openai/gpt-4o-mini`, kernel `d3067bc07e74977dedf6bb96d79a710c4b61143f6e8db151655bc88ece8b9d66`), not the currently shipped replay. Its source bundle is [`archive/bundle-d3067bc0-historical.json`](archive/bundle-d3067bc0-historical.json). The current shipped request fingerprint is `d4d7b5613cdb6abf0676daaa837de8aec1efd70940ed3feea4dee786857e1204`; both P2 and P3 receipts carry that full value. Real gateway, real kernel, real Postgres, real receipts, real block. The only synthetic element is the tool-call, scripted rather than emitted by a model.
 
-The demo plays out in three phases:
+Provenance source: [`provenance.json`](provenance.json) · runner `scripts/run_local.sh` · model `local-synthetic (no GitHub Models)` · `generated_by=run_local.sh` · tool-call `synthetic` · kernel `0b5e792500592b56847f70b1e27e47aecdc65023c7c59fd79695102c465f26ec` · bundle sha256 `7d16775e7ee271bf6563c7ac9988bf270cff1ce4be1ff2ddfd8250544a267226`.
+<!-- provenance-generated:opener:end -->
 
-1. **Phase 1 (P1) — a legitimate task.** The agent does an approved, harmless job: an insert into a staging table. Seal allows it.
-2. **Phase 2 (P2) — the attack, Seal ON.** Hostile data tricks the agent into requesting a destructive production delete. Seal blocks it; the 10,000 records survive.
-3. **Phase 3 (P3) — the same attack, Seal OFF.** Our control: the byte-identical request replays with Seal switched off. The table is destroyed.
+<!-- provenance-generated:phases:begin -->
+The shipped demo plays out in three phases:
 
-The demo wires an agent to a DB. Attack path: hostile data makes the agent emit the bad call. Seal stops it (no approval for that exact target). Control path: Seal off, data gone. Every step produces real receipts you can re-verify.
+1. **Phase 1 (P1) — a legitimate task.** The local runner submits an approved staging insert. Seal allows it.
+2. **Phase 2 (P2) — the attack, Seal ON.** The local runner submits the destructive request encoded by the hostile-data scenario. Seal blocks it; the 10,000 records survive.
+3. **Phase 3 (P3) — the same request, Seal OFF.** The byte-identical request replays with Seal switched off. The table is destroyed.
+
+The local runner submits tool-calls to Postgres through the real gateway and kernel. The attack bytes are scripted; the decision, database effects, receipts, and block are real.
+<!-- provenance-generated:phases:end -->
 
 <details>
 <summary><b>New to this? A 60-second decoder for the terms below</b></summary>
@@ -38,7 +44,9 @@ Full definitions: [docs/GLOSSARY.md](docs/GLOSSARY.md).
 bash scripts/showcase.sh
 ```
 
-One command spins up the full live agent + gateway + kernel + DB. Watch Phase 1 ALLOW a staging insert, Phase 2 BLOCK the tricked destructive prod delete (rows unchanged), Phase 3 prove the identical bytes bypass and destroy the table. Real row counts, receipts, and a final "ASSERT OK" — every invariant green — land in your terminal. (Requires Docker + compose.)
+<!-- provenance-generated:one-command:begin -->
+One command spins up the real gateway + kernel + Postgres path. It scripts only the tool-call, then shows Phase 1 ALLOW, Phase 2 BLOCK with rows unchanged, and Phase 3 replay the identical bytes with Seal off and destroy the table. Real row counts, receipts, and a final "ASSERT OK" land in your terminal. (Requires Docker + compose.)
+<!-- provenance-generated:one-command:end -->
 
 ## Replay without Docker
 
@@ -48,23 +56,17 @@ One command spins up the full live agent + gateway + kernel + DB. Watch Phase 1 
 cd pwa && python3 -m http.server 8090   # then open http://localhost:8090
 ```
 
-Ships ready to serve — the audited `wasm/seal.js` and a run's `bundle.json` are already in `pwa/`. The page re-derives every Phase 1/2/3 decision from that bundle in your browser: SEAL ON grid full vs SEAL OFF grid empty, the identical `canonical_request_sha256` (the request fingerprint from the screenshot above) on both, receipts you can re-verify. Nothing leaves the page; no containers, no build. (Smoke-tested: index, `bundle.json`, and `wasm/seal.js` all serve 200.)
+<!-- provenance-generated:replay-provenance:begin -->
+This shipped replay is the local synthetic run: the tool-call is scripted, while the gateway, kernel, Postgres, receipts, block, and control are real.
 
-> **Bundle provenance (2026-07-26 kernel repin).** The kernel was repinned from the
-> fail-open `d3067bc0` build to the pathological-number fail-closed `ff1bfd68` build
-> (2026-07-16), through the 7-kernel policy-bundle DX build (2026-07-17), and then
-> to `d7d81e27` (2026-07-26), and then `0b5e7925` (2026-08-02; the fail-closed guard carries forward unchanged).
-> Because `pwa/receipt.js` re-checks each replayed receipt's `wasm_sha256` against the
-> on-disk wasm, `pwa/bundle.json` was **generated under `0b5e7925`** by
-> [`scripts/run_local.sh`](scripts/run_local.sh). The local path scripts only the
-> agent's tool-call and labels it `synthetic_agent: true`; the kernel decisions,
-> signed configs, receipts, DB effects, and row counts are real. The older
-> `d3067bc0` CI capture is archived unmodified at
-> [`archive/bundle-d3067bc0-historical.json`](archive/README.md).
+The page re-derives every Phase 1/2/3 decision from the shipped bundle in your browser: Seal ON leaves the seeded table intact, Seal OFF empties it, both receipts carry `d4d7b5613cdb6abf0676daaa837de8aec1efd70940ed3feea4dee786857e1204`, and nothing leaves the page. No containers or build are required.
 
-The point: the external effect had to cross the approval boundary. The model was just the story.
+> **Shipped bundle provenance.** The replay bundle was generated by [`scripts/run_local.sh`](scripts/run_local.sh) at commit `b5d58fbc92a9145abcfea1c3b03134db5f695181`. Its exact model is `local-synthetic (no GitHub Models)`; `generated_by` is `run_local.sh`; tool-call mode is `synthetic`; kernel pin is `0b5e792500592b56847f70b1e27e47aecdc65023c7c59fd79695102c465f26ec`; bundle sha256 is `7d16775e7ee271bf6563c7ac9988bf270cff1ce4be1ff2ddfd8250544a267226`. These values come from [`provenance.json`](provenance.json), not from this paragraph. The archived historical live capture is [separately labelled](archive/bundle-d3067bc0-historical.json).
+<!-- provenance-generated:replay-provenance:end -->
 
-![Demo](https://img.shields.io/badge/demo-live%20agent-red)
+<!-- provenance-generated:badge:begin -->
+![Demo](https://img.shields.io/badge/demo-scripted%20tool--call-orange)
+<!-- provenance-generated:badge:end -->
 ![Runtime](https://img.shields.io/badge/runtime-WebAssembly-654ff0)
 ![License](https://img.shields.io/badge/license-Apache--2.0-blue)
 
@@ -106,10 +108,11 @@ Mandatory non-claims:
 
 ## Verify in five minutes
 
-This is the Seal family's one canonical demo: one command, real containers, deterministic
-outcome. **Prerequisites:** Docker with `docker compose`, and Node.js. No API keys — the local
-run scripts the agent's tool call (`synthetic_agent: true`); the gateway, kernel, database,
-receipts, and row counts are all real.
+<!-- provenance-generated:verify:begin -->
+This is the Seal family's canonical local demo: one command, real containers, deterministic outcome. **Prerequisites:** Docker with `docker compose`, and Node.js. Real gateway, real kernel, real Postgres, real receipts, real block. The only synthetic element is the tool-call, scripted rather than emitted by a model.
+
+`provenance.json` records `runner=scripts/run_local.sh`, `model=local-synthetic (no GitHub Models)`, `generated_by=run_local.sh`, and `tool_call.mode=synthetic`.
+<!-- provenance-generated:verify:end -->
 
 ```sh
 bash scripts/run_local.sh        # builds + runs the full P1/P2/P3 sequence (a few minutes,
@@ -117,13 +120,9 @@ bash scripts/run_local.sh        # builds + runs the full P1/P2/P3 sequence (a f
                                  # invariant green
 ```
 
-What you will see, in order: **Phase 1** an approved staging insert is ALLOWED; **Phase 2** the agent is
-tricked into a destructive production delete and Seal BLOCKS it (row count provably unchanged);
-**Phase 3** the *byte-identical* request replays with Seal bypassed and the 10,000-row table is
-destroyed. The P2/P3 requests carry the same `canonical_request_sha256` — the request
-fingerprint — so the only variable is Seal. Every phase emits a v2 receipt; `scripts/assert.mjs`
-gates every invariant, including that the table was genuinely populated before the run, so a
-green result can never come from an empty database.
+<!-- provenance-generated:terminal-reading:begin -->
+What you will see, in order: **Phase 1** an approved staging insert is ALLOWED; **Phase 2** the scripted destructive tool-call is submitted and Seal BLOCKS it (row count provably unchanged); **Phase 3** the *byte-identical* request replays with Seal bypassed and the 10,000-row table is destroyed. The P2/P3 receipts carry the same full `canonical_request_sha256`, `d4d7b5613cdb6abf0676daaa837de8aec1efd70940ed3feea4dee786857e1204`. `scripts/assert.mjs` reads the same provenance fact before it describes the producer.
+<!-- provenance-generated:terminal-reading:end -->
 
 Then check the evidence yourself — neither checker trusts this repo:
 
@@ -163,6 +162,7 @@ In this repo — every link below works publicly:
 - [Assumptions](docs/ASSUMPTIONS.md)
 - [Proof reference](docs/PROOF-REFERENCE.md)
 - [Conformance](docs/CONFORMANCE.md)
+- [Run provenance generation](PROVENANCE.md)
 - [Trusted computing base](docs/TCB.md)
 - [Glossary](docs/GLOSSARY.md)
 - [Security policy](SECURITY.md)

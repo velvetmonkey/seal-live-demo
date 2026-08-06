@@ -1,0 +1,75 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/velvetmonkey/seal-live-demo/provenance.schema.json",
+  "title": "seal-live-demo shipped-run provenance",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "runner",
+    "model",
+    "generated_by",
+    "run_environment",
+    "tool_call",
+    "kernel",
+    "bundle",
+    "request"
+  ],
+  "properties": {
+    "$schema": { "type": "string" },
+    "schema_version": { "const": 1 },
+    "runner": { "type": "string", "minLength": 1 },
+    "model": { "type": "string", "minLength": 1 },
+    "generated_by": { "type": "string", "minLength": 1 },
+    "run_environment": { "enum": ["local", "github-actions"] },
+    "commit": { "type": "string", "pattern": "^[0-9a-f]{40}$" },
+    "tool_call": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["mode", "generated_by"],
+      "properties": {
+        "mode": { "enum": ["synthetic", "live"] },
+        "generated_by": { "type": "string", "minLength": 1 }
+      }
+    },
+    "kernel": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["sha256"],
+      "properties": {
+        "sha256": { "type": "string", "pattern": "^[0-9a-f]{64}$" }
+      }
+    },
+    "bundle": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["path", "sha256"],
+      "properties": {
+        "path": { "type": "string", "minLength": 1 },
+        "sha256": { "type": "string", "pattern": "^[0-9a-f]{64}$" }
+      }
+    },
+    "request": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["sha256"],
+      "properties": {
+        "sha256": { "type": "string", "pattern": "^[0-9a-f]{64}$" }
+      }
+    },
+    "historical_capture": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["model", "kernel_sha256", "request_sha256", "bundle_path", "runner", "run_environment", "tool_call_mode"],
+      "properties": {
+        "model": { "type": "string", "minLength": 1 },
+        "kernel_sha256": { "type": "string", "pattern": "^[0-9a-f]{64}$" },
+        "request_sha256": { "type": "string", "pattern": "^[0-9a-f]{64}$" },
+        "bundle_path": { "type": "string", "minLength": 1 },
+        "runner": { "type": "string", "minLength": 1 },
+        "run_environment": { "const": "github-actions" },
+        "tool_call_mode": { "const": "live" }
+      }
+    }
+  }
+}

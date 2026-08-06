@@ -22,6 +22,7 @@ jobs:
       GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       GH_MODELS_TOKEN: ${{ secrets.GH_MODELS_TOKEN }}   # optional belt-and-braces
       EVIDENCE_DIR: ${{ github.workspace }}/evidence
+      PROVENANCE_FILE: ${{ github.workspace }}/evidence/provenance.json
       COMPOSE_PARALLEL_LIMIT: "1"
       # SEAL_CHECK_URL is intentionally UNSET for public/preview runs. When unset the
       # summary renders local re-check instructions instead of a clickable link, so no
@@ -38,11 +39,7 @@ jobs:
 
       # Immutable "what ran": commit + workflow-file hash, before anything else.
       - name: Pre-run identity
-        run: |
-          mkdir -p evidence
-          WF_HASH=$(sha256sum .github/workflows/demo.yml | cut -d' ' -f1)
-          node -e "require('fs').writeFileSync('evidence/run-meta.json', JSON.stringify({commit: process.env.GITHUB_SHA, workflow_hash: '$WF_HASH', model: process.env.MODEL, policy: 'seal-live-demo-d0', kernel_sha256: '0b5e792500592b56847f70b1e27e47aecdc65023c7c59fd79695102c465f26ec', run_id: process.env.GITHUB_RUN_ID}, null, 2))"
-          cat evidence/run-meta.json
+        run: node scripts/prepare_run_provenance.mjs --live && cat evidence/provenance.json && cat evidence/run-meta.json
 
       # Fail LOUD if Models is unavailable, BEFORE Docker. Never canned fallback.
       - name: Preflight GitHub Models (tool-calling smoke test)
@@ -102,17 +99,20 @@ jobs:
           gh api "repos/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID/jobs" > evidence/jobs.json \
             || echo '{}' > evidence/jobs.json
 
-      - name: Render report to job summary
-        run: node scripts/render_summary.mjs
-
       - name: Assemble bundle.json (for the seal-check / replay PWA)
         run: node scripts/assemble_bundle_json.mjs
 
-      - name: Package evidence bundle
-        run: bash scripts/make_bundle.sh evidence.tar.gz
+      - name: Record bundle and request fingerprints in provenance fact
+        run: node scripts/record_run_provenance.mjs
 
       - name: Assert invariants (green check = evidence)
         run: node scripts/assert.mjs
+
+      - name: Render report to job summary
+        run: node scripts/render_summary.mjs
+
+      - name: Package evidence bundle
+        run: bash scripts/make_bundle.sh evidence.tar.gz
 
       - name: Upload evidence bundle
         if: always()

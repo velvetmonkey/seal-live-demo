@@ -2,7 +2,7 @@
 # LOCAL VERIFICATION OVERRIDE ONLY. Publishes the gateway port to the host so a
 # developer can drive db.execute from the host during local verification. The
 # production topology (docker-compose.yml) deliberately exposes NO host port on the
-# gateway. Never use this override in the real run.
+# gateway. This override is used only by the advertised local verification path.
 services:
   seal-gateway:
     ports:
