@@ -36,7 +36,8 @@ globalThis.fetch = async (p) => {
     ok = ok && !!pass;
   };
 
-  const authentic = await verifyReceipt(clone());
+  const wire = (receipt) => JSON.stringify(receipt);
+  const authentic = await verifyReceipt(wire(clone()));
   const browserSigned = await buildSignedConfig(genuine.kernel_config);
   check("WebCrypto signer emits the exact RFC-key signed config",
     browserSigned.payload === genuine.signed_config.payload &&
@@ -53,11 +54,11 @@ globalThis.fetch = async (p) => {
 
   const bundle = JSON.parse(fs.readFileSync(path.join(PWA, "bundle.json"), "utf8"));
   for (const key of ["p1", "p2"]) {
-    const bundled = await verifyReceipt(bundle.phases[key].receipt);
+    const bundled = await verifyReceipt(wire(bundle.phases[key].receipt));
     check(`bundle ${key} authentic + replay-consistent + unpinned`,
       bundled.signature_valid && bundled.kernel_replay_consistent && bundled.outcome === "unpinned");
   }
-  const bundledBypass = await verifyReceipt(bundle.phases.p3.receipt);
+  const bundledBypass = await verifyReceipt(wire(bundle.phases.p3.receipt));
   check("bundle p3 is NOT MEDIATED", !!bundledBypass.notMediated);
 
   const cases = [
@@ -73,7 +74,7 @@ globalThis.fetch = async (p) => {
   ];
   for (const [name, mutate] of cases) {
     const receipt = clone(); mutate(receipt);
-    const result = await verifyReceipt(receipt);
+    const result = await verifyReceipt(wire(receipt));
     const rendered = verificationPresentation(receipt, result);
     check(`${name} fails red`, result.outcome === "failure" && rendered.tone === "bad");
   }
@@ -84,7 +85,7 @@ globalThis.fetch = async (p) => {
   bypass.bypass = true; bypass.verdict = "ALLOW"; bypass.certs = [];
   bypass.kernel_identity = { wasm_sha256: null, self_verified: false };
   bypass.reason = "seal bypassed"; bypass.deny_kernel = null;
-  const bypassResult = await verifyReceipt(bypass);
+  const bypassResult = await verifyReceipt(wire(bypass));
   const bypassView = verificationPresentation(bypass, bypassResult);
   check("bypass renders NOT MEDIATED", bypassResult.notMediated && bypassView.status === "NOT MEDIATED");
 
