@@ -24,13 +24,16 @@ async function handleDeepLink() {
   if (!enc) return false;
   const banner = $("deeplink-banner");
   banner.classList.remove("hidden");
-  let receipt;
-  try { receipt = JSON.parse(b64urlDecode(enc)); } catch (e) { banner.innerHTML = `<b>Deep-linked receipt:</b> could not decode (${e.message}).`; return true; }
+  let receiptDocument, receipt;
+  try {
+    receiptDocument = b64urlDecode(enc);
+    receipt = JSON.parse(receiptDocument);
+  } catch (e) { banner.innerHTML = `<b>Deep-linked receipt:</b> could not decode (${e.message}).`; return true; }
   $("tamper-input").value = JSON.stringify(receipt, null, 2);
   $("receipt-view").classList.remove("hidden");
   $("rv-json").textContent = JSON.stringify(receipt, null, 2);
   try {
-    const result = await verifyReceipt(receipt);
+    const result = await verifyReceipt(receiptDocument);
     renderVerification(receipt, result);
     const view = verificationPresentation(receipt, result);
     banner.textContent = view.summary + " Nothing was sent to a server.";

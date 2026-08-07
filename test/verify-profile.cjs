@@ -47,6 +47,7 @@ globalThis.fetch = async (p) => {
 (async () => {
   const R = await import(path.join(PWA, "receipt.js"));
   const { verifyReceipt, verificationPresentation } = R;
+  const wire = (receipt) => JSON.stringify(receipt);
   let failures = 0;
   const check = (name, pass, detail = "") => {
     if (!pass) failures++;
@@ -62,27 +63,27 @@ globalThis.fetch = async (p) => {
     String(R.VERIFY_PROFILE));
 
   // --- P-ENFORCE behaviour on the genuine receipt ---
-  const unpinned = await verifyReceipt(clone());
+  const unpinned = await verifyReceipt(wire(clone()));
   check("P-ENFORCE: pass, no pin -> outcome unpinned (never a bare pass)",
     unpinned.outcome === "unpinned" && unpinned.allGood === false, unpinned.outcome);
   const unpinnedView = verificationPresentation(genuine, unpinned);
   check("exhibit surface: unpinned renders UNPINNED (warn), not a success state",
     unpinnedView.status === "UNPINNED" && unpinnedView.tone === "warn", unpinnedView.status);
 
-  const pinned = await verifyReceipt(clone(), { expectedConfigPubkey: PIN });
+  const pinned = await verifyReceipt(wire(clone()), { expectedConfigPubkey: PIN });
   check("P-ENFORCE: pass + pin -> outcome authorised (the top verdict requires the pin)",
     pinned.outcome === "authorised" && pinned.authority_trusted === true, pinned.outcome);
   const pinnedView = verificationPresentation(genuine, pinned);
   check("exhibit surface (ENF-4): even pinned-authorised renders PIN NOT ACCEPTED HERE, never green",
     pinnedView.status === "PIN NOT ACCEPTED HERE" && pinnedView.tone === "bad", pinnedView.status);
 
-  const wrongPin = await verifyReceipt(clone(), { expectedConfigPubkey: "0".repeat(64) });
+  const wrongPin = await verifyReceipt(wire(clone()), { expectedConfigPubkey: "0".repeat(64) });
   check("P-ENFORCE: wrong pin -> failure (unauthorised config signer)",
     wrongPin.outcome === "failure" && wrongPin.authority_trusted === false, wrongPin.outcome);
 
   const configless = clone();
   delete configless.signed_config;
-  const noConfig = await verifyReceipt(configless, { expectedConfigPubkey: PIN });
+  const noConfig = await verifyReceipt(wire(configless), { expectedConfigPubkey: PIN });
   check("P-ENFORCE: config-less mediated -> failure (signed_config binding required)",
     noConfig.outcome === "failure", noConfig.outcome);
 

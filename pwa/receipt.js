@@ -12,7 +12,7 @@ import {
 // docs/VERIFY-PROFILES.md): P-ENFORCE — the production receipt gate core:
 // signed_config binding required, the top verdict requires the trust-anchor
 // pin (`expectedConfigPubkey`), outcome set {authorised,
-// authorised-unparseable, unpinned, failure}. DEPLOYED AS AN EXHIBIT (ENF-4,
+// authorised-unparseable, unpinned, unverified-document, failure}. DEPLOYED AS AN EXHIBIT (ENF-4,
 // deliberately stricter): this replay surface supplies no pin (ceiling
 // UNPINNED) and `verificationPresentation` renders even a pinned-authorised
 // result as "PIN NOT ACCEPTED HERE" — never authorised-green; operator
@@ -54,7 +54,10 @@ function auditConsistent(receipt) {
   }
 }
 
-export async function verifyReceipt(receipt, { expectedConfigPubkey } = {}) {
+export async function verifyReceipt(input, { expectedConfigPubkey } = {}) {
+  const fromDocument = typeof input === "string";
+  const shape = validateReceipt(input);
+  const receipt = fromDocument ? (shape.record ?? null) : input;
   const out = {
     receipt,
     signature_valid: false,
@@ -65,9 +68,9 @@ export async function verifyReceipt(receipt, { expectedConfigPubkey } = {}) {
     allGood: false,
     bindingErrors: [],
     grantErrors: [],
+    document_checked: shape.document_checked === true,
   };
 
-  const shape = validateReceipt(receipt);
   out.formatOk = shape.ok;
   out.formatVersion = shape.version;
   out.formatErrors = shape.errors;
@@ -181,15 +184,16 @@ export async function verifyReceipt(receipt, { expectedConfigPubkey } = {}) {
   // Reduced-scope core for unparseable-request receipts: everything the
   // receipt carries is verified; what it honestly cannot carry (canonical
   // request re-derivation, kernel replay) is excluded rather than failed.
-  const verificationCore = out.unparseableRequest
+  const checksPassed = out.unparseableRequest
     ? out.formatOk && out.kernelShaMatch && out.bindingOk &&
       out.grantErrors.length === 0 && out.signature_valid && out.kernelMaterialConsistent === true
     : out.formatOk && out.kernelShaMatch && out.requestHashMatch &&
       out.bindingOk && out.grantErrors.length === 0 && out.signature_valid &&
       out.kernel_replay_consistent;
-  out.verificationCore = verificationCore;
-  out.outcome = !verificationCore || out.authority_trusted === false
+  out.verificationCore = out.document_checked && checksPassed;
+  out.outcome = !checksPassed || out.authority_trusted === false
     ? "failure"
+    : !out.document_checked ? "unverified-document"
     : out.authority_trusted !== true ? "unpinned"
     : out.unparseableRequest ? "authorised-unparseable" : "authorised";
   out.allGood = out.outcome === "authorised";
@@ -212,6 +216,10 @@ export function verificationPresentation(receipt, result) {
   if (result.outcome === "unpinned") return {
     tone: "warn", status: "UNPINNED",
     summary: `AUTHENTIC + REPLAY-CONSISTENT, authority NOT established (signed by ${receipt.signed_config.pubkey}; verify it out-of-band).`,
+  };
+  if (result.outcome === "unverified-document") return {
+    tone: "warn", status: "UNVERIFIED DOCUMENT",
+    summary: "All object-level checks passed, but no received receipt bytes were checked; this is not a verified wire receipt.",
   };
   if (result.outcome === "authorised") return {
     tone: "bad", status: "PIN NOT ACCEPTED HERE",
