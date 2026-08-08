@@ -5,7 +5,7 @@
 import { SCENARIOS, CFG_STANDARD, buildSignedConfig, buildStepInput, parseVerdict } from "./seal-config.js";
 import { sha256Hex } from "./sha256.js";
 
-export const KERNEL_WASM_SHA256 = "0b5e792500592b56847f70b1e27e47aecdc65023c7c59fd79695102c465f26ec";
+export const KERNEL_WASM_SHA256 = "28bb3ae71985357163e3b651791e2a70c462ea5d1313a59b4967d4c20ea77657";
 
 // Memoise the PROMISE, not the resolved value: at load, ready() and an in-flight
 // decide call mod() concurrently, and a resolved-value guard (`if (_mod)`) lets both

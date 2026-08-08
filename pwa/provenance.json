@@ -5,17 +5,17 @@
   "model": "local-synthetic (no GitHub Models)",
   "generated_by": "run_local.sh",
   "run_environment": "local",
-  "commit": "b5d58fbc92a9145abcfea1c3b03134db5f695181",
+  "commit": "8a26cfcc32013b41eb3ed4b3ceb51a328564d781",
   "tool_call": {
     "mode": "synthetic",
     "generated_by": "scripts/mcp_call.mjs"
   },
   "kernel": {
-    "sha256": "0b5e792500592b56847f70b1e27e47aecdc65023c7c59fd79695102c465f26ec"
+    "sha256": "28bb3ae71985357163e3b651791e2a70c462ea5d1313a59b4967d4c20ea77657"
   },
   "bundle": {
     "path": "pwa/bundle.json",
-    "sha256": "7d16775e7ee271bf6563c7ac9988bf270cff1ce4be1ff2ddfd8250544a267226"
+    "sha256": "e8c3044fb405e02fea3be98fe578d24d2a1b29858753139eb6597aa2f109b95f"
   },
   "request": {
     "sha256": "d4d7b5613cdb6abf0676daaa837de8aec1efd70940ed3feea4dee786857e1204"

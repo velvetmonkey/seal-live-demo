@@ -2,8 +2,8 @@
   "kind": "seal-live-demo-evidence",
   "version": "v0",
   "run": {
-    "commit": "b5d58fbc92a9145abcfea1c3b03134db5f695181",
-    "generated_at": "2026-08-06T11:28:50.241Z",
+    "commit": "8a26cfcc32013b41eb3ed4b3ceb51a328564d781",
+    "generated_at": "2026-08-08T14:56:21.185Z",
     "workflow_hash": "4618463d3d20321893f58e2a290b38d96fcf223b98a3d78985df09b374454170",
     "policy": "seal-live-demo-d0"
   },
@@ -120,7 +120,7 @@
         ],
         "emitted_bytes": "{\"audit\":\"{\\\"certs\\\":[{\\\"certHash\\\":\\\"14585154447323058661\\\",\\\"kernel\\\":\\\"safety\\\",\\\"reason\\\":\\\"018055e0085682bebe9e07e491100fb628b09ec1a77d825cad676b4085a60e06\\\",\\\"verdict\\\":\\\"allow\\\"},{\\\"certHash\\\":\\\"12756644985251018087\\\",\\\"kernel\\\":\\\"temporal\\\",\\\"reason\\\":\\\"trace ok (1 events)\\\",\\\"verdict\\\":\\\"allow\\\"}],\\\"epoch\\\":1,\\\"request_sha256\\\":\\\"66330ea2242d45a5a6b32d85007464125608fec7e88430fa3c23d5c5303db756\\\",\\\"tool\\\":\\\"db.execute\\\",\\\"verdict\\\":\\\"allow\\\"}\",\"route\":\"forward\"}",
         "kernel_identity": {
-          "wasm_sha256": "0b5e792500592b56847f70b1e27e47aecdc65023c7c59fd79695102c465f26ec",
+          "wasm_sha256": "28bb3ae71985357163e3b651791e2a70c462ea5d1313a59b4967d4c20ea77657",
           "self_verified": true,
           "note": "Verified mediation DECISION FUNCTION (modulo A1-A3, for calls that reach seal). Binary identity only; host/container wiring is NOT verified."
         },
@@ -183,7 +183,7 @@
         },
         "gateway": {
           "bypass": false,
-          "ts_mono_ms": 138515289
+          "ts_mono_ms": 323766399
         }
       }
     },
@@ -223,7 +223,7 @@
         ],
         "emitted_bytes": "{\"audit\":\"{\\\"certs\\\":[{\\\"certHash\\\":\\\"57248940472517642\\\",\\\"kernel\\\":\\\"safety\\\",\\\"reason\\\":\\\"0c61a5e7422b77c92dba74543347db4a13819c83daeb9c5581ebaba08f1ef0df\\\",\\\"verdict\\\":\\\"deny\\\"},{\\\"certHash\\\":\\\"12756644985251018087\\\",\\\"kernel\\\":\\\"temporal\\\",\\\"reason\\\":\\\"trace ok (1 events)\\\",\\\"verdict\\\":\\\"allow\\\"}],\\\"epoch\\\":1,\\\"request_sha256\\\":\\\"d4d7b5613cdb6abf0676daaa837de8aec1efd70940ed3feea4dee786857e1204\\\",\\\"tool\\\":\\\"db.execute\\\",\\\"verdict\\\":\\\"deny\\\"}\",\"response\":\"{\\\"id\\\":1,\\\"jsonrpc\\\":\\\"2.0\\\",\\\"result\\\":{\\\"content\\\":[{\\\"text\\\":\\\"approval required: 0c61a5e7422b77c92dba74543347db4a13819c83daeb9c5581ebaba08f1ef0df\\\",\\\"type\\\":\\\"text\\\"}],\\\"isError\\\":true}}\\n\",\"route\":\"block\"}",
         "kernel_identity": {
-          "wasm_sha256": "0b5e792500592b56847f70b1e27e47aecdc65023c7c59fd79695102c465f26ec",
+          "wasm_sha256": "28bb3ae71985357163e3b651791e2a70c462ea5d1313a59b4967d4c20ea77657",
           "self_verified": true,
           "note": "Verified mediation DECISION FUNCTION (modulo A1-A3, for calls that reach seal). Binary identity only; host/container wiring is NOT verified."
         },
@@ -286,7 +286,7 @@
         },
         "gateway": {
           "bypass": false,
-          "ts_mono_ms": 138515421
+          "ts_mono_ms": 323766575
         }
       }
     },
@@ -320,7 +320,7 @@
         },
         "gateway": {
           "bypass": true,
-          "ts_mono_ms": 138529625
+          "ts_mono_ms": 323781465
         }
       }
     }
