@@ -1,11 +1,15 @@
 # IP audit & publish gate, seal-live-demo
 
-PRIVATE preview. Ships only public artifacts. The verified core is the **pre-built,
-sha256-pinned** seal kernel binary (the same audited artifact as seal-check); **no
-seal-host / mcp-seal-dev source is vendored or referenced.** This file is the gate:
+PRIVATE preview. Ships only public artifacts. The decision core is the **pre-built,
+sha256-pinned** seal kernel binary (the same pinned artifact as seal-check); **no
+seal-host / mcp-seal-dev source is vendored**, though their names appear in shipped
+comments and one wasm string (see the re-measured checklist). This file is the gate:
 the checklist must pass before any public flip, which is a separate authorised step.
 
-**Current status: PASS (private). NOT PUBLISHED.** No remote; no GitHub Pages.
+**Current status: NOT PUBLISHED — and the checklist does NOT currently pass; two
+items below are red as re-measured 2026-08-08.** A private `origin` remote exists
+and a `workflow_dispatch`-gated Pages deploy workflow (`.github/workflows/pages.yml`)
+is present; neither has published the site.
 
 ## Pinned kernel binary
 ```
@@ -25,11 +29,13 @@ and fails closed on mismatch.
 
 ## Checklist (must all hold to publish)
 - [x] wasm sha256 matches pin (`sha256sum seal-gateway/wasm/seal.wasm`).
-- [x] No private path / repo / commit / author leak in the binary or code, grep below
-      is clean (docs that *name the boundary*, this file, README, excluded).
-- [x] Embedded wasm strings are public-only (public `SealCore`/`SealV2` type names +
-      Lean runtime; no `seal-host`/`mcp-seal-dev`/`wasm-spike`/paths). Inherited from
-      the seal-check audit of the identical binary.
+- [ ] No private path / repo / commit / author leak in the binary or code — **RED,
+      re-measured 2026-08-08**: the grep below returns matches (exit 0), including
+      shipped runtime files `pwa/receipt.js`, `pwa/receipt-format.js`,
+      `seal-gateway/receipt-format.js` and `test/receipt-format-unparseable.cjs`,
+      which the stated doc exclusions do not cover.
+- [ ] Embedded wasm strings are public-only — **RED, re-measured 2026-08-08**: the
+      `strings` check below finds `seal-host: request refused` in the shipped binary.
 - [x] Node test harness (`test/local-harness.cjs`) is **TEST-ONLY**, not shipped
       runtime, clearly headered; the workflow never invokes it.
 - [x] Synthetic data only (no PII): `prod_customer_ledger` rows are generated fakes.
@@ -49,6 +55,6 @@ strings -n 5 seal-gateway/wasm/seal.wasm | grep -Ei 'seal-host|mcp-seal-dev|wasm
 
 ## Flip-public procedure (manual, separately authorised, NOT run here)
 Out of scope for this build. When authorised by the owner: re-run the checklist;
-create the PRIVATE GitHub repo; `git push`; run `workflow_dispatch` (GitHub Models
-needs the runner token); re-verify the live report. Until then: private, no remote,
-not published.
+clear both red checklist items; push to the existing private remote; run
+`workflow_dispatch` (GitHub Models needs the runner token); re-verify the live
+report. Until then: private, not published.
