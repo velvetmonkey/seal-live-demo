@@ -2,7 +2,7 @@
 
 Sampled from README, "What happens", "Run it now", non-claims, evidence/.
 
-Backed by: scripts/run_local.sh + assert.mjs (17 invariants), evidence/, pwa replay, scenarios/.
+Backed by: scripts/run_local.sh + assert.mjs (invariant count computed at run time), evidence/, pwa replay, scenarios/.
 
 All "block vs bypass on identical bytes", "ASSERT OK", "real receipts" preserved.
 
