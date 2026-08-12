@@ -7,7 +7,7 @@ on:
         description: GitHub Models model id
         default: openai/gpt-4o-mini
 
-# Unset permissions default to none and break private checkout + Models. (amendment #2)
+# Explicit permissions cover source checkout and GitHub Models. (amendment #2)
 permissions:
   contents: read
   models: read
@@ -26,7 +26,7 @@ jobs:
       COMPOSE_PARALLEL_LIMIT: "1"
       # SEAL_CHECK_URL is intentionally UNSET for public/preview runs. When unset the
       # summary renders local re-check instructions instead of a clickable link, so no
-      # private host is ever baked into the workflow. Set it in a private env only if
+      # operator-only host is ever baked into the workflow. Set it in a private env only if
       # you want emitted links to resolve on your own network.
     steps:
       - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4

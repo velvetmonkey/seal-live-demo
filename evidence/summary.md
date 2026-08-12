@@ -101,7 +101,7 @@ A keyword blocklist can be dodged by changing the spelling. The gate does not re
 ## Check the results yourself, on your own device
 Every decision comes with a receipt anyone can re-check independently. The link opens a tiny page that re-runs the verified kernel **in your own browser** and trusts nothing from us; the receipt rides in the link's `#fragment`, which browsers never send to any server. You can re-check all three runs: the gate **allowing** the legitimate action, **refusing** the attack, and the **control** with the gate removed.
 
-> The public re-check page isn't deployed for this private preview, so there is no link to click yet. To run it locally: download the evidence bundle, then `cd pwa && python3 -m http.server 8097` and open `http://localhost:8097/#receipt=<receipt>` for either receipt below.
+> The public re-check page isn't deployed, so there is no link to click yet. To run it locally: download the evidence bundle, then `cd pwa && python3 -m http.server 8097` and open `http://localhost:8097/#receipt=<receipt>` for either receipt below.
 
 <details><summary>raw receipts (JSON)</summary>
 
