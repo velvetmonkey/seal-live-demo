@@ -77,7 +77,7 @@ The page re-derives every Phase 1/2/3 decision from the shipped bundle in your b
 > **Claim:** policy-covered request-effects recognised by the compatible MCP boundary reach the downstream child MCP server only after every applicable Lean kernel returns Allow. Effects configured as guarded additionally require a matching live approval record. Seam failures block; every mediated decision emits replayable evidence.
 > **Non-claim:** the deployed host is not proved end to end, and canonical parser rejection is not currently the runtime gate. Host `ApprovalRecord` tokens are a separate signed channel from the v2 kernel-defined approval tuple. “Canonical” in Seal names the pinned kernel byte rule, not RFC 8785/JCS. Seal verifies the configured authorization evidence. Whether that evidence represents the intended human, device or service is an identity and key-custody assumption, not a proved property.
 <!-- truthbox:end -->
-> Map: the family evaluator guide (`EVALUATOR-START.md`) and the full profile definition (`PROFILE.md`) live in private repos (`seal`, `seal-host`) and are available to authorised evaluators on request.
+> Map: the family evaluator guide ([`seal/EVALUATOR-START.md`](https://github.com/velvetmonkey/seal/blob/main/EVALUATOR-START.md)) and the full profile definition ([`seal-host/PROFILE.md`](https://github.com/velvetmonkey/seal-host/blob/main/PROFILE.md)) live in public repositories and resolve for everyone.
 
 <!-- TODO(asset, shot #1, PROMO-GRADE): real terminal capture, split view — P2 BLOCK with
      "prod rows unchanged" beside P3 bypass "rows -> 0", the identical canonical_request_sha256
@@ -90,7 +90,7 @@ The page re-derives every Phase 1/2/3 decision from the shipped bundle in your b
 
 Seal's proof story is intentionally narrow. The Lean theorems cover the mediation kernel and selected model properties. The binaries and browser artifacts are connected to that proof by reproducible conformance tests, not by a theorem about every compiled instruction.
 
-Start with [What Seal is NOT](docs/LIMITATIONS.md) — the canonical non-claims, verbatim, in this repo — then [docs/PROOF-REFERENCE.md](docs/PROOF-REFERENCE.md) for theorem names and file locations, [docs/CONFORMANCE.md](docs/CONFORMANCE.md) for the byte-identity claim, and [docs/TCB.md](docs/TCB.md) for what remains trusted. The family-wide claims matrix (one table: proven / tested / assumed / not claimed) lives in the private `seal` umbrella repo, available to authorised evaluators.
+Start with [What Seal is NOT](docs/LIMITATIONS.md) — the canonical non-claims, verbatim, in this repo — then [docs/PROOF-REFERENCE.md](docs/PROOF-REFERENCE.md) for theorem names and file locations, [docs/CONFORMANCE.md](docs/CONFORMANCE.md) for the byte-identity claim, and [docs/TCB.md](docs/TCB.md) for what remains trusted. The family-wide claims matrix (one table: proven / tested / assumed / not claimed) is public in [`seal`](https://github.com/velvetmonkey/seal/blob/main/docs/CLAIMS-MATRIX.md).
 
 Mandatory non-claims:
 
@@ -136,12 +136,12 @@ Receipts in `evidence/receipts.jsonl` also verify through `seal-assurance-kit`'s
 `node bin/seal verify` — and in CI: `seal-verify-action` runs a sha256-pinned,
 downstream-stricter fork of that verify closure (it additionally requires a valid
 `signed_config`; see seal-verify-action/VENDORED.md) in GitHub Actions and fails the build
-on an unverifiable receipt. (Both tools live in private
-repos today; the install-to-first-PASS deployment guide is available to authorised evaluators.)
+on an unverifiable receipt. Both tools live in public repositories; `witness-check` is the
+separate proprietary sufficiency analyzer and remains private.
 
 ## The Seal family
 
-_The Seal-family repositories are private today, so the names below are deliberately not links — a public reader would only hit 404s. Authorised evaluators can request access to any of them._
+_The Seal-family repositories are public and resolve for everyone. `witness-check` is the one intentional private, proprietary exception._
 
 - **seal** — the umbrella story, product map, and evaluator path.
 - **mcp-seal-dev** — the rulebook, proven.
@@ -167,7 +167,7 @@ In this repo — every link below works publicly:
 - [Glossary](docs/GLOSSARY.md)
 - [Security policy](SECURITY.md)
 
-Family-wide documents — the claims matrix (proven / tested / assumed / not claimed) and the family architecture map — live in the private `seal` umbrella repo, available to authorised evaluators.
+Family-wide documents — the claims matrix (proven / tested / assumed / not claimed) and the family architecture map — are public in the [`seal` umbrella repository](https://github.com/velvetmonkey/seal).
 
 ## License
 

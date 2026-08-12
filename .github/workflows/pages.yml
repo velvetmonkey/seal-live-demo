@@ -1,9 +1,7 @@
 # SPDX-License-Identifier: Apache-2.0
 # Deploys the bundled seal-check PWA (pwa/) to GitHub Pages. Manual dispatch only.
-# The repo is PRIVATE and (on Pro) Pages must be set to PRIVATE visibility before the
-# first deploy: the PWA ships the verified seal.wasm, which must stay access-gated
-# until the deliberate, audited public flip. Do NOT run this until Pages visibility
-# is confirmed Private.
+# The repository is public. This workflow remains manual because deployment is an
+# operator action separate from publishing the source repository.
 name: deploy seal-check PWA to Pages
 on:
   workflow_dispatch:

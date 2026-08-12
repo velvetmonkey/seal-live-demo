@@ -337,7 +337,7 @@ if (host) {
   w(`- [**Re-check the blocked attack →**](${host}#receipt=${fragOf(p2.receipt)}), the gate refused \`${p2.receipt?.arguments?.operation}\` on the production table.`);
   w(`- [**Re-check the control (no gate) →**](${host}#receipt=${fragOf(p3.receipt)}), with seal removed, the identical attack executed and destroyed the data.`);
 } else {
-  w(`> The public re-check page isn't deployed for this private preview, so there is no link to click yet. To run it locally: download the evidence bundle, then \`cd pwa && python3 -m http.server 8097\` and open \`http://localhost:8097/#receipt=<receipt>\` for either receipt below.`);
+  w(`> The public re-check page isn't deployed, so there is no link to click yet. To run it locally: download the evidence bundle, then \`cd pwa && python3 -m http.server 8097\` and open \`http://localhost:8097/#receipt=<receipt>\` for either receipt below.`);
 }
 w("");
 w(`<details><summary>raw receipts (JSON)</summary>\n\n**Allowed (staging write):**\n\`\`\`json\n${JSON.stringify(p1.receipt, null, 2)}\n\`\`\`\n\n**Blocked (production delete):**\n\`\`\`json\n${JSON.stringify(p2.receipt, null, 2)}\n\`\`\`\n\n**Control (gate removed):**\n\`\`\`json\n${JSON.stringify(p3.receipt, null, 2)}\n\`\`\`\n</details>`);
