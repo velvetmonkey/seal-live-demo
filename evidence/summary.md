@@ -25,7 +25,7 @@ This proves **one narrow thing**: a request that reaches the gate cannot execute
 
 > **What this proves / does NOT prove.** This is a Lean-verified mediation **decision function** inside a host gateway.
 > 
-> **Proves**, complete mediation modulo A1-A3, for calls that reach seal: once canonicalised, a state transition that violates the capability policy **cannot be executed**.
+> **Proves**, modeled-route authorization behavior for calls that reach seal: once canonicalised, a state transition that violates the capability policy **cannot be executed**.
 > 
 > **Does NOT prove**:
 > - the agent is safe, a fooled agent can still leak what it *reads*;

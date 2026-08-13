@@ -27,6 +27,14 @@ const BLOCKS = [
     canonical: "docs/TRUTH-BOX.md", mirrors: ["README.md"] },
 ];
 
+// Repair manifest: every G0-edited claim surface is named explicitly. Missing
+// files are errors; restoring an overclaim makes this invoked CI guard fail.
+const CLAIM_MANIFEST = [
+  ["README.md", "mirrored word-for-word across the repository-local surfaces named by `scripts/claims-drift.mjs`"],
+  ["docs/THREAT-MODEL.md", "Lane C runs a wasm-vs-interpreted-Lean differential in seal-host CI over a fixed corpus; it is evidence over that corpus, not a universal binary-equals-model proof."],
+  ["evidence/summary.md", "> **Proves**, modeled-route authorization behavior for calls that reach seal: once canonicalised, a state transition that violates the capability policy **cannot be executed**."],
+];
+
 function extract(file, begin, end) {
   let text;
   try {
@@ -85,6 +93,14 @@ for (const blk of BLOCKS) {
       }
     }
   }
+}
+
+for (const [file, claim] of CLAIM_MANIFEST) {
+  let text;
+  try { text = readFileSync(resolve(ROOT, file), "utf8"); }
+  catch (e) { console.error(`ERROR  ${file}: ${e.message}`); process.exit(2); }
+  if (text.includes(claim)) console.log(`PASS  ${file} contains repaired claim`);
+  else { drift = true; console.error(`FAIL  ${file} missing repaired claim: ${claim}`); }
 }
 
 if (drift) {
