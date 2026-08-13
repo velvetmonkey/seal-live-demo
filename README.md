@@ -29,7 +29,7 @@ The local runner submits tool-calls to Postgres through the real gateway and ker
 - **Canonical request / `canonical_request_sha256`** — the request put into one exact, normalised byte form, and the SHA-256 fingerprint of those bytes. Same fingerprint = same request, byte for byte.
 - **Receipt** — a replayable record every decision emits; anyone can re-check it without trusting this repo.
 - **Kernel** — the small decision core, written and proved in the Lean theorem prover. "Self-verified" in the page header means the browser re-checked the kernel's hash before replaying.
-- **Truth box** — the quoted block below: the project's claim and non-claims, mirrored word-for-word across every Seal repo and guarded by an automated check (`scripts/claims-drift.mjs`) so it cannot drift silently.
+- **Truth box** — the quoted block below: the project's claim and non-claims, mirrored word-for-word across the repository-local surfaces named by `scripts/claims-drift.mjs`, which guards those mirrors against silent drift.
 - **Runtime profile `compatible` vs `canonical-l0`** — `canonical-l0` is the strict, mathematically proved request grammar. It exists and is proved, but it is **not** what runs today: the deployed route is the looser `compatible` profile, whose core allow/deny decisions come from the proved kernel while the pipeline around it is tested, not proved.
 - **"ASSERT OK"** — the run's final self-check: every invariant green, including a guard that the database was genuinely populated before the run, so an empty database can never fake a pass.
 
@@ -70,7 +70,7 @@ The page re-derives every Phase 1/2/3 decision from the shipped bundle in your b
 ![Runtime](https://img.shields.io/badge/runtime-WebAssembly-654ff0)
 ![License](https://img.shields.io/badge/license-Apache--2.0-blue)
 
-**What we claim — and what we don't.** The box below is the project's honesty statement. It is mirrored word-for-word across the Seal repos and guarded by an automated check, so it cannot be quietly softened. Plain-words version: the core decision kernel is mathematically proved; the strict proved request grammar (`canonical-l0`) is not yet the deployed route — today runs the `compatible` profile — and the deployed system as a whole is tested against the proof, not itself proved.
+**What we claim — and what we don't.** The box below is the project's honesty statement. It is mirrored word-for-word across the repository-local surfaces named by the automated check, which prevents those copies from being quietly softened. Plain-words version: the core decision kernel is mathematically proved; the strict proved request grammar (`canonical-l0`) is not yet the deployed route — today runs the `compatible` profile — and the deployed system as a whole is tested against the proof, not itself proved.
 
 <!-- truthbox:begin -->
 > **Runtime profile: `compatible`.** Strict `canonical-l0` is proved and modelled, not the deployed route yet.
