@@ -179,7 +179,7 @@ w(`<summary><b>Does NOT prove:</b> agent safety · host/transport/container wiri
 w("");
 w(`> **What this proves / does NOT prove.** This is a Lean-verified mediation **decision function** inside a host gateway.`);
 w(`> `);
-w(`> **Proves**, complete mediation modulo A1-A3, for calls that reach seal: once canonicalised, a state transition that violates the capability policy **cannot be executed**.`);
+w(`> **Proves**, modeled-route authorization behavior for calls that reach seal: once canonicalised, a state transition that violates the capability policy **cannot be executed**.`);
 w(`> `);
 w(`> **Does NOT prove**:`);
 w(`> - the agent is safe, a fooled agent can still leak what it *reads*;`);
