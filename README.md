@@ -1,3 +1,5 @@
+> **ARCHIVED, not maintained.** See [seal](https://github.com/velvetmonkey/seal) for the maintained product.
+
 # seal-live-demo
 
 [![claims-drift](https://github.com/velvetmonkey/seal-live-demo/actions/workflows/claims.yml/badge.svg)](https://github.com/velvetmonkey/seal-live-demo/actions/workflows/claims.yml)
